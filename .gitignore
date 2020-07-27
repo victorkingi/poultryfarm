@@ -10,7 +10,7 @@
 
 # config
 
-/src/config
+/src/config/fbConfig.js
 
 # production
 /build
