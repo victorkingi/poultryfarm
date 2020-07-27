@@ -1,22 +1,23 @@
-import React, { Component } from "react";
+import React, {Component} from "react";
 import Notifications from "./Notifications";
-import { connect } from 'react-redux';
-import { compose } from 'redux'
-import { firestoreConnect } from 'react-redux-firebase';
-import { Redirect } from 'react-router-dom';
+import {connect} from 'react-redux';
+import {compose} from 'redux'
+import {firestoreConnect} from 'react-redux-firebase';
+import {Redirect} from 'react-router-dom';
 import SalesList from "../projects/SalesList";
 import EggsList from "../projects/EggsList";
 import BuyList from "../projects/BuyList";
-import { checkClaims } from "../../store/actions/authActions";
+import {checkClaims} from "../../store/actions/authActions";
+import Current from "./Current";
 
 class Dashboard extends Component {
 
 
     render() {
-        const { sales, auth, admin, profile, notifications, eggs, buys } = this.props;
+        const {sales, balance, auth, admin, profile, notifications, eggs, buys} = this.props;
         this.props.checkClaims();
 
-        if(!auth.uid) {
+        if (!auth.uid) {
             return (
                 <Redirect to="/signin" />
             )
@@ -26,6 +27,10 @@ class Dashboard extends Component {
             return (
                 <div className="dashboard container">
                     <div className="row">
+
+                        <div className="col s12 m5 offset-m1">
+                            <Current balance={balance}/>
+                        </div>
 
                         <div className="col s12 m5 offset-m1">
                             <Notifications notifications={notifications}/>
@@ -73,6 +78,7 @@ class Dashboard extends Component {
 const mapStateToProps = (state) => {
     return {
         sales: state.firestore.ordered.sales,
+        balance: state.firestore.ordered.balanceNotification,
         buys: state.firestore.ordered.buys,
         eggs: state.firestore.ordered.eggs,
         auth: state.firebase.auth,
@@ -95,5 +101,6 @@ export default compose(
         { collection: 'notifications', limit: 3, orderBy:['time', 'desc']},
         { collection: 'buys', limit: 2, orderBy:['submittedOn', 'desc']},
         { collection: 'eggs', limit: 2, orderBy:['submittedOn', 'desc']},
+        {collection: 'balanceNotification', limit: 2, orderBy: ['time', 'desc']}
     ])
 )(Dashboard)
