@@ -1,3 +1,10 @@
+## Poultry data keeping web app
+
+This is a react web app for farmers to keep data about there sales, purchases and much more. I used firebase as the backend and I suggest going to [firebase website](https://firebase.google.com/) so as to create an account and try out the app.
+
+N.B:- Basic knowledge of firebase commands and linking your web app to firestore is needed.
+
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
