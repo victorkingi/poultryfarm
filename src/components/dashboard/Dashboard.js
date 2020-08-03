@@ -78,7 +78,7 @@ class Dashboard extends Component {
 const mapStateToProps = (state) => {
     return {
         sales: state.firestore.ordered.sales,
-        balance: state.firestore.ordered.balanceNotification,
+        balance: state.firestore.ordered.current,
         buys: state.firestore.ordered.buys,
         eggs: state.firestore.ordered.eggs,
         auth: state.firebase.auth,
@@ -101,6 +101,6 @@ export default compose(
         { collection: 'notifications', limit: 3, orderBy:['time', 'desc']},
         { collection: 'buys', limit: 2, orderBy:['submittedOn', 'desc']},
         { collection: 'eggs', limit: 2, orderBy:['submittedOn', 'desc']},
-        {collection: 'balanceNotification', limit: 2, orderBy: ['time', 'desc']}
+        {collection: 'current', limit: 1, orderBy: ['submittedOn', 'desc']}
     ])
 )(Dashboard)

@@ -15,11 +15,11 @@ const Current = (props) => {
                                 return (
                                     <li key={item.id}>
                                         <span className="pink-text">
-                                            {item.user}
+                                            {item.submittedBy}
                                         </span>
-                                        <span> {item.content}</span>
+                                        <span> Ksh.{item.totalEarned}</span>
                                         <div className="grey-text note-date">
-                                            {moment(item.time.toDate()).fromNow()}
+                                            {item.submittedOn && moment(item.submittedOn.toDate()).fromNow()}
                                         </div>
                                     </li>
                                 )
@@ -29,7 +29,7 @@ const Current = (props) => {
                 </div>
             </div>
         </div>
-    )
+    );
 }
 
 export default Current
