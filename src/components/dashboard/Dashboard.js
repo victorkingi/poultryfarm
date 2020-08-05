@@ -10,8 +10,8 @@ import BuyList from "../projects/BuyList";
 import {checkClaims} from "../../store/actions/authActions";
 import Current from "./Current";
 
-class Dashboard extends Component {
 
+class Dashboard extends Component {
 
     render() {
         const {sales, balance, auth, admin, profile, notifications, eggs, buys} = this.props;
@@ -60,6 +60,7 @@ class Dashboard extends Component {
                         <div className="center-align">
                             <h3 className="spinner-blue"> Welcome {profile.firstName}</h3>
                         </div>
+
                     </div>
                 )
             }
@@ -81,10 +82,11 @@ const mapStateToProps = (state) => {
         balance: state.firestore.ordered.current,
         buys: state.firestore.ordered.buys,
         eggs: state.firestore.ordered.eggs,
+        users: state.firestore.ordered.users,
         auth: state.firebase.auth,
         admin: state.auth.admin,
         profile: state.firebase.profile,
-        notifications: state.firestore.ordered.notifications
+        notifications: state.firestore.ordered.notifications,
     }
 }
 
@@ -97,10 +99,11 @@ const mapDispatchToProps = (dispatch) => {
 export default compose(
     connect(mapStateToProps, mapDispatchToProps),
     firestoreConnect([
-        { collection: 'sales', limit: 2, orderBy:['submittedOn', 'desc'] },
-        { collection: 'notifications', limit: 3, orderBy:['time', 'desc']},
-        { collection: 'buys', limit: 2, orderBy:['submittedOn', 'desc']},
-        { collection: 'eggs', limit: 2, orderBy:['submittedOn', 'desc']},
-        {collection: 'current', limit: 1, orderBy: ['submittedOn', 'desc']}
+        {collection: 'sales', limit: 2, orderBy: ['submittedOn', 'desc']},
+        {collection: 'notifications', limit: 3, orderBy: ['time', 'desc']},
+        {collection: 'buys', limit: 2, orderBy: ['submittedOn', 'desc']},
+        {collection: 'eggs', limit: 2, orderBy: ['submittedOn', 'desc']},
+        {collection: 'current', limit: 4, orderBy: ['balance', 'desc']},
+        {collection: 'users', limit: 4, orderBy: ['id', 'asc']}
     ])
 )(Dashboard)

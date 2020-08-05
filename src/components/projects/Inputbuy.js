@@ -1,6 +1,6 @@
-import React, { Component } from "react";
-import { connect } from 'react-redux';
-import { inputBuys } from "../../store/actions/buyAction";
+import React, {Component} from "react";
+import {connect} from 'react-redux';
+import {inputBuys} from "../../store/actions/buyAction";
 import M from 'materialize-css';
 import {Redirect} from "react-router-dom";
 
@@ -19,19 +19,19 @@ class Inputbuy extends Component {
             buys.style.display = 'block';
         }
 
-        if(selectedValue === "Other") {
+        if (selectedValue === "Other" || selectedValue === "Feeds") {
             const buys = document.getElementById("other");
             buys.style.display = 'block';
         }
-        if(selectedValue === "Vaccines") {
+        if (selectedValue === "Vaccines") {
             const buys = document.getElementById("vaccine");
             buys.style.display = 'block';
         }
-        if(selectedValue === "Drug") {
+        if (selectedValue === "Drug") {
             const buys = document.getElementById("drug");
             buys.style.display = 'block';
         }
-        if (selectedValue !== "Other" && selectedValue !== "Vaccine" && selectedValue !== "Drug" && selectedValue !== "") {
+        if (selectedValue !== "Other" && selectedValue !== "Vaccine" && selectedValue !== "Drug" && selectedValue !== "" && selectedValue !== "Feeds") {
             const vaccine = document.getElementById("vaccine");
             const buysDrug = document.getElementById("drug");
             const buysItem = document.getElementById("other");
@@ -50,15 +50,14 @@ class Inputbuy extends Component {
         const selectBox = document.getElementById("section");
         const selectedValue = selectBox.options[selectBox.selectedIndex].value;
 
-        if(selectedValue === "Other") {
+        if (selectedValue === "Other" || selectedValue === "Feeds") {
             const buys = document.getElementById("itemName");
             const drug = document.getElementById("drugName");
             const vaccine = document.getElementById("vaccineName");
 
-            if(buys.value === "" || drug.value !== "" || vaccine.value !== "") {
+            if (buys.value === "" || drug.value !== "" || vaccine.value !== "") {
                 document.getElementById("error-text").innerHTML = "Error! Try again"
-            }
-            else {
+            } else {
                 this.props.inputBuys(this.state);
                 this.props.history.push('/');
             }
@@ -79,23 +78,21 @@ class Inputbuy extends Component {
             const buys = document.getElementById("vaccineName");
             const drug = document.getElementById("drugName");
             const other = document.getElementById("itemName");
-            if(buys.value === "" || other.value !== "" || drug.value !== "") {
+            if (buys.value === "" || other.value !== "" || drug.value !== "") {
                 document.getElementById("error-text").innerHTML = "Error! Try again"
-            }
-            else {
+            } else {
                 this.props.inputBuys(this.state);
                 this.props.history.push('/');
             }
         }
-        if (selectedValue !== "Vaccine" && selectedValue !== "Drug" && selectedValue !== "Other") {
+        if (selectedValue !== "Vaccine" && selectedValue !== "Drug" && selectedValue !== "Other" && selectedValue !== "Feeds") {
             const drug = document.getElementById("drugName");
             const vaccine = document.getElementById("vaccineName");
             const item = document.getElementById("itemName");
 
-            if(item.value !== "" || vaccine.value !== "" || drug.value !== "") {
+            if (item.value !== "" || vaccine.value !== "" || drug.value !== "") {
                 document.getElementById("error-text").innerHTML = "Error! Try again"
-            }
-            else {
+            } else {
                 this.props.inputBuys(this.state);
                 this.props.history.push('/');
             }
@@ -166,9 +163,10 @@ class Inputbuy extends Component {
 
                             <div className="input-field">
                                 <button type="Submit" className="btn pink lighten-1 z-depth-0">Submit</button>
-                                <div className="red-text center" id="error-text"/>
                             </div>
                         </div>
+
+                        <div className="red-text center" id="error-text"/>
 
                     </form>
                 </div>

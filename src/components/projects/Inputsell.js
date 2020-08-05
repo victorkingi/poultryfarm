@@ -13,13 +13,14 @@ class Inputsell extends Component {
     handleChange = (e) => {
         const selectBox = document.getElementById("section");
         const selectedValue = selectBox.options[selectBox.selectedIndex].value;
+        const status = document.getElementById('status');
+        const statusValue = status.options[status.selectedIndex].value;
+
         if (selectedValue !== "" && selectedValue !== "Old chickens" && selectedValue !== "Other") {
             const old = document.getElementById("old");
             const other = document.getElementById("other");
             const sales = document.getElementById("sales");
-            const btn = document.getElementById("submit-btn");
             sales.style.display = 'block';
-            btn.style.display = 'block';
             old.style.display = 'none';
             other.style.display = 'none';
         }
@@ -27,20 +28,16 @@ class Inputsell extends Component {
         if (selectedValue === "Other") {
             const other = document.getElementById("other");
             const sales = document.getElementById("sales");
-            const btn = document.getElementById("submit-btn");
             const old = document.getElementById("old");
             old.style.display = 'none';
             other.style.display = 'block';
-            btn.style.display = 'block';
             sales.style.display = 'block';
         }
 
         if (selectedValue === "Old Chickens") {
             const old = document.getElementById("old");
             const other = document.getElementById("other");
-            const btn = document.getElementById("submit-btn");
             const sales = document.getElementById("sales");
-            btn.style.display = 'block';
             other.style.display = 'block';
             old.style.display = 'block';
             sales.style.display = 'none';
@@ -51,13 +48,21 @@ class Inputsell extends Component {
             item.style.display = 'none';
 
         }
-        if (selectedValue !== "Old Chickens" && selectedValue !== "") {
-
+        if (statusValue !== "0") {
+            const btn = document.getElementById("submit-btn");
+            btn.style.display = 'block';
         }
+        const myInt = parseInt(e.target.value);
 
-        this.setState({
-            [e.target.id]: e.target.value
-        });
+        if (isNaN(myInt)) {
+            this.setState({
+                [e.target.id]: e.target.value
+            });
+        } else {
+            this.setState({
+                [e.target.id]: myInt
+            });
+        }
     }
 
     handleSubmit = (e) => {
@@ -142,6 +147,13 @@ class Inputsell extends Component {
                             <label htmlFor="trayPrice">Price per Tray</label>
                             <input type="number" id="trayPrice" onChange={this.handleChange}/>
                         </div>
+
+                        <select id="status" onChange={this.handleChange} className="white" defaultValue="0">
+                            <option value="0" disabled="disabled">Status</option>
+                            <option value={true}>Paid</option>
+                            <option value={false}>Not paid</option>
+                        </select>
+
                     </div>
 
                     <div style={{display: 'none'}} id="submit-btn">

@@ -15,9 +15,9 @@ const Current = (props) => {
                                 return (
                                     <li key={item.id}>
                                         <span className="pink-text">
-                                            {item.submittedBy}
+                                            {item.fullName}
                                         </span>
-                                        <span> Ksh.{item.totalEarned}</span>
+                                        <span> Ksh.{item.balance}</span>
                                         <div className="grey-text note-date">
                                             {item.submittedOn && moment(item.submittedOn.toDate()).fromNow()}
                                         </div>

@@ -1,7 +1,7 @@
-import React, { Component } from "react";
+import React, {Component} from "react";
 import {Redirect} from "react-router-dom";
-import { connect } from "react-redux";
-import { signUp } from "../../store/actions/authActions";
+import {connect} from "react-redux";
+import {signUp} from "../../store/actions/authActions";
 
 
 class SignUp extends Component {
@@ -53,7 +53,7 @@ class SignUp extends Component {
                     <div className="input-field">
                         <button className="btn pink lighten-1 z-depth-0">Sign Up</button>
                         <div className="red-text center">
-                            { authError ? <p>{ authError }</p> : null }
+                            {authError ? <p>{authError}</p> : null}
                         </div>
                     </div>
                 </form>

@@ -1,6 +1,7 @@
 const initState = {
     authError: null,
-    admin: false
+    admin: false,
+
 }
 
 
@@ -13,15 +14,21 @@ const authReducer = (state = initState, action) => {
                 ...state,
                 authError: 'Login failed'
             }
+        case 'GOOGLE_ERROR':
+            console.log('login error', action.finalError);
+            return {
+                ...state,
+                authError: 'Login failed'
+            }
         case 'LOGIN_SUCCESS':
-            console.log('login success');
+            console.log('login success', action.finalUser);
             return {
                 ...state,
                 authError: null
             }
 
         case 'ADMIN_ACCESS':
-            console.log("you are admin")
+            //console.log("you are admin")
             return {
                 ...state,
                 admin: true
@@ -54,6 +61,23 @@ const authReducer = (state = initState, action) => {
             return {
                 ...state,
                 authError: action.err.message,
+            }
+        case 'MY_ERROR':
+            console.log('list not loaded', action.err.message);
+            return {
+                ...state,
+                authError: action.err.message,
+            }
+        case 'LIST_ERROR':
+            console.log('list error', action.all);
+            return {
+                ...state,
+                authError: action.err.message,
+            }
+        case 'LIST_ACCESS':
+            return {
+                ...state,
+                users: action.data,
             }
 
         default:
