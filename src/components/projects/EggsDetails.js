@@ -1,14 +1,14 @@
 import React from "react";
-import { connect } from 'react-redux';
-import { firestoreConnect } from "react-redux-firebase";
-import { compose } from "redux";
-import { Redirect } from "react-router-dom";
+import {connect} from 'react-redux';
+import {firestoreConnect} from "react-redux-firebase";
+import {compose} from "redux";
+import {Redirect} from "react-router-dom";
 import moment from "moment";
 
 const EggsDetails = (props) => {
-    const { egg, auth } = props;
+    const {egg, auth} = props;
     if (!auth.uid) {
-        return <Redirect to='/signin' />
+        return <Redirect to='/signin'/>
     }
 
     if (egg) {
@@ -27,6 +27,7 @@ const EggsDetails = (props) => {
                         <p>B 2: {egg['B 2']} </p>
                         <p>C 1: {egg['C 1']}  </p>
                         <p>C 2: {egg['C 2']} </p>
+                        <p>Broken: {egg['broken']} </p>
                     </div>
                     <div className="card-action grey lighten-4 grey-text">
                         <div>Posted by { egg.submittedBy }</div>

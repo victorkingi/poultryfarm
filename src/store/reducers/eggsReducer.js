@@ -9,7 +9,11 @@ const eggsReducer = (state = initState, action) => {
             window.alert("Data submitted");
             return state;
         case 'EGGS_DOC_EXISTS':
-            console.log("Doc exists");
+            console.log("egg doc exists");
+            window.alert("ERROR");
+            return state;
+        case 'TRAY_DOC_EXISTS':
+            console.log("Tray doc exists");
             window.alert("ERROR");
             return state;
         case 'INPUT_EGGS_ERROR':

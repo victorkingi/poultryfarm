@@ -1,7 +1,7 @@
 import React from "react";
 import SignedInLinks from "./SignedInLinks";
 import SignedOutLinks from "./SignedOutLinks";
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 import M from "materialize-css/dist/js/materialize.min.js";
 import "materialize-css/dist/css/materialize.min.css";
 
@@ -27,19 +27,20 @@ const Sidebar = (props) => {
         return (
             <div>
                 <ul id="slide-out" className="sidenav">
-                    { auth.isLoaded && links }
+                    {auth.isLoaded && links}
                 </ul>
-                <a href="#" data-target="slide-out" className="sidenav-trigger">
+                <a href='#' data-target="slide-out" className="sidenav-trigger">
                     <i className="material-icons">menu</i>
                 </a>
             </div>
         );
+
 }
 
 const mapStateToProps = (state) => {
     return {
         auth: state.firebase.auth,
-        profile: state.firebase.profile
+        profile: state.firebase.profile,
     }
 }
 

@@ -9,7 +9,9 @@ class Inputeggs extends Component {
         category: 'eggs',
     }
 
+
     handleChange = (e) => {
+        const date = document.getElementById("date").value;
         const a1 = document.getElementById("A 1").value;
         const a2 = document.getElementById("A 2").value;
         const  b1 = document.getElementById("B 1").value;
@@ -17,21 +19,33 @@ class Inputeggs extends Component {
         const  c1 = document.getElementById("C 1").value;
         const c2 = document.getElementById("C 2").value;
         const broken = document.getElementById("broken").value;
+        const egg0 = document.getElementById("egg0");
         const egg = document.getElementById("egg");
         const egg1 = document.getElementById("egg1");
-        const  egg2 = document.getElementById("egg2");
-        const  egg3 = document.getElementById("egg3");
-        const  egg4 = document.getElementById("egg4");
+        const egg2 = document.getElementById("egg2");
+        const egg3 = document.getElementById("egg3");
+        const egg4 = document.getElementById("egg4");
         const egg5 = document.getElementById("egg5");
         const egg6 = document.getElementById("egg6");
 
-        if(a1 !== "") {
-          egg.style.display = 'block';
+
+        if (parseInt(date) > 0 && parseInt(date) < 32 && date !== "") {
+            document.getElementById("error-text").innerHTML = "";
+            egg0.style.display = 'block';
+        }
+
+        if (parseInt(date) <= 0 || parseInt(date) >= 32 || date === "") {
+            document.getElementById("error-text").innerHTML = "ERROR: date ranges from 1 to 31";
+            egg0.style.display = 'none';
+        }
+
+        if (a1 !== "") {
+            egg.style.display = 'block';
         }
         if (a2 !== "") {
             egg1.style.display = 'block';
         }
-        if(b1 !== "") {
+        if (b1 !== "") {
             egg2.style.display = 'block';
         }
         if (b2 !== "") {
@@ -47,11 +61,12 @@ class Inputeggs extends Component {
             egg6.style.display = 'block';
         }
 
-
         this.setState({
             [e.target.id]: e.target.value
         });
     }
+
+
     handleSubmit = (e) => {
         e.preventDefault();
 
@@ -61,6 +76,7 @@ class Inputeggs extends Component {
 
     componentDidMount = () => {
         M.AutoInit();
+
     }
 
     render() {
@@ -79,57 +95,63 @@ class Inputeggs extends Component {
                         <h5 className="grey-text text-darken-3">Input Eggs</h5>
 
                         <div className="input-field">
+                            <label htmlFor="date">Select Date (range: 1 - 31)</label>
+                            <input type="number" id="date" onChange={this.handleChange} required/>
+                        </div>
+
+                        <div className="input-field" style={{display: 'none'}} id="egg0">
                             <label htmlFor="A 1">A 1 Eggs</label>
                             <input type="number" id="A 1" onChange={this.handleChange} required/>
-                        </div>
 
-                        <div style={{display: 'none' }} id="egg" >
-                            <div className="input-field">
-                                <label htmlFor="A 2">A 2 Eggs</label>
-                                <input type="number" id="A 2" onChange={this.handleChange} required/>
-                            </div>
-                        </div>
-                                <div style={{display: 'none' }} id="egg1" >
-                                    <div className="input-field">
-                                        <label htmlFor="B 1">B 1 Eggs</label>
-                                        <input type="number" id="B 1" onChange={this.handleChange} required/>
-                                    </div>
+                            <div style={{display: 'none'}} id="egg">
+                                <div className="input-field">
+                                    <label htmlFor="A 2">A 2 Eggs</label>
+                                    <input type="number" id="A 2" onChange={this.handleChange} required/>
                                 </div>
+                            </div>
+                            <div style={{display: 'none'}} id="egg1">
+                                <div className="input-field">
+                                    <label htmlFor="B 1">B 1 Eggs</label>
+                                    <input type="number" id="B 1" onChange={this.handleChange} required/>
+                                </div>
+                            </div>
 
-                                    <div style={{display: 'none' }} id="egg2" >
-                                        <div className="input-field">
-                                            <label htmlFor="B 2">B 2 Eggs</label>
-                                            <input type="number" id="B 2" onChange={this.handleChange} required/>
-                                        </div>
-                                    </div>
+                            <div style={{display: 'none' }} id="egg2" >
+                                <div className="input-field">
+                                    <label htmlFor="B 2">B 2 Eggs</label>
+                                    <input type="number" id="B 2" onChange={this.handleChange} required/>
+                                </div>
+                            </div>
 
-                                    <div style={{display: 'none' }} id="egg3" >
-                                        <div className="input-field">
-                                            <label htmlFor="C 1">C 1 Eggs</label>
-                                            <input type="number" id="C 1" onChange={this.handleChange} required/>
-                                        </div>
-                                    </div>
+                            <div style={{display: 'none' }} id="egg3" >
+                                <div className="input-field">
+                                    <label htmlFor="C 1">C 1 Eggs</label>
+                                    <input type="number" id="C 1" onChange={this.handleChange} required/>
+                                </div>
+                            </div>
 
-                        <div style={{display: 'none'}} id="egg4">
-                            <div className="input-field">
-                                <label htmlFor="C 2">C 2 Eggs</label>
-                                <input type="number" id="C 2" onChange={this.handleChange} required/>
+                            <div style={{display: 'none'}} id="egg4">
+                                <div className="input-field">
+                                    <label htmlFor="C 2">C 2 Eggs</label>
+                                    <input type="number" id="C 2" onChange={this.handleChange} required/>
+                                </div>
+                            </div>
+
+                            <div style={{display: 'none'}} id="egg5">
+                                <div className="input-field">
+                                    <label htmlFor="broken">Eggs broken</label>
+                                    <input type="number" id="broken" onChange={this.handleChange} required/>
+                                </div>
+                            </div>
+
+                            <div style={{display: 'none'}} id="egg6">
+                                <div className="input-field">
+                                    <button type="Submit" className="btn pink lighten-1 z-depth-0">Submit</button>
+                                </div>
                             </div>
                         </div>
 
-                        <div style={{display: 'none'}} id="egg5">
-                            <div className="input-field">
-                                <label htmlFor="broken">Eggs broken</label>
-                                <input type="number" id="broken" onChange={this.handleChange} required/>
-                            </div>
-                        </div>
-
-                        <div style={{display: 'none'}} id="egg6">
-                            <div className="input-field">
-                                <button type="Submit" className="btn pink lighten-1 z-depth-0">Submit</button>
-                                <div className="red-text center" id="error-text"/>
-                            </div>
-                        </div>
+                        <div className="red-text center" id="error-text"/>
 
                     </form>
                 </div>

@@ -1,5 +1,3 @@
-import React from "react";
-
 export const signIn = (credentials) => {
     return (dispatch, getState, {getFirebase}) => {
         const firebase = getFirebase();
@@ -12,31 +10,6 @@ export const signIn = (credentials) => {
         }).catch((err) => {
             dispatch({type: 'LOGIN_ERROR', err})
         });
-    }
-}
-
-export const listUsers = () => {
-    return (dispatch, getState, {getFirebase, getFirestore}) => {
-        const firestore = getFirestore();
-        const firebase = getFirebase();
-        const user = firebase.auth().currentUser;
-        const email = user.email;
-
-        /*firestore.collection('users').get().then(function (querySnapshot) {
-            querySnapshot.forEach(function (doc) {
-            })
-        }).catch((err) => {
-            dispatch({type: 'MY_ERROR', err});
-        });*/
-
-        firestore.collection('users')
-            .where("email", ">", email).get()
-            .then(function (query) {
-                query.forEach(function (doc) {
-                    const id = doc.id;
-                    dispatch({type: 'LIST_ACCESS', id});
-                })
-            })
     }
 }
 

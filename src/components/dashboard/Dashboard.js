@@ -4,17 +4,17 @@ import {connect} from 'react-redux';
 import {compose} from 'redux'
 import {firestoreConnect} from 'react-redux-firebase';
 import {Redirect} from 'react-router-dom';
-import SalesList from "../projects/SalesList";
-import EggsList from "../projects/EggsList";
-import BuyList from "../projects/BuyList";
 import {checkClaims} from "../../store/actions/authActions";
 import Current from "./Current";
+import DebtList from "../projects/DebtList";
+import TrayList from "../projects/TrayList";
+import BagsList from "../projects/BagsList";
 
 
 class Dashboard extends Component {
 
     render() {
-        const {sales, balance, auth, admin, profile, notifications, eggs, buys} = this.props;
+        const {balance, bags, trays, debt, auth, admin, profile, notifications} = this.props;
         this.props.checkClaims();
 
         if (!auth.uid) {
@@ -29,23 +29,23 @@ class Dashboard extends Component {
                     <div className="row">
 
                         <div className="col s12 m5 offset-m1">
+                            <Notifications notifications={notifications}/>
+                        </div>
+
+                        <div className="col s12 m5 offset-m1">
                             <Current balance={balance}/>
                         </div>
 
                         <div className="col s12 m5 offset-m1">
-                            <Notifications notifications={notifications}/>
+                            <TrayList trays={trays}/>
                         </div>
 
-                        <div className="col s12 m6">
-                            <SalesList sales={sales}/>
+                        <div className="col s12 m5 offset-m1">
+                            <BagsList bags={bags}/>
                         </div>
 
-                        <div className="col s12 m6">
-                            <BuyList buys={buys}/>
-                        </div>
-
-                        <div className="col s12 m6">
-                            <EggsList eggs={eggs}/>
+                        <div className="col s12 m5 offset-m1">
+                            <DebtList debt={debt}/>
                         </div>
 
                     </div>
@@ -78,32 +78,30 @@ class Dashboard extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        sales: state.firestore.ordered.sales,
+        debt: state.firestore.ordered.oweJeff,
         balance: state.firestore.ordered.current,
-        buys: state.firestore.ordered.buys,
-        eggs: state.firestore.ordered.eggs,
-        users: state.firestore.ordered.users,
         auth: state.firebase.auth,
         admin: state.auth.admin,
         profile: state.firebase.profile,
         notifications: state.firestore.ordered.notifications,
+        trays: state.firestore.ordered.trays,
+        bags: state.firestore.ordered.bags
     }
 }
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        checkClaims: () => dispatch(checkClaims())
+        checkClaims: () => dispatch(checkClaims()),
     }
 }
 
 export default compose(
     connect(mapStateToProps, mapDispatchToProps),
     firestoreConnect([
-        {collection: 'sales', limit: 2, orderBy: ['submittedOn', 'desc']},
-        {collection: 'notifications', limit: 3, orderBy: ['time', 'desc']},
-        {collection: 'buys', limit: 2, orderBy: ['submittedOn', 'desc']},
-        {collection: 'eggs', limit: 2, orderBy: ['submittedOn', 'desc']},
-        {collection: 'current', limit: 4, orderBy: ['balance', 'desc']},
-        {collection: 'users', limit: 4, orderBy: ['id', 'asc']}
+        {collection: 'notifications', limit: 4, orderBy: ['time', 'desc']},
+        {collection: 'current', limit: 10, orderBy: ['balance', 'desc']},
+        {collection: 'oweJeff', limit: 4, orderBy: ['balance', 'desc']},
+        {collection: 'trays', limit: 1, orderBy: ['number', 'desc']},
+        {collection: 'bags', limit: 1, orderBy: ['number', 'desc']}
     ])
 )(Dashboard)

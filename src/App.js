@@ -14,6 +14,10 @@ import Navbar from "./components/layout/Navbar";
 import Inputmoney from "./components/projects/Inputmoney";
 import LatePaymentDetails from "./components/projects/LatePaymentDetails";
 import Late from "./components/dashboard/Late";
+import Sale from "./components/dashboard/Sale";
+import Buy from "./components/dashboard/Buy";
+import Egg from "./components/dashboard/Egg";
+import LineChart from "./components/dashboard/LineChart";
 
 class App extends Component {
 
@@ -34,8 +38,12 @@ class App extends Component {
                         <Route path='/buy' component={Inputbuy}/>
                         <Route path='/eggs' component={Inputeggs}/>
                         <Route path='/send' component={Inputmoney}/>
-                        <Route path='/late' component={Late}/>
+                        <Route path='/l' component={Late}/>
+                        <Route path='/s' component={Sale}/>
+                        <Route path='/b' component={Buy}/>
+                        <Route path='/e' component={Egg}/>
                         <Route path='/l/:id' component={LatePaymentDetails}/>
+                        <Route path='/chart' component={LineChart}/>
                     </Switch>
                 </div>
             </BrowserRouter>

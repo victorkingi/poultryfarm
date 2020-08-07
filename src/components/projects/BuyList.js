@@ -1,19 +1,72 @@
 import React from "react";
 import BuySummary from "./BuySummary";
-import { Link } from "react-router-dom";
+import {Link} from "react-router-dom";
+import sample from "./images/sample-1.jpg";
 
 const BuyList = ({buys}) => {
-    return (
-        <div className="project-list section">
-            { buys && buys.map(buy => {
-                return (
-                    <Link to={'/b/' + buy.id} key={buy.id} >
-                    <BuySummary buy={buy}  />
-                    </Link>
-                )
-            })}
-        </div>
-    )
+
+    if (buys) {
+        if (buys['length'] > 0) {
+
+            return (
+                <div className="project-list section">
+                    {buys && buys.map(buy => {
+                        return (
+                            <Link to={'/b/' + buy.id} key={buy.id}>
+                                <BuySummary buy={buy}/>
+                            </Link>
+                        )
+                    })}
+                </div>
+            );
+        } else {
+            return (
+
+                <div className="card z-depth-0 project-summary">
+                    <div className="col s12 m7 large">
+                        <div className="card large">
+
+                            <div className="card-image">
+                                <img alt="pic" src={sample}/>
+                                <span className="card-title">Purchases Made</span>
+                            </div>
+
+                            <div className="card-content grey-text text-darken-3">
+                                <p>No purchase data</p>
+                            </div>
+                            <div className="card-action">
+                                <a href="/">Go to Dashboard</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            );
+        }
+    } else {
+        return (
+
+            <div className="card z-depth-0 project-summary">
+                <div className="col s12 m7 large">
+                    <div className="card large">
+
+                        <div className="card-image">
+                            <img alt="pic" src={sample}/>
+                            <span className="card-title">Purchases Made</span>
+                        </div>
+
+                        <div className="card-content grey-text text-darken-3">
+                            <p>No purchase data</p>
+                        </div>
+                        <div className="card-action">
+                            <a href="/">Go to Dashboard</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        );
+    }
 }
 
 export default BuyList;
