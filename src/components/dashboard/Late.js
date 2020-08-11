@@ -13,19 +13,28 @@ class Late extends Component {
         if (!auth.uid) {
             return (
                 <Redirect to="/signin"/>
-            )
+            );
         }
-        return (
-            <div className="dashboard container">
-                <div className="row">
 
-                    <div className="col s12 m6">
-                        <LatePaymentList late={late}/>
+        if (late) {
+            return (
+                <div className="dashboard container">
+                    <div className="row">
+
+                        <div className="col s12 m6">
+                            <LatePaymentList late={late}/>
+                        </div>
+
                     </div>
-
                 </div>
-            </div>
-        );
+            );
+        } else {
+            return (
+                <div className="progress">
+                    <div className="indeterminate"/>
+                </div>
+            );
+        }
     }
 }
 

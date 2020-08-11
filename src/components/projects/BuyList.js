@@ -22,10 +22,9 @@ const BuyList = ({buys}) => {
         } else {
             return (
 
-                <div className="card z-depth-0 project-summary">
-                    <div className="col s12 m7 large">
-                        <div className="card large">
-
+                <div className="row">
+                    <div className="col s12 m7">
+                        <div className="card">
                             <div className="card-image">
                                 <img alt="pic" src={sample}/>
                                 <span className="card-title">Purchases Made</span>
@@ -34,9 +33,11 @@ const BuyList = ({buys}) => {
                             <div className="card-content grey-text text-darken-3">
                                 <p>No purchase data</p>
                             </div>
+
                             <div className="card-action">
                                 <a href="/">Go to Dashboard</a>
                             </div>
+
                         </div>
                     </div>
                 </div>
@@ -45,24 +46,8 @@ const BuyList = ({buys}) => {
         }
     } else {
         return (
-
-            <div className="card z-depth-0 project-summary">
-                <div className="col s12 m7 large">
-                    <div className="card large">
-
-                        <div className="card-image">
-                            <img alt="pic" src={sample}/>
-                            <span className="card-title">Purchases Made</span>
-                        </div>
-
-                        <div className="card-content grey-text text-darken-3">
-                            <p>No purchase data</p>
-                        </div>
-                        <div className="card-action">
-                            <a href="/">Go to Dashboard</a>
-                        </div>
-                    </div>
-                </div>
+            <div className="progress">
+                <div className="indeterminate"/>
             </div>
 
         );

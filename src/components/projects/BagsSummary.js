@@ -27,12 +27,22 @@ const BagsSummary = (bag) => {
             updateBags(state);
         }
 
+        var link = <p>{bag.item.number} Bags of Feeds in Store</p>
+        if (parseInt(bag.item.number) === 1) {
+            link = <p>{bag.item.number} Bag of Feeds in Store</p>
+        }
+
         if (bagNo) {
+            link = <p>{bagNo} Bags of Feeds in Store</p>;
+            if (parseInt(bagNo) === 1) {
+                link = <p>{bagNo} Bag of Feeds in Store</p>
+            }
+
             return (
                 <div className="card z-depth-0 project-summary">
                     <div className="card-content grey-text text-darken-3">
                         <span className="card-title">Feeds</span>
-                        <p>{bagNo} Bags of Feeds in Store</p>
+                        {link}
                         <p className="grey-text">{moment(time).calendar()}</p>
                     </div>
                 </div>
@@ -42,7 +52,7 @@ const BagsSummary = (bag) => {
                 <div className="card z-depth-0 project-summary">
                     <div className="card-content grey-text text-darken-3">
                         <span className="card-title">Feeds</span>
-                        <p>{bag.item.number} Bags of Feeds in Store</p>
+                        {link}
                         <p className="grey-text">{moment(time).calendar()}</p>
                     </div>
                 </div>

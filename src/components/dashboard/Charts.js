@@ -9,11 +9,12 @@ function Charts(eggs) {
     const eggsDataB2 = [];
     const eggsDataC1 = [];
     const eggsDataC2 = [];
+    const eggsDataHouse = [];
     const eggsDatabroken = [];
 
     const eggsLabel = [];
     const eggsLabelPercent = [];
-
+    var max = 0;
 
     if (eggs.eggs) {
         for (var i = 0; i < eggs.eggs['length']; i++) {
@@ -23,7 +24,30 @@ function Charts(eggs) {
             const b2 = parseInt(eggs.eggs[i.toString()]["B 2"]);
             const c1 = parseInt(eggs.eggs[i.toString()]["C 1"]);
             const c2 = parseInt(eggs.eggs[i.toString()]["C 2"]);
+            const house = parseInt(eggs.eggs[i.toString()]["house"]);
             const broken = parseInt(eggs.eggs[i.toString()]["broken"]);
+
+            if (max < a1) {
+                max = a1;
+            }
+            if (max < a2) {
+                max = a2;
+            }
+            if (max < b1) {
+                max = b1;
+            }
+            if (max < b2) {
+                max = b2;
+            }
+            if (max < c1) {
+                max = c1;
+            }
+            if (max < c2) {
+                max = c2;
+            }
+            if (max < house) {
+                max = house;
+            }
 
             eggsDataA1.push(a1);
             eggsDataA2.push(a2);
@@ -31,6 +55,7 @@ function Charts(eggs) {
             eggsDataB2.push(b2);
             eggsDataC1.push(c1);
             eggsDataC2.push(c2);
+            eggsDataHouse.push(house);
             eggsDatabroken.push(broken);
 
         }
@@ -90,6 +115,13 @@ function Charts(eggs) {
                 borderColor: ['rgba(255, 255, 0, 0.2)'],
                 backgroundColor: ['rgba(255, 255, 0, 0.2)'],
                 pointBackgroundColor: 'rgba(255, 255, 0, 0.2)'
+            },
+            {
+                label: 'House',
+                data: eggsDataHouse,
+                borderColor: ['rgba(255, 255, 255, 0.2)'],
+                backgroundColor: ['rgba(255, 255, 255, 0.2)'],
+                pointBackgroundColor: 'rgba(255, 255, 255, 0.2)'
             },
             {
                 label: 'Broken',
@@ -166,7 +198,7 @@ function Charts(eggs) {
                 {
                     ticks: {
                         min: 0,
-                        max: 100,
+                        max: max,
                         stepSize: 20
                     }
                 }
@@ -184,7 +216,7 @@ function Charts(eggs) {
                 {
                     ticks: {
                         min: 0,
-                        max: 100,
+                        max: max,
                         stepSize: 20
                     }
                 }

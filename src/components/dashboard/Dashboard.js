@@ -9,6 +9,7 @@ import Current from "./Current";
 import DebtList from "../projects/DebtList";
 import TrayList from "../projects/TrayList";
 import BagsList from "../projects/BagsList";
+import ChickAge from "./ChickenAge";
 
 
 class Dashboard extends Component {
@@ -24,33 +25,45 @@ class Dashboard extends Component {
         }
 
         if (admin) {
-            return (
-                <div className="dashboard container">
-                    <div className="row">
+            if (balance && bags && trays && debt && notifications) {
+                return (
+                    <div className="dashboard container">
+                        <div className="row">
 
-                        <div className="col s12 m5 offset-m1">
-                            <Notifications notifications={notifications}/>
+                            <div className="col s12 m5 offset-m1">
+                                <ChickAge/>
+                            </div>
+
+                            <div className="col s12 m5 offset-m1">
+                                <Notifications notifications={notifications}/>
+                            </div>
+
+                            <div className="col s12 m5 offset-m1">
+                                <Current balance={balance}/>
+                            </div>
+
+                            <div className="col s12 m5 offset-m1">
+                                <TrayList trays={trays}/>
+                            </div>
+
+                            <div className="col s12 m5 offset-m1">
+                                <BagsList bags={bags}/>
+                            </div>
+
+                            <div className="col s12 m5 offset-m1">
+                                <DebtList debt={debt}/>
+                            </div>
+
                         </div>
-
-                        <div className="col s12 m5 offset-m1">
-                            <Current balance={balance}/>
-                        </div>
-
-                        <div className="col s12 m5 offset-m1">
-                            <TrayList trays={trays}/>
-                        </div>
-
-                        <div className="col s12 m5 offset-m1">
-                            <BagsList bags={bags}/>
-                        </div>
-
-                        <div className="col s12 m5 offset-m1">
-                            <DebtList debt={debt}/>
-                        </div>
-
                     </div>
-                </div>
-            )
+                )
+            } else {
+                return (
+                    <div className="progress">
+                        <div className="indeterminate"/>
+                    </div>
+                );
+            }
         } else {
 
             if(profile.firstName) {
@@ -66,10 +79,10 @@ class Dashboard extends Component {
             }
             else {
                 return (
-                    <div className="dashboard container">
-
+                    <div className="progress">
+                        <div className="indeterminate"/>
                     </div>
-                )
+                );
             }
         }
 

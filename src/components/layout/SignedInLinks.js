@@ -26,6 +26,7 @@ const SignedInLinks = (props) => {
                     <li><NavLink to='/sales'>Input Sales</NavLink></li>
                     <li><NavLink to='/eggs'>Input Eggs</NavLink></li>
                     <li><NavLink to='/buy'>Input Purchases</NavLink></li>
+                    <li><NavLink to='/ib'>Input Borrowing</NavLink></li>
 
                     <li>
                         <div className="divider"/>
@@ -46,6 +47,8 @@ const SignedInLinks = (props) => {
                     </li>
 
                     <li><NavLink to='/l'>Late Payments</NavLink></li>
+                    <li><NavLink to='/rb'>Random Borrowing</NavLink></li>
+                    <li><NavLink to='/o'>Other Debts</NavLink></li>
 
                     <li>
                         <div className="divider"/>
@@ -110,7 +113,7 @@ const SignedInLinks = (props) => {
                         <a className="subheader">Payments</a>
                     </li>
 
-                    <li><NavLink to='/late'>Late Payments</NavLink></li>
+                    <li><NavLink to='/l'>Late Payments</NavLink></li>
 
                     <li>
                         <div className="divider"/>

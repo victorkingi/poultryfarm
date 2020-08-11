@@ -11,6 +11,16 @@ const moneyReducer = (state = initState, action) => {
             console.log('updated');
             return state;
 
+        case 'BORROW_SUCCESS':
+            console.log('money borrowed');
+            console.log('Money borrowed successfully');
+            return state;
+
+        case 'BORROW_FAIL':
+            console.log('borrowing failed');
+            window.alert('ERROR: ', action.err);
+            return state;
+
         case 'LATE_REPAID':
             console.log('payment successful');
             window.alert("payment successful");

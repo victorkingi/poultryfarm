@@ -15,8 +15,21 @@ class Inputsell extends Component {
         const selectedValue = selectBox.options[selectBox.selectedIndex].value;
         const status = document.getElementById('status');
         const statusValue = status.options[status.selectedIndex].value;
+        const date = document.getElementById('date').value;
+        const mysec = document.getElementById('mySection');
+        const sales = document.getElementById('sales');
+        const trayPrice = document.getElementById('trayPrice').value;
 
-        if (selectedValue !== "" && selectedValue !== "Old chickens" && selectedValue !== "Other") {
+        if (parseInt(date) > 0 && parseInt(date) < 32 && date !== "") {
+            mysec.style.display = 'block';
+            document.getElementById("error-text").innerHTML = "";
+        } else {
+            mysec.style.display = 'none';
+            sales.style.display = 'none';
+            document.getElementById("error-text").innerHTML = "ERROR: date ranges from 1 to 31";
+        }
+
+        if (selectedValue === "Cakes" || selectedValue === "Simbi" || selectedValue === "Thika Farmers") {
             const old = document.getElementById("old");
             const other = document.getElementById("other");
             const sales = document.getElementById("sales");
@@ -38,9 +51,11 @@ class Inputsell extends Component {
             const old = document.getElementById("old");
             const other = document.getElementById("other");
             const sales = document.getElementById("sales");
+            const final = document.getElementById("final");
             other.style.display = 'block';
             old.style.display = 'block';
             sales.style.display = 'none';
+            final.style.display = 'block';
         }
 
         if (selectedValue !== "Old Chickens" && selectedValue !== "Other") {
@@ -48,6 +63,12 @@ class Inputsell extends Component {
             item.style.display = 'none';
 
         }
+
+        if (parseInt(trayPrice) > 0) {
+            const final = document.getElementById("final");
+            final.style.display = 'block';
+        }
+
         if (statusValue !== "0") {
             const btn = document.getElementById("submit-btn");
             btn.style.display = 'block';
@@ -109,14 +130,21 @@ class Inputsell extends Component {
                 <form onSubmit={this.handleSubmit} className="white">
                     <h5 className="grey-text text-darken-3">Input Sales</h5>
 
-                    <select id="section" onChange={this.handleChange} className="white" defaultValue="0" >
-                        <option value="0" disabled="disabled">Choose Section</option>
-                        <option value="Thika Farmers">Thika Farmers</option>
-                        <option value="Cakes">Cakes</option>
-                        <option value="Simbi">Simbi</option>
-                        <option value="Old Chickens">Old chickens</option>
-                        <option value="Other">Other</option>
-                    </select>
+                    <div className="input-field">
+                        <label htmlFor="date">Select Date (range: 1 - 31)</label>
+                        <input type="number" id="date" onChange={this.handleChange} required/>
+                    </div>
+
+                    <div style={{display: 'none'}} id="mySection">
+                        <select id="section" onChange={this.handleChange} className="white" defaultValue="0">
+                            <option value="0" disabled="disabled">Choose Section</option>
+                            <option value="Thika Farmers">Thika Farmers</option>
+                            <option value="Cakes">Cakes</option>
+                            <option value="Simbi">Simbi</option>
+                            <option value="Old Chickens">Old chickens</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
 
                     <div style={{display: 'none'}} id="other">
                         <div className="input-field">
@@ -148,21 +176,23 @@ class Inputsell extends Component {
                             <input type="number" id="trayPrice" onChange={this.handleChange}/>
                         </div>
 
+                    </div>
+
+                    <div style={{display: 'none'}} id="final">
                         <select id="status" onChange={this.handleChange} className="white" defaultValue="0">
                             <option value="0" disabled="disabled">Status</option>
                             <option value={true}>Paid</option>
                             <option value={false}>Not paid</option>
                         </select>
-
                     </div>
+
 
                     <div style={{display: 'none'}} id="submit-btn">
                         <div className="input-field">
                             <button type="Submit" className="btn pink lighten-1 z-depth-0">Submit</button>
-                            <div className="red-text center" id="error-text"/>
                         </div>
                     </div>
-
+                    <div className="red-text center" id="error-text"/>
                 </form>
             </div>
         );

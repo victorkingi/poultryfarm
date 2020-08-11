@@ -39,11 +39,17 @@ class Inputbuy extends Component {
             buysItem.style.display = 'none';
             vaccine.style.display = 'none';
         }
+        if (e.target.id === "status") {
+            this.setState({
+                [e.target.id]: JSON.parse(e.target.value)
+            });
+        } else {
+            this.setState({
+                [e.target.id]: e.target.value
+            });
+        }
 
 
-        this.setState({
-            [e.target.id]: e.target.value
-        });
     }
     handleSubmit = (e) => {
         e.preventDefault();
@@ -160,6 +166,13 @@ class Inputbuy extends Component {
                                 <label htmlFor="objectPrice">Price per Object</label>
                                 <input type="number" id="objectPrice" onChange={this.handleChange} required/>
                             </div>
+
+                            <select id="status" onChange={this.handleChange} className="white" defaultValue="0">
+                                <option value="0" disabled="disabled">Status</option>
+                                <option value={true}>Paid</option>
+                                <option value={false}>Not paid</option>
+                            </select>
+
 
                             <div className="input-field">
                                 <button type="Submit" className="btn pink lighten-1 z-depth-0">Submit</button>

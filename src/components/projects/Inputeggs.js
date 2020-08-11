@@ -12,13 +12,14 @@ class Inputeggs extends Component {
 
     handleChange = (e) => {
         const date = document.getElementById("date").value;
-        const a1 = document.getElementById("A 1").value;
-        const a2 = document.getElementById("A 2").value;
-        const  b1 = document.getElementById("B 1").value;
-        const  b2 = document.getElementById("B 2").value;
-        const  c1 = document.getElementById("C 1").value;
-        const c2 = document.getElementById("C 2").value;
-        const broken = document.getElementById("broken").value;
+        const a1 = parseInt(document.getElementById("A 1").value);
+        const a2 = parseInt(document.getElementById("A 2").value);
+        const b1 = parseInt(document.getElementById("B 1").value);
+        const b2 = parseInt(document.getElementById("B 2").value);
+        const c1 = parseInt(document.getElementById("C 1").value);
+        const c2 = parseInt(document.getElementById("C 2").value);
+        const house = parseInt(document.getElementById("house").value);
+        const broken = parseInt(document.getElementById("broken").value);
         const egg0 = document.getElementById("egg0");
         const egg = document.getElementById("egg");
         const egg1 = document.getElementById("egg1");
@@ -27,6 +28,7 @@ class Inputeggs extends Component {
         const egg4 = document.getElementById("egg4");
         const egg5 = document.getElementById("egg5");
         const egg6 = document.getElementById("egg6");
+        const egg7 = document.getElementById("egg7");
 
 
         if (parseInt(date) > 0 && parseInt(date) < 32 && date !== "") {
@@ -35,35 +37,75 @@ class Inputeggs extends Component {
         }
 
         if (parseInt(date) <= 0 || parseInt(date) >= 32 || date === "") {
-            document.getElementById("error-text").innerHTML = "ERROR: date ranges from 1 to 31";
             egg0.style.display = 'none';
         }
 
-        if (a1 !== "") {
+        if (a1 !== "" && a1 >= 0 && a1 <= Number.MAX_SAFE_INTEGER) {
             egg.style.display = 'block';
-        }
-        if (a2 !== "") {
-            egg1.style.display = 'block';
-        }
-        if (b1 !== "") {
-            egg2.style.display = 'block';
-        }
-        if (b2 !== "") {
-            egg3.style.display = 'block';
-        }
-        if (c1 !== "") {
-            egg4.style.display = 'block';
-        }
-        if (c2 !== "") {
-            egg5.style.display = 'block';
-        }
-        if (broken !== "") {
-            egg6.style.display = 'block';
+            document.getElementById("error-text").innerHTML = "";
+        } else {
+            egg.style.display = 'none';
         }
 
-        this.setState({
-            [e.target.id]: e.target.value
-        });
+        if (b1 !== "" && b1 >= 0 && b1 <= Number.MAX_SAFE_INTEGER) {
+            egg1.style.display = 'block';
+            document.getElementById("error-text").innerHTML = "";
+        } else {
+            egg1.style.display = 'none';
+        }
+
+        if (c1 !== "" && c1 >= 0 && c1 <= Number.MAX_SAFE_INTEGER) {
+            egg2.style.display = 'block';
+            document.getElementById("error-text").innerHTML = "";
+        } else {
+            egg2.style.display = 'none';
+
+        }
+        if (a2 !== "" && a2 >= 0 && a2 <= Number.MAX_SAFE_INTEGER) {
+            egg3.style.display = 'block';
+            document.getElementById("error-text").innerHTML = "";
+        } else {
+            egg3.style.display = 'none';
+        }
+        if (b2 !== "" && b2 >= 0 && b2 <= Number.MAX_SAFE_INTEGER) {
+            document.getElementById("error-text").innerHTML = "";
+            egg4.style.display = 'block';
+        } else {
+            egg4.style.display = 'none';
+
+        }
+        if (c2 !== "" && c2 >= 0 && c2 <= Number.MAX_SAFE_INTEGER) {
+            egg5.style.display = 'block';
+            document.getElementById("error-text").innerHTML = "";
+        } else {
+            egg5.style.display = 'none';
+        }
+
+        if (house !== "" && house >= 0 && house <= Number.MAX_SAFE_INTEGER) {
+            egg6.style.display = 'block';
+            document.getElementById("error-text").innerHTML = "";
+        } else {
+            egg6.style.display = 'none';
+        }
+
+        if (broken !== "" && broken >= 0 && broken <= Number.MAX_SAFE_INTEGER) {
+            egg7.style.display = 'block';
+            document.getElementById("error-text").innerHTML = "";
+        } else {
+            egg7.style.display = 'none';
+        }
+
+        const myInt = parseInt(e.target.value);
+
+        if (isNaN(myInt)) {
+            this.setState({
+                [e.target.id]: e.target.value
+            });
+        } else {
+            this.setState({
+                [e.target.id]: myInt
+            });
+        }
     }
 
 
@@ -105,28 +147,28 @@ class Inputeggs extends Component {
 
                             <div style={{display: 'none'}} id="egg">
                                 <div className="input-field">
-                                    <label htmlFor="A 2">A 2 Eggs</label>
-                                    <input type="number" id="A 2" onChange={this.handleChange} required/>
+                                    <label htmlFor="B 1">B 1 Eggs</label>
+                                    <input type="number" id="B 1" onChange={this.handleChange} required/>
                                 </div>
                             </div>
                             <div style={{display: 'none'}} id="egg1">
                                 <div className="input-field">
-                                    <label htmlFor="B 1">B 1 Eggs</label>
-                                    <input type="number" id="B 1" onChange={this.handleChange} required/>
+                                    <label htmlFor="C 1">C 1 Eggs</label>
+                                    <input type="number" id="C 1" onChange={this.handleChange} required/>
                                 </div>
                             </div>
 
                             <div style={{display: 'none' }} id="egg2" >
                                 <div className="input-field">
-                                    <label htmlFor="B 2">B 2 Eggs</label>
-                                    <input type="number" id="B 2" onChange={this.handleChange} required/>
+                                    <label htmlFor="A 2">A 2 Eggs</label>
+                                    <input type="number" id="A 2" onChange={this.handleChange} required/>
                                 </div>
                             </div>
 
                             <div style={{display: 'none' }} id="egg3" >
                                 <div className="input-field">
-                                    <label htmlFor="C 1">C 1 Eggs</label>
-                                    <input type="number" id="C 1" onChange={this.handleChange} required/>
+                                    <label htmlFor="B 2">B 2 Eggs</label>
+                                    <input type="number" id="B 2" onChange={this.handleChange} required/>
                                 </div>
                             </div>
 
@@ -139,12 +181,19 @@ class Inputeggs extends Component {
 
                             <div style={{display: 'none'}} id="egg5">
                                 <div className="input-field">
+                                    <label htmlFor="house">House Eggs</label>
+                                    <input type="number" id="house" onChange={this.handleChange} required/>
+                                </div>
+                            </div>
+
+                            <div style={{display: 'none'}} id="egg6">
+                                <div className="input-field">
                                     <label htmlFor="broken">Eggs broken</label>
                                     <input type="number" id="broken" onChange={this.handleChange} required/>
                                 </div>
                             </div>
 
-                            <div style={{display: 'none'}} id="egg6">
+                            <div style={{display: 'none'}} id="egg7">
                                 <div className="input-field">
                                     <button type="Submit" className="btn pink lighten-1 z-depth-0">Submit</button>
                                 </div>

@@ -56,7 +56,6 @@ class Inputmoney extends Component {
     render() {
         const {auth, admin} = this.props;
         const links = admin ? <option value="bank@account.com">Bank</option> : null;
-        console.log(links)
         if (!auth.uid) {
             return (
                 <Redirect to="/signin"/>
@@ -72,7 +71,7 @@ class Inputmoney extends Component {
                         <option value="0" disabled="disabled">Choose User</option>
                         <option value="victorkarue712@gmail.com">Victor</option>
                         <option value="mukomauapurity@gmail.com">Purity</option>
-                        <option value="jeffkarue@gmail.com">Jefferson</option>
+                        <option value="jeffkarue@gmail.com">Jeff</option>
                         {links}
                     </select>
 

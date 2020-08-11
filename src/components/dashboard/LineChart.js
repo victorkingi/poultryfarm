@@ -15,13 +15,21 @@ class LineChart extends Component {
                 <Redirect to="/signin"/>
             )
         }
-        return (
-            <div className="app">
-                <div className="chart">
-                    <Charts eggs={eggs}/>
+        if (eggs) {
+            return (
+                <div className="app">
+                    <div className="chart">
+                        <Charts eggs={eggs}/>
+                    </div>
                 </div>
-            </div>
-        );
+            );
+        } else {
+            return (
+                <div className="progress">
+                    <div className="indeterminate"/>
+                </div>
+            );
+        }
     }
 }
 
