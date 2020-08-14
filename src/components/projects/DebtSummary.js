@@ -5,9 +5,8 @@ import {connect} from "react-redux";
 
 const DebtSummary = (debt) => {
 
-    const handleClick = (e) => {
-        e.preventDefault();
-        debt.updateBankBalance();
+    const handleClick = (details) => {
+        debt.updateBankBalance(details);
     }
 
     if (debt.item.submittedOn) {
@@ -21,7 +20,10 @@ const DebtSummary = (debt) => {
                     <p>Ksh.{debt.item.balance}</p>
                     <p className="grey-text">{moment(time).calendar()}</p>
                 </div>
-                <button onClick={handleClick} className="btn pink lighten-2 z-depth-0">Pay off</button>
+                <button type="submit" onClick={() => {
+                    handleClick(debt.item)
+                }} className="btn pink lighten-2 z-depth-0">Pay off
+                </button>
             </div>
         )
     } else {
@@ -39,7 +41,7 @@ const DebtSummary = (debt) => {
 const mapDispatchToProps = (dispatch) => {
 
     return {
-        updateBankBalance: () => dispatch(updateBankBalance())
+        updateBankBalance: (details) => dispatch(updateBankBalance(details))
     }
 }
 

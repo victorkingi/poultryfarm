@@ -1,3 +1,12 @@
+function makeid(l) {
+    var text = "";
+    var char_list = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    for (var i = 0; i < l; i++) {
+        text += char_list.charAt(Math.floor(Math.random() * char_list.length));
+    }
+    return text;
+}
+
 export const inputMoney = (money) => {
     return (dispatch, getState, {getFirebase, getFirestore}) => {
         //make async call to database
@@ -9,6 +18,7 @@ export const inputMoney = (money) => {
         const amount = parseInt(money.amount);
         var receiverUID = undefined;
         var receiverName = undefined;
+        const key = makeid(28);
 
         firestore.collection('users').where("email", "==", receiver).get()
             .then(function (query) {
@@ -41,6 +51,7 @@ export const inputMoney = (money) => {
                                             firestore.collection('userLogs').doc(user.uid).collection('logs').add({
                                                 event: 'sent money to ' + receiver,
                                                 amount: parseInt(amount),
+                                                moneyKey: key,
                                                 fullName: profile.firstName + ' ' + profile.lastName,
                                                 submittedBy: profile.firstName + ' ' + profile.lastName,
                                                 submittedOn: firestore.FieldValue.serverTimestamp()
@@ -65,6 +76,7 @@ export const inputMoney = (money) => {
                                                         firestore.collection('userLogs').doc(receiverUID).collection('logs').add({
                                                             event: 'received money from ' + user.email,
                                                             amount: parseInt(amount),
+                                                            moneyKey: key,
                                                             fullName: receiverName,
                                                             submittedBy: profile.firstName + ' ' + profile.lastName,
                                                             submittedOn: firestore.FieldValue.serverTimestamp()
@@ -84,6 +96,7 @@ export const inputMoney = (money) => {
                                                         firestore.collection('userLogs').doc(receiverUID).collection('logs').add({
                                                             event: 'received money from ' + user.email,
                                                             amount: emptyBalance,
+                                                            moneyKey: key,
                                                             fullName: receiverName,
                                                             submittedBy: profile.firstName + ' ' + profile.lastName,
                                                             submittedOn: firestore.FieldValue.serverTimestamp()
@@ -117,6 +130,7 @@ export const latePays = (details) => {
         const profile = getState().firebase.profile;
         const user = firebase.auth().currentUser;
         const buy = details.buyer ? (details.section + ": " + details.buyer) : details.section;
+        const key = makeid(28);
 
 
         firestore.collection('latePayment').where("saleKey", "==", details.saleKey).get()
@@ -151,6 +165,7 @@ export const latePays = (details) => {
                             firestore.collection('userLogs').doc(user.uid).collection('logs').add({
                                 event: 'late payment from ' + buy,
                                 earned: parseInt(details.amountDue),
+                                oweKey: key,
                                 submittedBy: profile.firstName + ' ' + profile.lastName,
                                 submittedOn: firestore.FieldValue.serverTimestamp()
                             });
@@ -179,6 +194,7 @@ export const latePays = (details) => {
                             firestore.collection('userLogs').doc(user.uid).collection('logs').add({
                                 event: 'late payment from ' + buy,
                                 earned: parseInt(details.amountDue),
+                                oweKey: key,
                                 submittedBy: profile.firstName + ' ' + profile.lastName,
                                 submittedOn: firestore.FieldValue.serverTimestamp()
                             });
@@ -197,6 +213,7 @@ export const latePays = (details) => {
     }
 }
 
+//executed if we owe thika farmers money or someone else who sold as something
 export const clearedDebt = (details) => {
     return (dispatch, getState, {getFirebase, getFirestore}) => {
         const firestore = getFirestore();
@@ -204,6 +221,7 @@ export const clearedDebt = (details) => {
         const profile = getState().firebase.profile;
         const user = firebase.auth().currentUser;
         const month = new Date().getMonth() + 1;
+        const key = makeid(28);
 
         firestore.collection('current').doc(user.uid).get().then(function (doc) {
             if (doc.exists) {
@@ -224,6 +242,14 @@ export const clearedDebt = (details) => {
                                             const fin = parseInt(data.balance) + parseInt(details.balance);
 
                                             doc.ref.update({balance: fin}).then(() => console.log("owing jeff updated"));
+                                        } else {
+                                            firestore.collection('oweJeff').doc("Month " + month).set({
+                                                oweKey: key,
+                                                UsedOn: details.debter,
+                                                balance: parseInt(details.balance),
+                                                submittedBy: profile.firstName + ' ' + profile.lastName,
+                                                submittedOn: firestore.FieldValue.serverTimestamp()
+                                            })
                                         }
                                     }).then(() => {
                                         firestore.collection('sales').where("buyKey", "==", details.buyKey).get().then(function (query) {
@@ -231,12 +257,19 @@ export const clearedDebt = (details) => {
                                                 doc.ref.update({status: true}).then(() => {
                                                     firestore.collection('userLogs').doc(user.uid).collection('logs').add({
                                                         event: 'balance cleared of ' + details.debter,
+                                                        oweKey: key,
                                                         amount: parseInt(details.balance),
                                                         submittedBy: profile.firstName + ' ' + profile.lastName,
                                                         submittedOn: firestore.FieldValue.serverTimestamp()
                                                     })
                                                 });
                                             });
+                                        }).then(() => {
+                                            firestore.collection('otherDebt').where("buyKey", "==", details.buyKey).get().then(function (query) {
+                                                query.forEach(function (doc) {
+                                                    doc.ref.delete().then(() => console.log("deleted respective debt"));
+                                                })
+                                            })
                                         });
                                     })
                                 } else {
@@ -252,11 +285,18 @@ export const clearedDebt = (details) => {
                                                 firestore.collection('userLogs').doc(user.uid).collection('logs').add({
                                                     event: 'balance cleared of ' + details.debter,
                                                     amount: parseInt(details.balance),
+                                                    oweKey: key,
                                                     submittedBy: profile.firstName + ' ' + profile.lastName,
                                                     submittedOn: firestore.FieldValue.serverTimestamp()
                                                 })
                                             });
                                         });
+                                    }).then(() => {
+                                        firestore.collection('otherDebt').where("buyKey", "==", details.buyKey).get().then(function (query) {
+                                            query.forEach(function (doc) {
+                                                doc.ref.delete().then(() => console.log("deleted respective debt"));
+                                            })
+                                        })
                                     });
                                 }
                             })
@@ -274,6 +314,7 @@ export const clearedDebt = (details) => {
                                 firestore.collection('userLogs').doc(user.uid).collection('logs').add({
                                     event: 'balance cleared of ' + details.debter,
                                     amount: parseInt(details.balance),
+                                    oweKey: key,
                                     submittedBy: profile.firstName + ' ' + profile.lastName,
                                     submittedOn: firestore.FieldValue.serverTimestamp()
                                 })
@@ -293,12 +334,14 @@ export const clearedDebt = (details) => {
     }
 }
 
-export const updateBankBalance = () => {
+//executed if dad spent his own money on feeds or other products
+export const updateBankBalance = (details) => {
     return (dispatch, getState, {getFirebase, getFirestore}) => {
         const firestore = getFirestore();
         const firebase = getFirebase();
         const user = firebase.auth().currentUser;
         const profile = getState().firebase.profile;
+        const key = makeid(28);
 
 
         firestore.collection('current').where("fullName", "==", "Bank Account").get().then(function (query) {
@@ -306,9 +349,9 @@ export const updateBankBalance = () => {
                 const balance = doc.data().balance;
 
                 if (balance > 0) {
-                    firestore.collection('oweJeff').where("balance", ">", 0).get().then(function (querySnap) {
+                    firestore.collection('oweJeff').where("oweKey", "==", details.oweKey).get().then(function (querySnap) {
                         querySnap.forEach(function (mydoc) {
-                            const debt = mydoc.data().balance;
+                            const debt = parseInt(mydoc.data().balance);
                             const final = balance - debt;
 
                             if (final >= 0) {
@@ -318,6 +361,7 @@ export const updateBankBalance = () => {
                                 firestore.collection('userLogs').doc(user.uid).collection('logs').add({
                                     event: 'all debt paid off',
                                     amount: parseInt(debt),
+                                    oweKey: key,
                                     submittedBy: profile.firstName + ' ' + profile.lastName,
                                     submittedOn: firestore.FieldValue.serverTimestamp()
                                 });
@@ -330,6 +374,7 @@ export const updateBankBalance = () => {
                                 firestore.collection('userLogs').doc(user.uid).collection('logs').add({
                                     event: 'some debt paid off',
                                     amount: parseInt(debt),
+                                    oweKey: key,
                                     submittedBy: profile.firstName + ' ' + profile.lastName,
                                     submittedOn: firestore.FieldValue.serverTimestamp()
                                 });
@@ -353,6 +398,7 @@ export const updateBorrow = (details) => {
         const profile = getState().firebase.profile;
         const date = new Date();
         const month = date.getMonth() + 1;
+        const key = makeid(28);
 
 
         firestore.collection('borrow').doc('Month ' + month + ' Date ' + date.getDate()).get().then((doc) => {
@@ -360,38 +406,99 @@ export const updateBorrow = (details) => {
                 const err = "Doc exists"
                 dispatch({type: 'BORROW_FAILED', err});
             } else {
-                firestore.collection('borrow').doc('Month ' + month + ' Date ' + date.getDate()).set({
-                    borrowAmount: details.borrowAmount,
-                    borrower: details.borrower,
-                    purpose: details.purpose,
-                    submittedBy: profile.firstName + ' ' + profile.lastName,
-                    submittedOn: firestore.FieldValue.serverTimestamp()
-                }).then(() => {
+                firestore.collection('current').doc(user.uid).get().then((doc) => {
+                    if (doc.exists) {
+                        const data = doc.data();
+                        const balance = parseInt(data.balance);
+                        const final = balance - parseInt(details.borrowAmount);
+
+                        if (final < 0) {
+                            const err = "Insufficient funds to borrow money";
+                            dispatch({type: 'BORROW_FAILED', err});
+                        } else {
+                            doc.ref.update({
+                                balance: final,
+                                submittedOn: firestore.FieldValue.serverTimestamp(),
+                                submittedBy: profile.firstName + ' ' + profile.lastName
+                            }).then(() => {
+
+
+                                firestore.collection('borrow').doc('Month ' + month + ' Date ' + date.getDate()).set({
+                                    borrowAmount: details.borrowAmount,
+                                    borrower: details.borrower,
+                                    oweKey: key,
+                                    purpose: details.purpose,
+                                    submittedBy: profile.firstName + ' ' + profile.lastName,
+                                    submittedOn: firestore.FieldValue.serverTimestamp()
+
+                                }).then(() => {
+                                    firestore.collection('userLogs').doc(user.uid).collection('logs').add({
+                                        event: details.borrower + ' borrowed money',
+                                        amount: parseInt(details.borrowAmount),
+                                        oweKey: key,
+                                        submittedBy: profile.firstName + ' ' + profile.lastName,
+                                        submittedOn: firestore.FieldValue.serverTimestamp()
+                                    });
+
+                                }).then(() => console.log("updated current after borrowing"));
+
+                            }).then(() => {
+                                dispatch({type: 'BORROW_SUCCESS'});
+                            })
+
+                        }
+
+                    }
+                });
+            }
+        });
+    }
+}
+
+export const updateBorrowCleared = (details) => {
+    return (dispatch, getState, {getFirebase, getFirestore}) => {
+        const firestore = getFirestore();
+        const firebase = getFirebase();
+        const user = firebase.auth().currentUser;
+        const profile = getState().firebase.profile;
+        const key = makeid(28);
+
+
+        firestore.collection('borrow').where("borrowKey", "==", details.borrowKey).get().then((query) => {
+            query.forEach(function (doc) {
+                if (doc.exists) {
                     firestore.collection('current').doc(user.uid).get().then((doc) => {
                         if (doc.exists) {
                             const data = doc.data();
-                            const balance = parseInt(data.balance);
-                            const final = balance - parseInt(details.borrowAmount);
+                            const bal = parseInt(data.balance);
+                            const final = bal + parseInt(details.borrowAmount);
 
-                            if (final < 0) {
-                                const err = "Insufficient funds to borrow money";
-                                dispatch({type: 'BORROW_FAILED', err});
-                            } else {
-                                doc.ref.update({
-                                    balance: final,
-                                    submittedOn: firestore.FieldValue.serverTimestamp(),
-                                    submittedBy: profile.firstName + ' ' + profile.lastName
-                                }).then(() => console.log("updated current after borrowing"))
-                            }
+                            doc.ref.update({
+                                balance: final,
+                                submittedBy: profile.firstName + ' ' + profile.lastName,
+                                submittedOn: firestore.FieldValue.serverTimestamp()
+                            }).then(() => console.log("borrow received to user balance"));
+
+                            firestore.collection('userLogs').doc(user.uid).collection('logs').add({
+                                event: 'received borrowed money from ' + details.borrower,
+                                amount: parseInt(details.borrowAmount),
+                                oweKey: key,
+                                submittedBy: profile.firstName + ' ' + profile.lastName,
+                                submittedOn: firestore.FieldValue.serverTimestamp()
+                            })
                         }
+                    }).then(() => {
+                        dispatch({type: 'REPAID'});
+                    }).catch((err) => {
+                        dispatch({type: 'REPAID_ERROR', err});
                     })
 
-                }).then(() => {
-                    dispatch({type: 'BORROW_SUCCESS'});
-                })
+                    doc.ref.delete().then(() => console.log("borrowed money repaid"));
+                }
+            })
 
-            }
-
+        }).catch((err) => {
+            dispatch({type: 'REPAID_ERROR', err});
         });
     }
 }

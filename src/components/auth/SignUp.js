@@ -19,8 +19,8 @@ class SignUp extends Component {
     }
     handleSubmit = (e) => {
         e.preventDefault();
-        this.props.signUp(this.state);
-        //window.alert("SIGN UP DENIED!");
+        // this.props.signUp(this.state);
+        window.alert("PERMISSION DENIED!");
     }
 
     render() {

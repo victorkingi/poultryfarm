@@ -100,6 +100,7 @@ export const inputBuys = (buys) => {
                                                                     if (buys.section === "Feeds") {
                                                                         firestore.collection('bags').add({
                                                                             number: buys.objectNo,
+                                                                            buyKey: key,
                                                                             submittedBy: profile.firstName + ' ' + profile.lastName,
                                                                             submittedOn: firestore.FieldValue.serverTimestamp()
                                                                         })
@@ -110,6 +111,7 @@ export const inputBuys = (buys) => {
                                                                 firestore.collection('userLogs').doc(user.uid).collection('logs').add({
                                                                     event: 'purchase owe Jeff ' + buys.section,
                                                                     spent: total,
+                                                                    buyKey: key,
                                                                     submittedBy: profile.firstName + ' ' + profile.lastName,
                                                                     submittedOn: firestore.FieldValue.serverTimestamp()
                                                                 });
@@ -120,7 +122,8 @@ export const inputBuys = (buys) => {
 
                                                         } else {
 
-                                                            firestore.collection('oweJeff').doc("Month " + month).update({
+                                                            firestore.collection('oweJeff').doc("Month " + month).set({
+                                                                oweKey: key,
                                                                 balance: total,
                                                                 submittedBy: profile.firstName + ' ' + profile.lastName,
                                                                 submittedOn: firestore.FieldValue.serverTimestamp()
@@ -128,6 +131,7 @@ export const inputBuys = (buys) => {
 
                                                                 firestore.collection('buys').doc('Month ' + month + ' Date ' + date.getDate() + ' ' + section).set({
                                                                     ...buys,
+                                                                    buyKey: key,
                                                                     submittedBy: profile.firstName + ' ' + profile.lastName,
                                                                     submittedOn: firestore.FieldValue.serverTimestamp()
 
@@ -141,6 +145,7 @@ export const inputBuys = (buys) => {
 
                                                                 firestore.collection('userLogs').doc(user.uid).collection('logs').add({
                                                                     event: 'purchase owe Jeff ' + buys.section,
+                                                                    buyKey: key,
                                                                     spent: total,
                                                                     submittedBy: profile.firstName + ' ' + profile.lastName,
                                                                     submittedOn: firestore.FieldValue.serverTimestamp()
@@ -168,6 +173,7 @@ export const inputBuys = (buys) => {
                                                     }).then(() => {
                                                         firestore.collection('buys').doc('Month ' + month + ' Date ' + date.getDate() + ' ' + section).set({
                                                             ...buys,
+                                                            buyKey: key,
                                                             submittedBy: profile.firstName + ' ' + profile.lastName,
                                                             submittedOn: firestore.FieldValue.serverTimestamp()
 
@@ -177,6 +183,7 @@ export const inputBuys = (buys) => {
                                                         firestore.collection('userLogs').doc(user.uid).collection('logs').add({
                                                             event: 'purchase used bank balance ' + buys.section,
                                                             spent: total,
+                                                            buyKey: key,
                                                             submittedBy: profile.firstName + ' ' + profile.lastName,
                                                             submittedOn: firestore.FieldValue.serverTimestamp()
                                                         });
@@ -189,6 +196,7 @@ export const inputBuys = (buys) => {
                                     } else {
                                         firestore.collection('buys').doc('Month ' + month + ' Date ' + date.getDate() + ' ' + section).set({
                                             ...buys,
+                                            buyKey: key,
                                             submittedBy: profile.firstName + ' ' + profile.lastName,
                                             submittedOn: firestore.FieldValue.serverTimestamp()
 
@@ -204,6 +212,7 @@ export const inputBuys = (buys) => {
                                             firestore.collection('userLogs').doc(user.uid).collection('logs').add({
                                                 event: 'purchase ' + buys.section,
                                                 spent: total,
+                                                buyKey: key,
                                                 submittedBy: profile.firstName + ' ' + profile.lastName,
                                                 submittedOn: firestore.FieldValue.serverTimestamp()
                                             });
@@ -211,6 +220,7 @@ export const inputBuys = (buys) => {
                                             if (buys.section === "Feeds") {
                                                 firestore.collection('bags').add({
                                                     number: buys.objectNo,
+                                                    buyKey: key,
                                                     submittedBy: profile.firstName + ' ' + profile.lastName,
                                                     submittedOn: firestore.FieldValue.serverTimestamp()
                                                 });
@@ -248,6 +258,7 @@ export const inputBuys = (buys) => {
                                 if (buys.section === "Feeds") {
                                     firestore.collection('bags').add({
                                         number: buys.objectNo,
+                                        buyKey: key,
                                         submittedBy: profile.firstName + ' ' + profile.lastName,
                                         submittedOn: firestore.FieldValue.serverTimestamp()
                                     })
@@ -258,6 +269,7 @@ export const inputBuys = (buys) => {
                             firestore.collection('userLogs').doc(user.uid).collection('logs').add({
                                 event: 'purchase owe ' + buys.section,
                                 spent: total,
+                                buyKey: key,
                                 submittedBy: profile.firstName + ' ' + profile.lastName,
                                 submittedOn: firestore.FieldValue.serverTimestamp()
                             });

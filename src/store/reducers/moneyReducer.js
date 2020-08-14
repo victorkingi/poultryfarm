@@ -7,16 +7,26 @@ const moneyReducer = (state = initState, action) => {
             window.alert("money sent");
             return state;
 
+        case 'REPAID':
+            console.log('borrow cleared ');
+            window.alert("borrow balance cleared");
+            return state;
+
+        case 'REPAID_ERROR':
+            console.log('borrow clearing error', action.error);
+            window.alert("ERROR: ", action.error);
+            return state;
+
         case 'UPDATE':
             console.log('updated');
             return state;
 
         case 'BORROW_SUCCESS':
             console.log('money borrowed');
-            console.log('Money borrowed successfully');
+            window.alert('Money borrowed successfully');
             return state;
 
-        case 'BORROW_FAIL':
+        case 'BORROW_FAILED':
             console.log('borrowing failed');
             window.alert('ERROR: ', action.err);
             return state;

@@ -3,11 +3,10 @@ import moment from "moment";
 
 const SalesSummary = (sales) => {
 
-    if(sales.item.submittedOn) {
+    if (sales.item) {
         const total = sales.item.chickenNo ? (sales.item.chickenNo * sales.item.chickenPrice) : (sales.item.trayNo * sales.item.trayPrice);
         const buyer = sales.item.buyerName ? sales.item.buyerName : sales.item.section;
-        const time = sales.item.submittedOn.toDate() ? sales.item.submittedOn.toDate() : "No date given";
-
+        const time = sales.item.date ? sales.item.date.toDate() : "No date given";
 
 
         return (

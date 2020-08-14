@@ -15,7 +15,7 @@ const SalesDetails = (props) => {
 
     if (sale) {
         const total = sale.chickenNo ? (sale.chickenNo * sale.chickenPrice) : (sale.trayNo * sale.trayPrice);
-        const time = sale.submittedOn.toDate() ? sale.submittedOn.toDate() : "No date given";
+        const time = sale.date ? sale.date.toDate() : "No date given";
 
 
         if(sale.buyerName) {

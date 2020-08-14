@@ -64,6 +64,7 @@ export const inputSales = (sales) => {
                     } else {
                         firestore.collection('sales').doc('Month ' + month + ' Date ' + enteredDate + ' ' + section).set({
                             ...sales,
+                            saleKey: key,
                             date: new Date(year, date.getMonth(), enteredDate),
                             submittedBy: profile.firstName + ' ' + profile.lastName,
                             submittedOn: firestore.FieldValue.serverTimestamp()
@@ -88,6 +89,7 @@ export const inputSales = (sales) => {
                                         firestore.collection('userLogs').doc(user.uid).collection('logs').add({
                                             event: 'sale ' + sales.section,
                                             earned: parseInt(total),
+                                            saleKey: key,
                                             submittedBy: profile.firstName + ' ' + profile.lastName,
                                             submittedOn: firestore.FieldValue.serverTimestamp()
                                         });
@@ -105,6 +107,7 @@ export const inputSales = (sales) => {
                                         firestore.collection('userLogs').doc(user.uid).collection('logs').add({
                                             event: 'sale ' + sales.section,
                                             earned: parseInt(total),
+                                            saleKey: key,
                                             submittedBy: profile.firstName + ' ' + profile.lastName,
                                             submittedOn: firestore.FieldValue.serverTimestamp()
                                         });
@@ -174,6 +177,7 @@ export const inputSales = (sales) => {
                                         firestore.collection('userLogs').doc(user.uid).collection('logs').add({
                                             event: 'trays used',
                                             number: parseInt(trays),
+                                            saleKey: key,
                                             submittedBy: profile.firstName + ' ' + profile.lastName,
                                             submittedOn: firestore.FieldValue.serverTimestamp()
                                         })
@@ -206,6 +210,7 @@ export const inputSales = (sales) => {
                                                         firestore.collection('userLogs').doc(user.uid).collection('logs').add({
                                                             event: 'sale ' + sales.section,
                                                             earned: parseInt(total),
+                                                            saleKey: key,
                                                             submittedBy: profile.firstName + ' ' + profile.lastName,
                                                             submittedOn: firestore.FieldValue.serverTimestamp()
                                                         });
@@ -223,6 +228,7 @@ export const inputSales = (sales) => {
                                                         firestore.collection('userLogs').doc(user.uid).collection('logs').add({
                                                             event: 'sale ' + sales.section,
                                                             earned: parseInt(total),
+                                                            saleKey: key,
                                                             submittedBy: profile.firstName + ' ' + profile.lastName,
                                                             submittedOn: firestore.FieldValue.serverTimestamp()
                                                         });
