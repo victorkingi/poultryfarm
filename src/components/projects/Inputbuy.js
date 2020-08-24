@@ -14,35 +14,74 @@ class Inputbuy extends Component {
     handleChange = (e) => {
         const selectBox = document.getElementById("section");
         const selectedValue = selectBox.options[selectBox.selectedIndex].value;
-        if(selectedValue !== "") {
+        const date = document.getElementById('date').value;
+
+        if (parseInt(date) > 0 && parseInt(date) < 32 && date !== "") {
+            const section = document.getElementById('mySection');
+            section.style.display = 'block';
+        } else {
+            const section = document.getElementById('mySection');
             const buys = document.getElementById("buy");
-            buys.style.display = 'block';
+            buys.style.display = 'none';
+            section.style.display = 'none';
         }
 
-        if (selectedValue === "Other" || selectedValue === "Feeds") {
+        if (selectedValue !== "0") {
+            const buys = document.getElementById("buy");
+            buys.style.display = 'block';
+        } else {
+            const buys = document.getElementById("buy");
+            buys.style.display = 'none';
+        }
+
+        if (selectedValue === "Labour Payment") {
+            const buys = document.getElementById("labour");
+            buys.style.display = 'block';
+        } else {
+            const buys = document.getElementById("labour");
+            buys.style.display = 'none';
+        }
+
+        if (selectedValue === "Other" || selectedValue === "Feeds" || selectedValue === "Equipment") {
             const buys = document.getElementById("other");
             buys.style.display = 'block';
+        } else {
+            const buys = document.getElementById("other");
+            buys.style.display = 'none';
         }
-        if (selectedValue === "Vaccines") {
-            const buys = document.getElementById("vaccine");
-            buys.style.display = 'block';
-        }
+
         if (selectedValue === "Drug") {
             const buys = document.getElementById("drug");
             buys.style.display = 'block';
+        } else {
+            const buys = document.getElementById("drug");
+            buys.style.display = 'none';
         }
-        if (selectedValue !== "Other" && selectedValue !== "Vaccine" && selectedValue !== "Drug" && selectedValue !== "" && selectedValue !== "Feeds") {
-            const vaccine = document.getElementById("vaccine");
-            const buysDrug = document.getElementById("drug");
-            const buysItem = document.getElementById("other");
-            buysDrug.style.display = 'none';
-            buysItem.style.display = 'none';
-            vaccine.style.display = 'none';
+
+        if (selectedValue === "Vaccines") {
+            const vac = document.getElementById("vaccine");
+            vac.style.display = 'block';
+
+        } else {
+            const vac = document.getElementById("vaccine");
+            vac.style.display = 'none';
         }
+
         if (e.target.id === "status") {
             this.setState({
                 [e.target.id]: JSON.parse(e.target.value)
             });
+        } else if (e.target.id === "date" || e.target.id === "objectNo" || e.target.id === "objectPrice") {
+            console.log(parseInt(e.target.value))
+            if (isNaN(parseInt(e.target.value))) {
+                document.getElementById("error-text").innerHTML = "Error! Input needs to be a number";
+            } else {
+                document.getElementById("error-text").innerHTML = "";
+
+                this.setState({
+                    [e.target.id]: parseInt(e.target.value)
+                });
+            }
         } else {
             this.setState({
                 [e.target.id]: e.target.value
@@ -55,13 +94,14 @@ class Inputbuy extends Component {
         e.preventDefault();
         const selectBox = document.getElementById("section");
         const selectedValue = selectBox.options[selectBox.selectedIndex].value;
+        const status = document.getElementById("status");
+        const vaccine = document.getElementById("vaccineName");
+        const drug = document.getElementById("drugName");
+        const other = document.getElementById("itemName");
 
         if (selectedValue === "Other" || selectedValue === "Feeds") {
-            const buys = document.getElementById("itemName");
-            const drug = document.getElementById("drugName");
-            const vaccine = document.getElementById("vaccineName");
 
-            if (buys.value === "" || drug.value !== "" || vaccine.value !== "") {
+            if (other.value === "" || drug.value !== "" || vaccine.value !== "" || status.value === "") {
                 document.getElementById("error-text").innerHTML = "Error! Try again"
             } else {
                 this.props.inputBuys(this.state);
@@ -69,22 +109,17 @@ class Inputbuy extends Component {
             }
         }
         if (selectedValue === "Drug") {
-            const buys = document.getElementById("drugName");
-            const other = document.getElementById("itemName");
-            const vaccine = document.getElementById("vaccineName");
-            if(buys.value === "" || other.value !== "" || vaccine.value !== "") {
+
+            if (drug.value === "" || other.value !== "" || vaccine.value !== "" || status.value === "") {
                 document.getElementById("error-text").innerHTML = "Error! Try again"
-            }
-            else {
+            } else {
                 this.props.inputBuys(this.state);
                 this.props.history.push('/');
             }
         }
         if (selectedValue === "Vaccines") {
-            const buys = document.getElementById("vaccineName");
-            const drug = document.getElementById("drugName");
-            const other = document.getElementById("itemName");
-            if (buys.value === "" || other.value !== "" || drug.value !== "") {
+
+            if (vaccine.value === "" || other.value !== "" || drug.value !== "" || status.value === "") {
                 document.getElementById("error-text").innerHTML = "Error! Try again"
             } else {
                 this.props.inputBuys(this.state);
@@ -92,11 +127,8 @@ class Inputbuy extends Component {
             }
         }
         if (selectedValue !== "Vaccine" && selectedValue !== "Drug" && selectedValue !== "Other" && selectedValue !== "Feeds") {
-            const drug = document.getElementById("drugName");
-            const vaccine = document.getElementById("vaccineName");
-            const item = document.getElementById("itemName");
 
-            if (item.value !== "" || vaccine.value !== "" || drug.value !== "") {
+            if (other.value !== "" || vaccine.value !== "" || drug.value !== "" || status.value === "") {
                 document.getElementById("error-text").innerHTML = "Error! Try again"
             } else {
                 this.props.inputBuys(this.state);
@@ -124,44 +156,64 @@ class Inputbuy extends Component {
                 <div className="container">
                     <form onSubmit={this.handleSubmit} className="white">
                         <h5 className="grey-text text-darken-3">Input Purchases</h5>
+                        <br/>
+                        <div className="input-field">
+                            <label htmlFor="date">Select Date (range: 1 - 31)</label>
+                            <input type="number" id="date" onChange={this.handleChange} required/>
+                        </div>
 
-                        <select id="section" onChange={this.handleChange} className="white" defaultValue="0" >
-                            <option value="0" disabled="disabled">Choose Section</option>
-                            <option value="Feeds">Feeds</option>
-                            <option value="Vaccines">Vaccines</option>
-                            <option value="Drug">Drug</option>
-                            <option value="Equipment">Equipment</option>
-                            <option value="Other">Other</option>
-                            <option value="Labour Payment">Labour Payment</option>
-                        </select>
+                        <div style={{display: 'none'}} id="mySection">
+                            <select style={{display: 'none'}} id="section" onChange={this.handleChange}
+                                    className="white" defaultValue="0">
+                                <option value="0" disabled="disabled">Choose Section</option>
+                                <option value="Feeds">Feeds</option>
+                                <option value="Vaccines">Vaccines</option>
+                                <option value="Drug">Drug</option>
+                                <option value="Equipment">Equipment</option>
+                                <option value="Other">Other</option>
+                                <option value="Labour Payment">Labour Payment</option>
+                            </select>
+                        </div>
 
-                        <div style={{display: 'none' }} id="other" >
+                        <div style={{display: 'none'}} id="other">
+                            <br/>
                             <div className="input-field">
                                 <label htmlFor="itemName">Name of Item Purchased</label>
-                                <input type="text" id="itemName" onChange={this.handleChange} />
+                                <input type="text" id="itemName" onChange={this.handleChange}/>
                             </div>
                         </div>
 
-                        <div style={{display: 'none' }} id="vaccine" >
+                        <div style={{display: 'none'}} id="labour">
+                            <br/>
+                            <div className="input-field">
+                                <label htmlFor="labourName">Name of Person Paid</label>
+                                <input type="text" id="labourName" onChange={this.handleChange}/>
+                            </div>
+                        </div>
+
+                        <div style={{display: 'none'}} id="vaccine">
+                            <br/>
                             <div className="input-field">
                                 <label htmlFor="vaccineName">Name of Vaccine Purchased</label>
-                                <input type="text" id="vaccineName" onChange={this.handleChange} />
+                                <input type="text" id="vaccineName" onChange={this.handleChange}/>
                             </div>
                         </div>
 
-                        <div style={{display: 'none' }} id="drug" >
+                        <div style={{display: 'none'}} id="drug">
+                            <br/>
                             <div className="input-field">
                                 <label htmlFor="drugName">Name of Drug</label>
-                                <input type="text" id="drugName" onChange={this.handleChange} />
+                                <input type="text" id="drugName" onChange={this.handleChange}/>
                             </div>
                         </div>
 
-                        <div style={{display: 'none' }} id="buy" >
+                        <div style={{display: 'none'}} id="buy">
+                            <br/>
                             <div className="input-field">
                                 <label htmlFor="objectNo">Number of Objects</label>
                                 <input type="number" id="objectNo" onChange={this.handleChange} required/>
                             </div>
-
+                            <br/>
                             <div className="input-field">
                                 <label htmlFor="objectPrice">Price per Object</label>
                                 <input type="number" id="objectPrice" onChange={this.handleChange} required/>

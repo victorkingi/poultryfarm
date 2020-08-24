@@ -23,9 +23,11 @@ export const inputBuys = (buys) => {
         const month = date.getMonth() + 1;
         const section = buys.section;
         const key = makeid(28);
+        const enteredDate = parseInt(buys.date);
+        const year = date.getFullYear();
+        var prevDate = enteredDate - 1;
         const status = JSON.parse(buys.status);
         var prevMonth = month;
-        var prevDate = date.getDate() - 1;
 
         if (prevDate === 0) {
             if (month === 2 || month === 4 || month === 6 || month === 8 || month === 9 || month === 11 || month === 1) {
@@ -54,7 +56,7 @@ export const inputBuys = (buys) => {
 
         const collect = () => {
             firestore.collection('buys').doc('Month ' + month + ' Date '
-                + date.getDate() + ' ' + section).get().then(function (doc) {
+                + enteredDate + ' ' + section).get().then(function (doc) {
                 if (doc.exists) {
                     dispatch({type: 'BUYS_DOC_EXISTS'});
                 } else {
@@ -91,15 +93,16 @@ export const inputBuys = (buys) => {
                                                                 submittedBy: profile.firstName + ' ' + profile.lastName,
                                                                 submittedOn: firestore.FieldValue.serverTimestamp()
                                                             }).then(() => {
-                                                                firestore.collection('buys').doc('Month ' + month + ' Date ' + date.getDate() + ' ' + section).set({
+                                                                firestore.collection('buys').doc('Month ' + month + ' Date ' + enteredDate + ' ' + section).set({
                                                                     ...buys,
+                                                                    date: new Date(year, date.getMonth(), enteredDate),
                                                                     submittedBy: profile.firstName + ' ' + profile.lastName,
                                                                     submittedOn: firestore.FieldValue.serverTimestamp()
 
                                                                 }).then(() => {
                                                                     if (buys.section === "Feeds") {
-                                                                        firestore.collection('bags').add({
-                                                                            number: buys.objectNo,
+                                                                        firestore.collection('bags').doc('CurrentBags').set({
+                                                                            number: parseInt(buys.objectNo),
                                                                             buyKey: key,
                                                                             submittedBy: profile.firstName + ' ' + profile.lastName,
                                                                             submittedOn: firestore.FieldValue.serverTimestamp()
@@ -129,9 +132,10 @@ export const inputBuys = (buys) => {
                                                                 submittedOn: firestore.FieldValue.serverTimestamp()
                                                             }).then(() => {
 
-                                                                firestore.collection('buys').doc('Month ' + month + ' Date ' + date.getDate() + ' ' + section).set({
+                                                                firestore.collection('buys').doc('Month ' + month + ' Date ' + enteredDate + ' ' + section).set({
                                                                     ...buys,
                                                                     buyKey: key,
+                                                                    date: new Date(year, date.getMonth(), enteredDate),
                                                                     submittedBy: profile.firstName + ' ' + profile.lastName,
                                                                     submittedOn: firestore.FieldValue.serverTimestamp()
 
@@ -171,9 +175,10 @@ export const inputBuys = (buys) => {
                                                         submittedOn: firestore.FieldValue.serverTimestamp()
 
                                                     }).then(() => {
-                                                        firestore.collection('buys').doc('Month ' + month + ' Date ' + date.getDate() + ' ' + section).set({
+                                                        firestore.collection('buys').doc('Month ' + month + ' Date ' + enteredDate + ' ' + section).set({
                                                             ...buys,
                                                             buyKey: key,
+                                                            date: new Date(year, date.getMonth(), enteredDate),
                                                             submittedBy: profile.firstName + ' ' + profile.lastName,
                                                             submittedOn: firestore.FieldValue.serverTimestamp()
 
@@ -194,9 +199,10 @@ export const inputBuys = (buys) => {
                                             dispatch({type: 'INPUT_BUYING_ERROR', err});
                                         });
                                     } else {
-                                        firestore.collection('buys').doc('Month ' + month + ' Date ' + date.getDate() + ' ' + section).set({
+                                        firestore.collection('buys').doc('Month ' + month + ' Date ' + enteredDate + ' ' + section).set({
                                             ...buys,
                                             buyKey: key,
+                                            date: new Date(year, date.getMonth(), enteredDate),
                                             submittedBy: profile.firstName + ' ' + profile.lastName,
                                             submittedOn: firestore.FieldValue.serverTimestamp()
 
@@ -218,8 +224,8 @@ export const inputBuys = (buys) => {
                                             });
                                         }).then(() => {
                                             if (buys.section === "Feeds") {
-                                                firestore.collection('bags').add({
-                                                    number: buys.objectNo,
+                                                firestore.collection('bags').doc('CurrentBags').set({
+                                                    number: parseInt(buys.objectNo),
                                                     buyKey: key,
                                                     submittedBy: profile.firstName + ' ' + profile.lastName,
                                                     submittedOn: firestore.FieldValue.serverTimestamp()
@@ -245,19 +251,21 @@ export const inputBuys = (buys) => {
                             debter: buys.section,
                             balance: total,
                             buyKey: key,
+                            date: new Date(year, date.getMonth(), enteredDate),
                             submittedBy: profile.firstName + ' ' + profile.lastName,
                             submittedOn: firestore.FieldValue.serverTimestamp()
                         }).then(() => {
-                            firestore.collection('buys').doc('Month ' + month + ' Date ' + date.getDate() + ' ' + section).set({
+                            firestore.collection('buys').doc('Month ' + month + ' Date ' + enteredDate + ' ' + section).set({
                                 ...buys,
                                 buyKey: key,
+                                date: new Date(year, date.getMonth(), enteredDate),
                                 submittedBy: profile.firstName + ' ' + profile.lastName,
                                 submittedOn: firestore.FieldValue.serverTimestamp()
 
                             }).then(() => {
                                 if (buys.section === "Feeds") {
-                                    firestore.collection('bags').add({
-                                        number: buys.objectNo,
+                                    firestore.collection('bags').doc('CurrentBags').set({
+                                        number: parseInt(buys.objectNo),
                                         buyKey: key,
                                         submittedBy: profile.firstName + ' ' + profile.lastName,
                                         submittedOn: firestore.FieldValue.serverTimestamp()
@@ -299,18 +307,19 @@ export const updateBags = (state) => {
         //make async call to database
         const firestore = getFirestore();
         const profile = getState().firebase.profile;
+        var myBags = parseInt(state.bagNo);
+        if (myBags < 1) {
+            myBags = 0;
+        }
 
-        firestore.collection('bags').get().then(function (query) {
-            query.forEach(function (doc) {
-                doc.ref.update({
-                    number: state.bagNo,
-                    submittedBy: profile.firstName + ' ' + profile.lastName,
-                    submittedOn: firestore.FieldValue.serverTimestamp()
-                }).then(() => dispatch({type: 'BAGS_CHANGE'}));
-            });
-        }).catch((err) => {
-            console.log(err.message);
-        })
+        var bagRef = firestore.collection("bags").doc("CurrentBags");
 
+        bagRef.update({
+            number: myBags,
+            submittedBy: profile.firstName + ' ' + profile.lastName,
+            submittedOn: firestore.FieldValue.serverTimestamp()
+        }).then(() => dispatch({type: 'BAGS_CHANGE'}))
+            .catch((err) => console.log(err.message));
     }
+
 };

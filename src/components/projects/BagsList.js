@@ -4,14 +4,13 @@ import BagsSummary from "./BagsSummary";
 
 const BagsList = (bags) => {
 
-
     if (bags.bags) {
         if (bags.bags['length'] > 0) {
             return (
                 <div className="project-list section">
                     {bags.bags && bags.bags.map(item => {
                         return (
-                            <BagsSummary item={item}/>
+                            <BagsSummary item={item} key={item.id}/>
                         );
                     })}
                 </div>

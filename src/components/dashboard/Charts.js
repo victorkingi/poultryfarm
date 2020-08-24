@@ -11,10 +11,12 @@ function Charts(eggs) {
     const eggsDataC2 = [];
     const eggsDataHouse = [];
     const eggsDatabroken = [];
+    const eggDataTotal = [];
 
     const eggsLabel = [];
     const eggsLabelPercent = [];
     var max = 0;
+    var totalMax = 0;
 
     if (eggs.eggs) {
         for (var i = 0; i < eggs.eggs['length']; i++) {
@@ -26,6 +28,7 @@ function Charts(eggs) {
             const c2 = parseInt(eggs.eggs[i.toString()]["C 2"]);
             const house = parseInt(eggs.eggs[i.toString()]["house"]);
             const broken = parseInt(eggs.eggs[i.toString()]["broken"]);
+            const total = a1 + a2 + b1 + b2 + c1 + c2 + house;
 
             if (max < a1) {
                 max = a1;
@@ -48,6 +51,9 @@ function Charts(eggs) {
             if (max < house) {
                 max = house;
             }
+            if (totalMax < total) {
+                totalMax = total;
+            }
 
             eggsDataA1.push(a1);
             eggsDataA2.push(a2);
@@ -57,6 +63,7 @@ function Charts(eggs) {
             eggsDataC2.push(c2);
             eggsDataHouse.push(house);
             eggsDatabroken.push(broken);
+            eggDataTotal.push(total);
 
         }
 
@@ -71,8 +78,18 @@ function Charts(eggs) {
         }
     }
 
+    const eggsDataA1n = eggsDataA1.reverse();
+    const eggsDataA2n = eggsDataA2.reverse();
+    const eggsDataB1n = eggsDataB1.reverse();
+    const eggsDataB2n = eggsDataB2.reverse();
+    const eggsDataC1n = eggsDataC1.reverse();
+    const eggsDataC2n = eggsDataC2.reverse();
+    const eggsDataHousen = eggsDataHouse.reverse();
+    const eggsDatabrokenn = eggsDatabroken.reverse();
+    const eggDataTotaln = eggDataTotal.reverse();
+
     const data1 = {
-        labels: eggsLabel,
+        labels: eggsLabel.reverse(),
         datasets: [
             {
                 label: 'A 1',
@@ -83,49 +100,49 @@ function Charts(eggs) {
             },
             {
                 label: 'A 2',
-                data: eggsDataA2,
+                data: eggsDataA2n,
                 borderColor: ['rgba(0, 0, 255, 0.2)'],
                 backgroundColor: ['rgba(0, 0, 255, 0.2)'],
                 pointBackgroundColor: 'rgba(0, 0, 255, 0.2)'
             },
             {
                 label: 'B 1',
-                data: eggsDataB1,
+                data: eggsDataB1n,
                 borderColor: ['rgba(255, 69, 0, 0.2)'],
                 backgroundColor: ['rgba(255, 69, 0, 0.2)'],
                 pointBackgroundColor: 'rgba(255, 69, 0, 0.2)'
             },
             {
                 label: 'B 2',
-                data: eggsDataB2,
+                data: eggsDataB2n,
                 borderColor: ['rgba(34, 139, 34, 0.2)'],
                 backgroundColor: ['rgba(34, 139, 34, 0.2)'],
                 pointBackgroundColor: 'rgba(34, 139, 34, 0.2)'
             },
             {
                 label: 'C 1',
-                data: eggsDataC1,
+                data: eggsDataC1n,
                 borderColor: ['rgba(0, 255, 0, 0.2)'],
                 backgroundColor: ['rgba(0, 255, 0, 0.2)'],
                 pointBackgroundColor: 'rgba(0, 255, 0, 0.2)'
             },
             {
                 label: 'C 2',
-                data: eggsDataC2,
+                data: eggsDataC2n,
                 borderColor: ['rgba(255, 255, 0, 0.2)'],
                 backgroundColor: ['rgba(255, 255, 0, 0.2)'],
                 pointBackgroundColor: 'rgba(255, 255, 0, 0.2)'
             },
             {
                 label: 'House',
-                data: eggsDataHouse,
+                data: eggsDataHousen,
                 borderColor: ['rgba(255, 255, 255, 0.2)'],
                 backgroundColor: ['rgba(255, 255, 255, 0.2)'],
                 pointBackgroundColor: 'rgba(255, 255, 255, 0.2)'
             },
             {
                 label: 'Broken',
-                data: eggsDatabroken,
+                data: eggsDatabrokenn,
                 borderColor: ['rgba(148, 0, 211, 0.2)'],
                 backgroundColor: ['rgba(148, 0, 211, 0.2)'],
                 pointBackgroundColor: 'rgba(148, 0, 211, 0.2)'
@@ -134,56 +151,69 @@ function Charts(eggs) {
     }
 
     const data2 = {
-        labels: eggsLabelPercent,
+        labels: eggsLabelPercent.reverse(),
         datasets: [
             {
                 label: 'A 1',
-                data: eggsDataA1,
+                data: eggsDataA1n,
                 borderColor: ['rgba(255, 0, 0, 0.2)'],
                 backgroundColor: ['rgba(255, 0, 0, 0.2)'],
                 pointBackgroundColor: 'rgba(255, 0, 0, 0.2)'
             },
             {
                 label: 'A 2',
-                data: eggsDataA2,
+                data: eggsDataA2n,
                 borderColor: ['rgba(0, 0, 255, 0.2)'],
                 backgroundColor: ['rgba(0, 0, 255, 0.2)'],
                 pointBackgroundColor: 'rgba(0, 0, 255, 0.2)'
             },
             {
                 label: 'B 1',
-                data: eggsDataB1,
+                data: eggsDataB1n,
                 borderColor: ['rgba(255, 69, 0, 0.2)'],
                 backgroundColor: ['rgba(255, 69, 0, 0.2)'],
                 pointBackgroundColor: 'rgba(255, 69, 0, 0.2)'
             },
             {
                 label: 'B 2',
-                data: eggsDataB2,
+                data: eggsDataB2n,
                 borderColor: ['rgba(34, 139, 34, 0.2)'],
                 backgroundColor: ['rgba(34, 139, 34, 0.2)'],
                 pointBackgroundColor: 'rgba(34, 139, 34, 0.2)'
             },
             {
                 label: 'C 1',
-                data: eggsDataC1,
+                data: eggsDataC1n,
                 borderColor: ['rgba(0, 255, 0, 0.2)'],
                 backgroundColor: ['rgba(0, 255, 0, 0.2)'],
                 pointBackgroundColor: 'rgba(0, 255, 0, 0.2)'
             },
             {
                 label: 'C 2',
-                data: eggsDataC2,
+                data: eggsDataC2n,
                 borderColor: ['rgba(255, 255, 0, 0.2)'],
                 backgroundColor: ['rgba(255, 255, 0, 0.2)'],
                 pointBackgroundColor: 'rgba(255, 255, 0, 0.2)'
             },
             {
                 label: 'Broken',
-                data: eggsDatabroken,
+                data: eggsDatabrokenn,
                 borderColor: ['rgba(148, 0, 211, 0.2)'],
                 backgroundColor: ['rgba(148, 0, 211, 0.2)'],
                 pointBackgroundColor: 'rgba(148, 0, 211, 0.2)'
+            }
+        ]
+    }
+
+    const data3 = {
+        labels: eggsLabel.reverse(),
+        datasets: [
+            {
+                label: 'Total eggs',
+                data: eggDataTotaln,
+                borderColor: ['rgba(255, 255, 0, 0.2)'],
+                backgroundColor: ['rgba(255, 255, 0, 0.2)'],
+                pointBackgroundColor: 'rgba(255, 255, 0, 0.2)'
             }
         ]
     }
@@ -224,10 +254,31 @@ function Charts(eggs) {
         }
     }
 
+    const options3 = {
+        title: {
+            display: true,
+            text: 'Total Eggs against time'
+        },
+        scales: {
+            yAxes: [
+                {
+                    ticks: {
+                        min: 0,
+                        max: totalMax,
+                        stepSize: 100
+                    }
+                }
+            ]
+        }
+    }
+
     return (
         <div>
-            <Line data={data1} options={options1}/>
+            <Line data={data3} options={options3}/>
+            <br/> <br/>
 
+            <Line data={data1} options={options1}/>
+            <br/> <br/>
             <Line data={data2} options={options2}/>
         </div>
     );

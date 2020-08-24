@@ -72,13 +72,14 @@ class Inputmoney extends Component {
                         <option value="victorkarue712@gmail.com">Victor</option>
                         <option value="mukomauapurity@gmail.com">Purity</option>
                         <option value="jeffkarue@gmail.com">Jeff</option>
+                        <option value="karueanne@gmail.com">Anne</option>
                         {links}
                     </select>
 
                     <div style={{display: 'none'}} id="money">
                         <div className="input-field">
                             <label htmlFor="amount">Enter amount</label>
-                            <input type="number" id="amount" onChange={this.handleChange}/>
+                            <input type="number" id="amount" onChange={this.handleChange} required/>
                         </div>
                     </div>
 

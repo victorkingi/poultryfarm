@@ -73,15 +73,25 @@ class Inputsell extends Component {
             const btn = document.getElementById("submit-btn");
             btn.style.display = 'block';
         }
-        const myInt = parseInt(e.target.value);
 
-        if (isNaN(myInt)) {
+        if (e.target.id === "status") {
             this.setState({
-                [e.target.id]: e.target.value
+                [e.target.id]: JSON.parse(e.target.value)
             });
+        } else if (e.target.id === "date" || e.target.id === "trayNo" || e.target.id === "trayPrice"
+            || e.target.id === "chickenNo" || e.target.id === "chickenPrice") {
+            if (isNaN(parseInt(e.target.value))) {
+                document.getElementById("error-text").innerHTML = "Error! Input needs to be a number";
+            } else {
+                document.getElementById("error-text").innerHTML = "";
+
+                this.setState({
+                    [e.target.id]: parseInt(e.target.value)
+                });
+            }
         } else {
             this.setState({
-                [e.target.id]: myInt
+                [e.target.id]: e.target.value
             });
         }
     }
@@ -129,7 +139,7 @@ class Inputsell extends Component {
             <div className="container">
                 <form onSubmit={this.handleSubmit} className="white">
                     <h5 className="grey-text text-darken-3">Input Sales</h5>
-
+                    <br/>
                     <div className="input-field">
                         <label htmlFor="date">Select Date (range: 1 - 31)</label>
                         <input type="number" id="date" onChange={this.handleChange} required/>
@@ -140,13 +150,14 @@ class Inputsell extends Component {
                             <option value="0" disabled="disabled">Choose Section</option>
                             <option value="Thika Farmers">Thika Farmers</option>
                             <option value="Cakes">Cakes</option>
-                            <option value="Simbi">Simbi</option>
+                            <option value="Simbi">Duka</option>
                             <option value="Old Chickens">Old chickens</option>
                             <option value="Other">Other</option>
                         </select>
                     </div>
 
                     <div style={{display: 'none'}} id="other">
+                        <br/>
                         <div className="input-field">
                             <label htmlFor="buyerName">Name of Buyer</label>
                             <input type="text" id="buyerName" onChange={this.handleChange}/>
@@ -154,11 +165,12 @@ class Inputsell extends Component {
                     </div>
 
                     <div style={{display: 'none'}} id="old">
+                        <br/>
                         <div className="input-field">
                             <label htmlFor="chickenNo">Number of old chickens</label>
                             <input type="number" id="chickenNo" onChange={this.handleChange}/>
                         </div>
-
+                        <br/>
                         <div className="input-field">
                             <label htmlFor="chickenPrice">Price of 1 chicken</label>
                             <input type="number" id="chickenPrice" onChange={this.handleChange}/>
@@ -166,11 +178,12 @@ class Inputsell extends Component {
                     </div>
 
                     <div style={{display: 'none'}} id="sales">
+                        <br/>
                         <div className="input-field">
                             <label htmlFor="trayNo">Number of Trays</label>
                             <input type="number" id="trayNo" onChange={this.handleChange}/>
                         </div>
-
+                        <br/>
                         <div className="input-field">
                             <label htmlFor="trayPrice">Price per Tray</label>
                             <input type="number" id="trayPrice" onChange={this.handleChange}/>

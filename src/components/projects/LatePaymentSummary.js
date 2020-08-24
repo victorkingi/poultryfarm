@@ -11,7 +11,7 @@ const LatePaymentSummary = (late) => {
     }
 
     if (late) {
-        const time = late.item.submittedOn.toDate() ? late.item.submittedOn.toDate() : "No date given";
+        const time = late.item.date.toDate() ? late.item.date.toDate() : "No date given";
         const buy = late.item.buyer ? late.item.buyer : late.item.section;
 
         return (

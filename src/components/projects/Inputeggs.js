@@ -135,7 +135,7 @@ class Inputeggs extends Component {
                 <div className="container">
                     <form onSubmit={this.handleSubmit} className="white">
                         <h5 className="grey-text text-darken-3">Input Eggs</h5>
-
+                        <br/>
                         <div className="input-field">
                             <label htmlFor="date">Select Date (range: 1 - 31)</label>
                             <input type="number" id="date" onChange={this.handleChange} required/>

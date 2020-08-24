@@ -6,7 +6,7 @@ const Notifications = (props) => {
 
     if (notifications) {
         return (
-            <div className="section">
+            <div className="section modal-trigger">
                 <div className="card z-depth-0">
                     <div className="card-content">
                         <span className="card-title">Notifications</span>

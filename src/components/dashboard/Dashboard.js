@@ -9,33 +9,57 @@ import Current from "./Current";
 import DebtList from "../projects/DebtList";
 import TrayList from "../projects/TrayList";
 import BagsList from "../projects/BagsList";
-import ChickAge from "./ChickenAge";
-
+import ChickenDetails from "./ChickenDetails";
+import News from "./News";
 
 class Dashboard extends Component {
 
     render() {
-        const {balance, bags, trays, debt, auth, admin, profile, notifications} = this.props;
+        const {news, chicken, balance, bags, trays, debt, auth, admin, profile, notifications} = this.props;
         this.props.checkClaims();
 
         if (!auth.uid) {
             return (
-                <Redirect to="/signin" />
+                <Redirect to="/signin"/>
             )
         }
 
+        var checkHour = new Date();
+        checkHour = checkHour.getHours();
+        var period = "";
+
+        function time() {
+            if ((checkHour >= 0) && (checkHour <= 12)) {
+                period = "Good Morning";
+            } else if ((checkHour >= 12) && (checkHour <= 18)) {
+                period = "Afternoon";
+            } else {
+                period = "Good Evening";
+            }
+        }
+
         if (admin) {
-            if (balance && bags && trays && debt && notifications) {
+            if (balance && bags && trays && debt && notifications && news) {
+                time();
+
                 return (
                     <div className="dashboard container">
                         <div className="row">
 
-                            <div className="col s12 m5 offset-m1">
-                                <ChickAge/>
+                            <div className="center-align">
+                                <h3 className="spinner-blue" id="details"> {period} {profile.firstName}</h3>
                             </div>
 
                             <div className="col s12 m5 offset-m1">
                                 <Notifications notifications={notifications}/>
+                            </div>
+
+                            <div className="col s12 m5 offset-m1">
+                                <News news={news}/>
+                            </div>
+
+                            <div className="col s12 m5 offset-m1">
+                                <ChickenDetails chicken={chicken}/>
                             </div>
 
                             <div className="col s12 m5 offset-m1">
@@ -71,7 +95,15 @@ class Dashboard extends Component {
                     <div className="dashboard container">
 
                         <div className="center-align">
-                            <h3 className="spinner-blue"> Welcome {profile.firstName}</h3>
+                            <h3 className="spinner-blue"> {period} {profile.firstName}</h3>
+                        </div>
+
+                        <div className="col s12 m5 offset-m1">
+                            <Notifications notifications={notifications}/>
+                        </div>
+
+                        <div className="col s12 m5 offset-m1">
+                            <Current balance={balance}/>
                         </div>
 
                     </div>
@@ -91,6 +123,7 @@ class Dashboard extends Component {
 
 const mapStateToProps = (state) => {
     return {
+        chicken: state.firestore.ordered.chickenDetails,
         debt: state.firestore.ordered.oweJeff,
         balance: state.firestore.ordered.current,
         auth: state.firebase.auth,
@@ -98,7 +131,8 @@ const mapStateToProps = (state) => {
         profile: state.firebase.profile,
         notifications: state.firestore.ordered.notifications,
         trays: state.firestore.ordered.trays,
-        bags: state.firestore.ordered.bags
+        bags: state.firestore.ordered.bags,
+        news: state.firestore.ordered.latestNews,
     }
 }
 
@@ -113,8 +147,10 @@ export default compose(
     firestoreConnect([
         {collection: 'notifications', limit: 4, orderBy: ['time', 'desc']},
         {collection: 'current', limit: 10, orderBy: ['balance', 'desc']},
+        {collection: 'chickenDetails'},
         {collection: 'oweJeff', limit: 4, orderBy: ['balance', 'desc']},
         {collection: 'trays', limit: 1, orderBy: ['number', 'desc']},
-        {collection: 'bags', limit: 1, orderBy: ['number', 'desc']}
+        {collection: 'bags', limit: 1, orderBy: ['number', 'desc']},
+        {collection: 'latestNews', limit: 1, orderBy: ['time', 'desc']},
     ])
 )(Dashboard)

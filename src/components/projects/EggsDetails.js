@@ -14,7 +14,7 @@ const EggsDetails = (props) => {
     if (egg) {
         const time = egg.date.toDate() ? egg.date.toDate() : "No date given", a1 = parseInt(egg['A 1']),
             a2 = parseInt(egg['A 2']), b1 = parseInt(egg['B 1']), b2 = parseInt(egg['B 2']), c1 = parseInt(egg['C 1']),
-            c2 = parseInt(egg['C 2']), total = a1 + a2 + b1 + b2 + c1 + c2;
+            c2 = parseInt(egg['C 2']), house = parseInt(egg['house']), total = a1 + a2 + b1 + b2 + c1 + c2 + house;
 
         return(
             <div className="container section project-details">

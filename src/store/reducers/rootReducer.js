@@ -6,6 +6,7 @@ import {firestoreReducer} from "redux-firestore";
 import {firebaseReducer} from "react-redux-firebase";
 import buyReducer from "./buyReducer";
 import moneyReducer from "./moneyReducer";
+import deadSickReducer from "./deadSickReducer";
 
 const rootReducer = combineReducers({
     auth: authReducer,
@@ -13,6 +14,7 @@ const rootReducer = combineReducers({
     eggs: eggsReducer,
     buy: buyReducer,
     money: moneyReducer,
+    deadSick: deadSickReducer,
     firestore: firestoreReducer,
     firebase: firebaseReducer
 });

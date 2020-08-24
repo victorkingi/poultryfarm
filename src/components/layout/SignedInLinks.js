@@ -27,6 +27,7 @@ const SignedInLinks = (props) => {
                     <li><NavLink to='/eggs'>Input Eggs</NavLink></li>
                     <li><NavLink to='/buy'>Input Purchases</NavLink></li>
                     <li><NavLink to='/ib'>Input Borrowing</NavLink></li>
+                    <li><NavLink to='/d'>Input Sick / Dead Chicken</NavLink></li>
 
                     <li>
                         <div className="divider"/>
@@ -61,6 +62,7 @@ const SignedInLinks = (props) => {
                     <li><NavLink to='/e'>Eggs collected</NavLink></li>
                     <li><NavLink to='/s'>Sales Made</NavLink></li>
                     <li><NavLink to='/b'>Items Purchased</NavLink></li>
+                    <li><NavLink to='/sd'>Sick / Dead Chicken</NavLink></li>
                     <li><NavLink to='/chart'>Charts</NavLink></li>
 
                     <li>

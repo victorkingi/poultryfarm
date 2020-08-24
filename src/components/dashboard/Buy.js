@@ -39,6 +39,6 @@ const mapStateToProps = (state) => {
 export default compose(
     connect(mapStateToProps),
     firestoreConnect([
-        {collection: 'buys', limit: 10, orderBy: ['submittedOn', 'desc']},
+        {collection: 'buys', limit: 1000, orderBy: ['submittedOn', 'desc']},
     ])
 )(Buy)

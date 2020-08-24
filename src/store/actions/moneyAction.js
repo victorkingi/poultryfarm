@@ -44,7 +44,7 @@ export const inputMoney = (money) => {
                                                 fullName: profile.firstName + ' ' + profile.lastName,
                                                 submittedBy: profile.firstName + ' ' + profile.lastName,
                                                 submittedOn: firestore.FieldValue.serverTimestamp()
-                                            });
+                                            })
 
                                             firestore.collection('userLogs').doc(user.uid).set({dummy: 'dummy'});
 
@@ -69,6 +69,8 @@ export const inputMoney = (money) => {
                                                             submittedBy: profile.firstName + ' ' + profile.lastName,
                                                             fullName: receiverName,
                                                             submittedOn: firestore.FieldValue.serverTimestamp()
+                                                        }).then(() => {
+                                                            dispatch({type: 'MONEY_SENT', money});
                                                         });
 
                                                         firestore.collection('userLogs').doc(receiverUID).set({dummy: 'dummy'});
@@ -89,6 +91,8 @@ export const inputMoney = (money) => {
                                                             fullName: receiverName,
                                                             submittedBy: profile.firstName + ' ' + profile.lastName,
                                                             submittedOn: firestore.FieldValue.serverTimestamp()
+                                                        }).then(() => {
+                                                            dispatch({type: 'MONEY_SENT', money});
                                                         });
 
                                                         firestore.collection('userLogs').doc(receiverUID).set({dummy: 'dummy'});
@@ -113,8 +117,6 @@ export const inputMoney = (money) => {
                     }
 
                 })
-            }).then(() => {
-            dispatch({type: 'MONEY_SENT', money});
         })
             .catch((err) => {
                 dispatch({type: 'MONEY_ERROR', err});
@@ -213,7 +215,7 @@ export const latePays = (details) => {
     }
 }
 
-//executed if we owe thika farmers money or someone else who sold as something
+//executed if we owe thika farmers money or someone else who sold us something
 export const clearedDebt = (details) => {
     return (dispatch, getState, {getFirebase, getFirestore}) => {
         const firestore = getFirestore();
@@ -228,7 +230,7 @@ export const clearedDebt = (details) => {
                 const data = doc.data();
                 const final = parseInt(data.balance) - parseInt(details.balance);
 
-                if (final < 0) {
+                if (final < 0 && user.email === "jeffkarue@gmail.com") {
                     firestore.collection('current').where("fullName", "==", "Bank Account").get()
                         .then(function (query) {
                             query.forEach(function (doc) {

@@ -17,9 +17,13 @@ const SalesDetails = (props) => {
         const total = sale.chickenNo ? (sale.chickenNo * sale.chickenPrice) : (sale.trayNo * sale.trayPrice);
         const time = sale.date ? sale.date.toDate() : "No date given";
 
+        if (parseInt(sale.chickenNo) === 1) {
 
-        if(sale.buyerName) {
-            if (sale.chickenNo) {
+        }
+
+
+        if (sale.buyerName) {
+            if (sale.chickenNo && parseInt(sale.chickenNo) > 1) {
                 return (
                     <div className="container section project-details">
                         <div className="card z-depth-0">
@@ -37,7 +41,27 @@ const SalesDetails = (props) => {
                     </div>
                 )
 
-            } else {
+            } else if (sale.chickenNo && parseInt(sale.chickenNo) === 1) {
+
+                return (
+                    <div className="container section project-details">
+                        <div className="card z-depth-0">
+                            <div className="card-content">
+                                <span className="card-title">{sale.category}: {sale.section}</span>
+                                <p>We sold {sale.chickenNo} chicken to {sale.buyerName} at a price of
+                                    Ksh.{sale.chickenPrice} per
+                                    chicken and earned Ksh.{total} in total.</p>
+                            </div>
+                            <div className="card-action grey lighten-4 grey-text">
+                                <div>Posted by {sale.submittedBy}</div>
+                                <div>{moment(time).calendar()}</div>
+                            </div>
+                        </div>
+                    </div>
+                )
+
+
+            } else if (sale.trayNo && parseInt(sale.trayNo) > 1) {
                 return (
                     <div className="container section project-details">
                         <div className="card z-depth-0">
@@ -54,7 +78,25 @@ const SalesDetails = (props) => {
                         </div>
                     </div>
                 )
+            } else if (sale.trayNo && parseInt(sale.trayNo) === 1) {
+                return (
+                    <div className="container section project-details">
+                        <div className="card z-depth-0">
+                            <div className="card-content">
+                                <span className="card-title">{sale.category}: {sale.section}</span>
+                                <p>We sold {sale.trayNo} tray to {sale.buyerName} at a price of
+                                    Ksh.{sale.trayPrice} per
+                                    tray and earned Ksh.{total} in total.</p>
+                            </div>
+                            <div className="card-action grey lighten-4 grey-text">
+                                <div>Posted by {sale.submittedBy}</div>
+                                <div>{moment(time).calendar()}</div>
+                            </div>
+                        </div>
+                    </div>
+                )
             }
+
         } else {
             return (
                 <div className="container section project-details">

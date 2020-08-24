@@ -48,6 +48,6 @@ const mapStateToProps = (state) => {
 export default compose(
     connect(mapStateToProps),
     firestoreConnect([
-        {collection: 'latePayment', limit: 10, orderBy: ['amountDue', 'desc']}
+        {collection: 'latePayment', limit: 1000, orderBy: ['amountDue', 'desc']}
     ])
 )(Late)

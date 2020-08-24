@@ -19,14 +19,14 @@ export const inputSales = (sales) => {
         const profile = getState().firebase.profile;
         const firebase = getFirebase();
         const user = firebase.auth().currentUser;
-        const date = new Date();
         const key = makeid(28);
-        const month = date.getMonth() + 1;
         const section = sales.section;
         const status = sales.status;
+        const date = new Date();
+        const month = date.getMonth() + 1;
+        var prevMonth = month;
         const enteredDate = parseInt(sales.date);
         const year = date.getFullYear();
-        var prevMonth = month;
         var prevDate = enteredDate - 1;
 
         if (prevDate === 0) {
@@ -70,7 +70,7 @@ export const inputSales = (sales) => {
                             submittedOn: firestore.FieldValue.serverTimestamp()
                         }).then(() => {
 
-                            if (user.uid && status === "true") {
+                            if (user.uid && status) {
                                 const total = parseInt(sales.chickenNo) * parseInt(sales.chickenPrice);
 
                                 firestore.collection('current').doc(user.uid).get().then(function (doc) {
@@ -149,6 +149,141 @@ export const inputSales = (sales) => {
                         });
                     }
                 });
+            } else if (sales.section === "Simbi") {
+                firestore.collection('sales').doc('Month ' + month + ' Date ' + enteredDate + ' ' + section).get().then(function (doc) {
+                    if (doc.exists) {
+                        dispatch({type: 'SALES_DOC_EXISTS'});
+                    } else {
+                        const trays = parseInt(sales.trayNo);
+
+                        firestore.collection('trays').where("number", ">", 0).get().then(function (query) {
+                            query.forEach((doc) => {
+                                if (doc.exists) {
+                                    const trayNo = parseInt(doc.data().number);
+                                    const final = trayNo - trays;
+
+                                    if (final < 0) {
+                                        const err = "ERROR: trays left cannot be negative";
+                                        dispatch({type: 'INPUT_SALES_ERROR', err});
+                                    } else {
+
+                                        firestore.collection('trays').doc(doc.id).update({
+                                            number: final,
+                                            submittedBy: profile.firstName + ' ' + profile.lastName,
+                                            submittedOn: firestore.FieldValue.serverTimestamp()
+                                        });
+
+                                        firestore.collection('userLogs').doc(user.uid).collection('logs').add({
+                                            event: 'trays used',
+                                            number: parseInt(trays),
+                                            saleKey: key,
+                                            submittedBy: profile.firstName + ' ' + profile.lastName,
+                                            submittedOn: firestore.FieldValue.serverTimestamp()
+                                        })
+
+
+                                        firestore.collection('sales').doc('Month ' + month + ' Date ' + enteredDate + ' ' + section).set({
+                                            ...sales,
+                                            saleKey: key,
+                                            date: new Date(year, date.getMonth(), enteredDate),
+                                            submittedBy: profile.firstName + ' ' + profile.lastName,
+                                            submittedOn: firestore.FieldValue.serverTimestamp()
+
+                                        }).then(() => {
+                                            const total = sales.trayNo * sales.trayPrice;
+
+                                            if (user.uid && status) {
+                                                firestore.collection('current').doc("uM7j65iqBzQmU5vJZCzAsOibba53").get().then(function (doc) {
+                                                    if (doc.exists) {
+                                                        const data = doc.data();
+                                                        const myTotal = parseInt(data.balance) + parseInt(total);
+                                                        const final = parseInt(myTotal);
+
+                                                        firestore.collection('current').doc("uM7j65iqBzQmU5vJZCzAsOibba53").update({
+                                                            balance: final,
+                                                            submittedBy: profile.firstName + ' ' + profile.lastName,
+                                                            submittedOn: firestore.FieldValue.serverTimestamp()
+                                                        })
+
+                                                        firestore.collection('userLogs').doc(user.uid).collection('logs').add({
+                                                            event: 'sale ' + sales.section,
+                                                            earned: parseInt(total),
+                                                            saleKey: key,
+                                                            submittedBy: profile.firstName + ' ' + profile.lastName,
+                                                            submittedOn: firestore.FieldValue.serverTimestamp()
+                                                        });
+
+                                                    } else {
+                                                        firestore.collection('current').doc("uM7j65iqBzQmU5vJZCzAsOibba53").set({
+                                                            balance: parseInt(total),
+                                                            fullName: profile.firstName + ' ' + profile.lastName,
+                                                            submittedBy: profile.firstName + ' ' + profile.lastName,
+                                                            submittedOn: firestore.FieldValue.serverTimestamp()
+                                                        })
+
+                                                        firestore.collection('userLogs').doc(user.uid).set({dummy: 'dummy'});
+
+                                                        firestore.collection('userLogs').doc(user.uid).collection('logs').add({
+                                                            event: 'sale ' + sales.section,
+                                                            earned: parseInt(total),
+                                                            saleKey: key,
+                                                            submittedBy: profile.firstName + ' ' + profile.lastName,
+                                                            submittedOn: firestore.FieldValue.serverTimestamp()
+                                                        });
+                                                    }
+                                                });
+                                            } else if (user.uid && !status) {
+                                                const buyer = sales.buyerName ? sales.buyerName : null;
+
+                                                if (buyer == null) {
+                                                    firestore.collection('latePayment').add({
+                                                        amountDue: total,
+                                                        trayNo: sales.trayNo,
+                                                        saleKey: key,
+                                                        trayPrice: sales.trayPrice,
+                                                        date: new Date(year, date.getMonth(), enteredDate),
+                                                        section: sales.section,
+                                                        submittedBy: profile.firstName + ' ' + profile.lastName,
+                                                        submittedOn: firestore.FieldValue.serverTimestamp()
+                                                    })
+                                                } else {
+                                                    firestore.collection('latePayment').add({
+                                                        amountDue: total,
+                                                        trayNo: sales.trayNo,
+                                                        saleKey: key,
+                                                        trayPrice: sales.trayPrice,
+                                                        date: new Date(year, date.getMonth(), enteredDate),
+                                                        section: sales.section,
+                                                        buyer: buyer,
+                                                        submittedBy: profile.firstName + ' ' + profile.lastName,
+                                                        submittedOn: firestore.FieldValue.serverTimestamp()
+                                                    })
+                                                }
+                                            }
+
+                                        }).then(() => {
+                                            dispatch({type: 'INPUT_SALES', sales});
+                                        }).then(() => {
+                                            if (final === 0) {
+                                                doc.ref.delete().then(() => console.log("trays are zero"));
+                                            }
+
+                                        }).catch((err) => {
+                                            dispatch({type: 'INPUT_SALES_ERROR', err});
+                                        });
+
+                                    }
+                                } else {
+                                    const err = "ERROR: cannot make a sale with no eggs in store";
+                                    dispatch({type: 'INPUT_SALES_ERROR', err});
+                                }
+                            })
+
+
+                        });
+                    }
+                });
+
             } else {
 
                 firestore.collection('sales').doc('Month ' + month + ' Date ' + enteredDate + ' ' + section).get().then(function (doc) {
@@ -193,7 +328,7 @@ export const inputSales = (sales) => {
                                         }).then(() => {
                                             const total = sales.trayNo * sales.trayPrice;
 
-                                            if (user.uid && status === "true") {
+                                            if (user.uid && status) {
                                                 firestore.collection('current').doc(user.uid).get().then(function (doc) {
                                                     if (doc.exists) {
                                                         const data = doc.data();
@@ -234,7 +369,7 @@ export const inputSales = (sales) => {
                                                         });
                                                     }
                                                 });
-                                            } else if (user.uid && status === "false") {
+                                            } else if (user.uid && status) {
                                                 const buyer = sales.buyerName ? sales.buyerName : null;
 
                                                 if (buyer == null) {
@@ -242,6 +377,7 @@ export const inputSales = (sales) => {
                                                         amountDue: total,
                                                         trayNo: sales.trayNo,
                                                         saleKey: key,
+                                                        date: new Date(year, date.getMonth(), enteredDate),
                                                         trayPrice: sales.trayPrice,
                                                         section: sales.section,
                                                         submittedBy: profile.firstName + ' ' + profile.lastName,
@@ -252,6 +388,7 @@ export const inputSales = (sales) => {
                                                         amountDue: total,
                                                         trayNo: sales.trayNo,
                                                         saleKey: key,
+                                                        date: new Date(year, date.getMonth(), enteredDate),
                                                         trayPrice: sales.trayPrice,
                                                         section: sales.section,
                                                         buyer: buyer,

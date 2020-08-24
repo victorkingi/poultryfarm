@@ -10,7 +10,7 @@ const TrayList = (trays) => {
                 <div className="project-list section">
                     {trays.trays && trays.trays.map(item => {
                         return (
-                            <TraySummary item={item}/>
+                            <TraySummary item={item} key={item.id}/>
                         );
                     })}
                 </div>
