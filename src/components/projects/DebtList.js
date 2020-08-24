@@ -23,7 +23,7 @@ const DebtList = ({debt}) => {
                         <div className="card">
                             <div className="card-image">
                                 <img alt="picture" src={sample}/>
-                                <span className="card-title">Debts</span>
+                                <span className="card-title">Debts Owing Jeff</span>
                             </div>
                             <div className="card-content">
                                 <p>No debts</p>
@@ -42,7 +42,7 @@ const DebtList = ({debt}) => {
                     <div className="card">
                         <div className="card-image">
                             <img alt="picture" src={sample}/>
-                            <span className="card-title">Debts</span>
+                            <span className="card-title">Debts Owing Jeff</span>
                         </div>
                         <div className="card-content">
                             <p>No debts</p>
