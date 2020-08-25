@@ -369,7 +369,7 @@ export const inputSales = (sales) => {
                                                         });
                                                     }
                                                 });
-                                            } else if (user.uid && status) {
+                                            } else if (user.uid && !status) {
                                                 const buyer = sales.buyerName ? sales.buyerName : null;
 
                                                 if (buyer == null) {

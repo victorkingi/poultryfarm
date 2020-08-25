@@ -89,6 +89,7 @@ class Dashboard extends Component {
                 );
             }
         } else {
+            time();
 
             if(profile.firstName) {
                 return (

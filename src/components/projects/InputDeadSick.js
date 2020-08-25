@@ -2,6 +2,7 @@ import React, {Component} from "react";
 import {connect} from 'react-redux';
 import {inputDeadSick} from "../../store/actions/DeadSickAction";
 import M from "materialize-css";
+import {Redirect} from "react-router-dom";
 
 class InputDeadSick extends Component {
 
