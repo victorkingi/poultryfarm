@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {BrowserRouter, Route, Switch} from 'react-router-dom'
+
 import Dashboard from "./components/dashboard/Dashboard";
 import SalesDetails from "./components/projects/SalesDetails";
 import SignIn from "./components/auth/SignIn";

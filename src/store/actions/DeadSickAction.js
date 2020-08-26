@@ -1,5 +1,6 @@
 import React from "react";
-import {Redirect} from "react-router-dom";
+import 'react-toastify/dist/ReactToastify.css';
+
 
 export const inputDeadSick = (deadSick, image) => {
     return (dispatch, getState, {getFirebase, getFirestore}) => {
@@ -45,8 +46,16 @@ export const inputDeadSick = (deadSick, image) => {
                                 submittedOn: firestore.FieldValue.serverTimestamp()
 
                             }).then(() => {
-
                                 dispatch({type: 'UPLOAD_DONE'});
+                                const upload = document.getElementById("uploadLoad");
+                                upload.style.display = 'block';
+
+                                function uploadNotify() {
+                                    upload.style.display = 'none';
+                                }
+
+                                setTimeout(uploadNotify, 3000);
+
 
                             }).then(() => {
                                 if (section === "Dead") {
@@ -72,59 +81,14 @@ export const inputDeadSick = (deadSick, image) => {
                                 });
                             });
                         }).then(() => {
-                        const loading = document.getElementById('loading');
-                        loading.style.display = 'none';
                         dispatch({type: 'SUBMIT'});
-                        return (
-                            <Redirect to="/"/>
-                        )
+                        window.alert("Data submitted");
+                        window.location = '/';
+
                     });
                 });
             }
 
         });
-
-        /*  const upload = storage.ref(`deadSick/${image.name}`).put(image);
-          upload.on(
-              "state_changed",
-              error => {
-                  dispatch({type: 'UPLOAD_ERROR', error});
-              },
-              () => {
-                  storage
-                      .ref("images")
-                      .child(image.name)
-                      .getDownloadURL()
-                      .then((url) => {
-
-                          firestore.collection('deadSick').doc('Month ' + month + ' Date ' + enteredDate + ' ' + section).get().then(function (doc) {
-                              if (doc.exists) {
-                                  const err = "Doc exists";
-                                  dispatch({type: 'DOC_EXISTS', err});
-                              } else {
-                                  firestore.collection('deadSick').doc('Month ' + month + ' Date ' + enteredDate + ' ' + section).set({
-                                      ...deadSick,
-                                      photoURL: url,
-                                      date: new Date(year, date.getMonth(), enteredDate),
-                                      submittedBy: profile.firstName + ' ' + profile.lastName,
-                                      submittedOn: firestore.FieldValue.serverTimestamp()
-                              }).then(() => {
-                                      dispatch({type: 'UPLOAD_DONE'});
-                                  })
-                                      .then(() => {
-                                          firestore.collection('userLogs').doc(user.uid).set({dummy: 'dummy'});
-
-                                          firestore.collection('userLogs').doc(user.uid).collection('logs').add({
-                                              event: deadSick.section + " Chicken",
-                                              submittedBy: profile.firstName + ' ' + profile.lastName,
-                                              submittedOn: firestore.FieldValue.serverTimestamp()
-                                          });
-                                      })
-                              }
-                          })
-
-                      })
-              }
-          ) */
     }
 }

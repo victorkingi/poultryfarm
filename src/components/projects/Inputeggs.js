@@ -111,9 +111,13 @@ class Inputeggs extends Component {
 
     handleSubmit = (e) => {
         e.preventDefault();
+        const load = document.getElementById("loading");
+        const submit = document.getElementById("egg7");
+
+        submit.style.display = 'none';
+        load.style.display = 'block';
 
         this.props.inputEggs(this.state);
-        this.props.history.push('/');
     }
 
     componentDidMount = () => {
@@ -190,6 +194,58 @@ class Inputeggs extends Component {
                                 <div className="input-field">
                                     <label htmlFor="broken">Eggs broken</label>
                                     <input type="number" id="broken" onChange={this.handleChange} required/>
+                                </div>
+                            </div>
+
+                            <div style={{display: 'none'}} id="loading">
+                                <div className="preloader-wrapper big active">
+                                    <div className="spinner-layer spinner-blue">
+                                        <div className="circle-clipper left">
+                                            <div className="circle"/>
+                                        </div>
+                                        <div className="gap-patch">
+                                            <div className="circle"/>
+                                        </div>
+                                        <div className="circle-clipper right">
+                                            <div className="circle"/>
+                                        </div>
+                                    </div>
+
+                                    <div className="spinner-layer spinner-red">
+                                        <div className="circle-clipper left">
+                                            <div className="circle"/>
+                                        </div>
+                                        <div className="gap-patch">
+                                            <div className="circle"/>
+                                        </div>
+                                        <div className="circle-clipper right">
+                                            <div className="circle"/>
+                                        </div>
+                                    </div>
+
+                                    <div className="spinner-layer spinner-yellow">
+                                        <div className="circle-clipper left">
+                                            <div className="circle"/>
+                                        </div>
+                                        <div className="gap-patch">
+                                            <div className="circle"/>
+                                        </div>
+                                        <div className="circle-clipper right">
+                                            <div className="circle"/>
+                                        </div>
+                                    </div>
+
+                                    <div className="spinner-layer spinner-green">
+                                        <div className="circle-clipper left">
+                                            <div className="circle"/>
+                                        </div>
+                                        <div className="gap-patch">
+                                            <div className="circle"/>
+                                        </div>
+                                        <div className="circle-clipper right">
+                                            <div className="circle"/>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 

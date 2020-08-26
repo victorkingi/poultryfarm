@@ -1,6 +1,6 @@
 {
   "name": "poultryfarm",
-  "version": "2.3.3",
+  "version": "2.3.5",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^4.2.4",
@@ -45,9 +45,11 @@
     ]
   },
   "devDependencies": {
+    "axios": "^0.20.0",
     "materialize-css": "^1.0.0",
     "react-native-modalbox": "^2.0.0",
     "react-redux": "^7.2.1",
-    "react-router-dom": "^5.2.0"
+    "react-router-dom": "^5.2.0",
+    "react-toastify": "^6.0.8"
   }
 }

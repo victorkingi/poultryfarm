@@ -38,13 +38,17 @@ class Inputmoney extends Component {
         e.preventDefault();
         const selectBox = document.getElementById("receiver");
         const selectedValue = selectBox.options[selectBox.selectedIndex].value;
+        const load = document.getElementById("loading");
+        const submit = document.getElementById("submit-btn");
+
+        submit.style.display = 'none';
+        load.style.display = 'block';
 
         if (selectedValue === "0") {
             document.getElementById("error-text").innerHTML = "Error with selection";
         } else {
             document.getElementById("error-text").innerHTML = "";
             this.props.inputMoney(this.state);
-            this.props.history.push('/');
         }
 
     }
@@ -80,6 +84,58 @@ class Inputmoney extends Component {
                         <div className="input-field">
                             <label htmlFor="amount">Enter amount</label>
                             <input type="number" id="amount" onChange={this.handleChange} required/>
+                        </div>
+                    </div>
+
+                    <div style={{display: 'none'}} id="loading">
+                        <div className="preloader-wrapper big active">
+                            <div className="spinner-layer spinner-blue">
+                                <div className="circle-clipper left">
+                                    <div className="circle"/>
+                                </div>
+                                <div className="gap-patch">
+                                    <div className="circle"/>
+                                </div>
+                                <div className="circle-clipper right">
+                                    <div className="circle"/>
+                                </div>
+                            </div>
+
+                            <div className="spinner-layer spinner-red">
+                                <div className="circle-clipper left">
+                                    <div className="circle"/>
+                                </div>
+                                <div className="gap-patch">
+                                    <div className="circle"/>
+                                </div>
+                                <div className="circle-clipper right">
+                                    <div className="circle"/>
+                                </div>
+                            </div>
+
+                            <div className="spinner-layer spinner-yellow">
+                                <div className="circle-clipper left">
+                                    <div className="circle"/>
+                                </div>
+                                <div className="gap-patch">
+                                    <div className="circle"/>
+                                </div>
+                                <div className="circle-clipper right">
+                                    <div className="circle"/>
+                                </div>
+                            </div>
+
+                            <div className="spinner-layer spinner-green">
+                                <div className="circle-clipper left">
+                                    <div className="circle"/>
+                                </div>
+                                <div className="gap-patch">
+                                    <div className="circle"/>
+                                </div>
+                                <div className="circle-clipper right">
+                                    <div className="circle"/>
+                                </div>
+                            </div>
                         </div>
                     </div>
 

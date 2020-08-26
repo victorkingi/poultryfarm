@@ -5,9 +5,10 @@ import {latePays} from "../../store/actions/moneyAction";
 
 const LatePaymentSummary = (late) => {
 
-    const handleClick = (details) => {
+    const handleClick = (e) => {
+        e.preventDefault();
+        late.latePays(late.item);
 
-        late.latePays(details);
     }
 
     if (late) {
@@ -21,14 +22,16 @@ const LatePaymentSummary = (late) => {
                     <span style={{fontSize: "30px"}}>{buy}</span>
                     <p>Amount due: Ksh.{late.item.amountDue}</p>
                     <p className="grey-text">{moment(time).calendar()}</p>
-                    <button type="submit" onClick={() => {
-                        handleClick(late.item)
+
+                    <button id="mySubmit" type="submit" onClick={(e) => {
+                        handleClick(e)
                     }} className="btn pink lighten-2 z-depth-0">Payment received
                     </button>
 
                 </div>
             </div>
         )
+
     } else {
         return (
             <div className="card z-depth-0 project-summary">

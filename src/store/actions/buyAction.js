@@ -160,6 +160,9 @@ export const inputBuys = (buys) => {
 
                                                             }).then(() => {
                                                                 dispatch({type: 'INPUT_BUYING', buys});
+                                                                window.alert("Data submitted");
+                                                                window.location = '/';
+
                                                             }).catch((err) => {
                                                                 dispatch({type: 'INPUT_BUYING_ERROR', err});
                                                             });
@@ -234,6 +237,9 @@ export const inputBuys = (buys) => {
 
                                         }).then(() => {
                                             dispatch({type: 'INPUT_BUYING', buys});
+                                            window.alert("Data submitted");
+                                            window.location = '/';
+
 
                                         }).catch((err) => {
                                             dispatch({type: 'INPUT_BUYING_ERROR', err});
@@ -283,6 +289,9 @@ export const inputBuys = (buys) => {
                             });
                         }).then(() => {
                             dispatch({type: 'INPUT_BUYING', buys});
+                            window.alert("Data submitted");
+                            window.location = '/';
+
                         }).catch((err) => {
                             dispatch({type: 'INPUT_BUYING_ERROR', err});
                         });
@@ -294,6 +303,9 @@ export const inputBuys = (buys) => {
                     dispatch({type: 'INPUT_BUYING_ERROR', err});
                 } else {
                     dispatch({type: 'INPUT_BUYING', buys});
+                    window.alert("Data submitted");
+                    window.location = '/';
+
                 }
 
             });
@@ -317,7 +329,7 @@ export const updateBags = (state) => {
         bagRef.update({
             number: myBags,
             submittedBy: profile.firstName + ' ' + profile.lastName,
-            submittedOn: firestore.FieldValue.serverTimestamp()
+            submittedOn: state.submittedOn
         }).then(() => dispatch({type: 'BAGS_CHANGE'}))
             .catch((err) => console.log(err.message));
     }

@@ -3,6 +3,7 @@ import {connect} from 'react-redux';
 import {inputDeadSick} from "../../store/actions/DeadSickAction";
 import M from "materialize-css";
 import {Redirect} from "react-router-dom";
+import {toast, ToastContainer} from "react-toastify";
 
 class InputDeadSick extends Component {
 
@@ -83,15 +84,27 @@ class InputDeadSick extends Component {
 
     handleSubmit = (e) => {
         e.preventDefault();
+        const load = document.getElementById("loading");
+        const submit = document.getElementById("submit-btn");
+
+        submit.style.display = 'none';
+        load.style.display = 'block';
+
         this.props.inputDeadSick(this.state, this.image);
-        const loading = document.getElementById('loading');
-        loading.style.display = 'block';
-        //  this.props.history.push('/');
 
     }
 
     componentDidMount = () => {
         M.AutoInit();
+        toast.success('🦄 Image Uploaded', {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+        });
     }
 
     render() {
@@ -107,6 +120,19 @@ class InputDeadSick extends Component {
 
         return (
             <div>
+                <div style={{display: 'none'}} id="uploadLoad">
+                    <ToastContainer
+                        position="top-right"
+                        autoClose={3000}
+                        hideProgressBar={false}
+                        newestOnTop
+                        closeOnClick
+                        rtl={false}
+                        pauseOnFocusLoss
+                        draggable
+                        pauseOnHover
+                    />
+                </div>
 
                 <div className="container">
                     <form onSubmit={this.handleSubmit} className="white">

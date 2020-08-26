@@ -11,18 +11,23 @@ import TrayList from "../projects/TrayList";
 import BagsList from "../projects/BagsList";
 import ChickenDetails from "./ChickenDetails";
 import News from "./News";
+import {handleToken} from "../../store/actions/chickenAction";
+import {updateBags} from "../../store/actions/buyAction";
 
 class Dashboard extends Component {
 
     render() {
         const {news, chicken, balance, bags, trays, debt, auth, admin, profile, notifications} = this.props;
         this.props.checkClaims();
+        // this.props.handleToken();
+
 
         if (!auth.uid) {
             return (
                 <Redirect to="/signin"/>
             )
         }
+
 
         var checkHour = new Date();
         checkHour = checkHour.getHours();
@@ -39,8 +44,33 @@ class Dashboard extends Component {
         }
 
         if (admin) {
+            time();
             if (balance && bags && trays && debt && notifications && news) {
-                time();
+
+                var num = bags['0'].number;
+                const time = bags ? bags['0'].date.toDate() : "No date given";
+                const currentDay = parseInt(new Date().getDate());
+                const previous = parseInt(time.getDate());
+                const currentMonth = (new Date().getMonth()) + 1;
+                const prevMonth = time.getMonth() + 1;
+                var bagNo = undefined;
+                const finalMonth = parseInt(currentMonth) - parseInt(prevMonth);
+
+                if (previous < currentDay && finalMonth === 0) {
+                    const final = currentDay - previous;
+                    bagNo = num - final;
+
+                    if (parseInt(bagNo) < 1) {
+                        bagNo = 0;
+                    }
+
+                    const state = {
+                        submittedOn: bags['0'].submittedOn,
+                        bagNo: bagNo
+                    }
+
+                    this.props.updateBags(state)
+                }
 
                 return (
                     <div className="dashboard container">
@@ -140,13 +170,16 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         checkClaims: () => dispatch(checkClaims()),
+        handleToken: () => dispatch(handleToken()),
+        updateBags: (state) => dispatch(updateBags(state))
+
     }
 }
 
 export default compose(
     connect(mapStateToProps, mapDispatchToProps),
     firestoreConnect([
-        {collection: 'notifications', limit: 4, orderBy: ['time', 'desc']},
+        {collection: 'notifications', limit: 3, orderBy: ['time', 'desc']},
         {collection: 'current', limit: 10, orderBy: ['balance', 'desc']},
         {collection: 'chickenDetails'},
         {collection: 'oweJeff', limit: 4, orderBy: ['balance', 'desc']},

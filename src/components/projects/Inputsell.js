@@ -100,6 +100,11 @@ class Inputsell extends Component {
         e.preventDefault();
         const selectBox = document.getElementById("section");
         const selectedValue = selectBox.options[selectBox.selectedIndex].value;
+        const load = document.getElementById("loading");
+        const submit = document.getElementById("submit-btn");
+
+        submit.style.display = 'none';
+        load.style.display = 'block';
 
         if (selectedValue === "Other" || selectedValue === "Old Chickens") {
             const sales = document.getElementById("buyerName");
@@ -107,7 +112,6 @@ class Inputsell extends Component {
                 document.getElementById("error-text").innerHTML = "Please input a buyer name"
             } else {
                 this.props.inputSales(this.state);
-                this.props.history.push('/');
             }
         }
         if (selectedValue !== "Other" && selectedValue !== "Old Chickens") {
@@ -116,7 +120,6 @@ class Inputsell extends Component {
                 document.getElementById("error-text").innerHTML = "Error! Try again"
             } else {
                 this.props.inputSales(this.state);
-                this.props.history.push('/');
             }
         }
 
@@ -199,6 +202,57 @@ class Inputsell extends Component {
                         </select>
                     </div>
 
+                    <div style={{display: 'none'}} id="loading">
+                        <div className="preloader-wrapper big active">
+                            <div className="spinner-layer spinner-blue">
+                                <div className="circle-clipper left">
+                                    <div className="circle"/>
+                                </div>
+                                <div className="gap-patch">
+                                    <div className="circle"/>
+                                </div>
+                                <div className="circle-clipper right">
+                                    <div className="circle"/>
+                                </div>
+                            </div>
+
+                            <div className="spinner-layer spinner-red">
+                                <div className="circle-clipper left">
+                                    <div className="circle"/>
+                                </div>
+                                <div className="gap-patch">
+                                    <div className="circle"/>
+                                </div>
+                                <div className="circle-clipper right">
+                                    <div className="circle"/>
+                                </div>
+                            </div>
+
+                            <div className="spinner-layer spinner-yellow">
+                                <div className="circle-clipper left">
+                                    <div className="circle"/>
+                                </div>
+                                <div className="gap-patch">
+                                    <div className="circle"/>
+                                </div>
+                                <div className="circle-clipper right">
+                                    <div className="circle"/>
+                                </div>
+                            </div>
+
+                            <div className="spinner-layer spinner-green">
+                                <div className="circle-clipper left">
+                                    <div className="circle"/>
+                                </div>
+                                <div className="gap-patch">
+                                    <div className="circle"/>
+                                </div>
+                                <div className="circle-clipper right">
+                                    <div className="circle"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                     <div style={{display: 'none'}} id="submit-btn">
                         <div className="input-field">

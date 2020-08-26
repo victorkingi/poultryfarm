@@ -2,7 +2,7 @@ import firebase from "firebase/app";
 import 'firebase/firestore';
 import 'firebase/auth';
 import 'firebase/functions';
-import 'firebase/messaging';
+import 'firebase/messaging'
 
 const firebaseConfig = {
     apiKey: "",
@@ -19,6 +19,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 firebase.functions();
 firebase.firestore();
+firebase.messaging();
 
 export default firebase;
 

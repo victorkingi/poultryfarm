@@ -41,7 +41,7 @@ const Current = (props) => {
 
                                         if (item.fullName === "Bank Account") {
                                             return (
-                                                <div>
+                                                <div key={item.id}>
 
                                                 </div>
                                             )

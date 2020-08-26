@@ -99,6 +99,8 @@ export const inputEggs = (eggs) => {
                             })
                                 .then(() => {
                                     dispatch({type: 'INPUT_EGGS', eggs});
+                                    window.alert("Data submitted");
+                                    window.location = '/';
                                 }).catch((err) => {
                                 dispatch({type: 'INPUT_EGGS_ERROR', err});
                             });
@@ -134,6 +136,8 @@ export const inputEggs = (eggs) => {
                             })
                                 .then(() => {
                                     dispatch({type: 'INPUT_EGGS', eggs});
+                                    window.alert("Data submitted");
+                                    window.location = '/';
                                 }).catch((err) => {
                                 dispatch({type: 'INPUT_EGGS_ERROR', err});
                             });

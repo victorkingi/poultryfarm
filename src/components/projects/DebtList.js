@@ -11,7 +11,7 @@ const DebtList = ({debt}) => {
                 <div className="project-list section">
                     {debt && debt.map(item => {
                         return (
-                            <DebtSummary item={item}/>
+                            <DebtSummary item={item} key={item.id}/>
                         );
                     })}
                 </div>

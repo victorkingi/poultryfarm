@@ -44,9 +44,14 @@ class InputBorrow extends Component {
 
     handleSubmit = (e) => {
         e.preventDefault();
+        const load = document.getElementById("loading");
+        const submit = document.getElementById("submit-btn");
+
+        submit.style.display = 'none';
+        load.style.display = 'block';
 
         this.props.updateBorrow(this.state);
-        this.props.history.push('/');
+
     }
 
     componentDidMount = () => {
@@ -84,6 +89,58 @@ class InputBorrow extends Component {
                             <input type="text" id="purpose" onChange={this.handleChange} required/>
                         </div>
 
+                    </div>
+
+                    <div style={{display: 'none'}} id="loading">
+                        <div className="preloader-wrapper big active">
+                            <div className="spinner-layer spinner-blue">
+                                <div className="circle-clipper left">
+                                    <div className="circle"/>
+                                </div>
+                                <div className="gap-patch">
+                                    <div className="circle"/>
+                                </div>
+                                <div className="circle-clipper right">
+                                    <div className="circle"/>
+                                </div>
+                            </div>
+
+                            <div className="spinner-layer spinner-red">
+                                <div className="circle-clipper left">
+                                    <div className="circle"/>
+                                </div>
+                                <div className="gap-patch">
+                                    <div className="circle"/>
+                                </div>
+                                <div className="circle-clipper right">
+                                    <div className="circle"/>
+                                </div>
+                            </div>
+
+                            <div className="spinner-layer spinner-yellow">
+                                <div className="circle-clipper left">
+                                    <div className="circle"/>
+                                </div>
+                                <div className="gap-patch">
+                                    <div className="circle"/>
+                                </div>
+                                <div className="circle-clipper right">
+                                    <div className="circle"/>
+                                </div>
+                            </div>
+
+                            <div className="spinner-layer spinner-green">
+                                <div className="circle-clipper left">
+                                    <div className="circle"/>
+                                </div>
+                                <div className="gap-patch">
+                                    <div className="circle"/>
+                                </div>
+                                <div className="circle-clipper right">
+                                    <div className="circle"/>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div style={{display: 'none'}} id="submit-btn">

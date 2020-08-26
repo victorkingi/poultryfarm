@@ -72,7 +72,7 @@ class Inputbuy extends Component {
                 [e.target.id]: JSON.parse(e.target.value)
             });
         } else if (e.target.id === "date" || e.target.id === "objectNo" || e.target.id === "objectPrice") {
-            console.log(parseInt(e.target.value))
+
             if (isNaN(parseInt(e.target.value))) {
                 document.getElementById("error-text").innerHTML = "Error! Input needs to be a number";
             } else {
@@ -98,6 +98,11 @@ class Inputbuy extends Component {
         const vaccine = document.getElementById("vaccineName");
         const drug = document.getElementById("drugName");
         const other = document.getElementById("itemName");
+        const load = document.getElementById("loading");
+        const submit = document.getElementById("submit-btn");
+
+        submit.style.display = 'none';
+        load.style.display = 'block';
 
         if (selectedValue === "Other" || selectedValue === "Feeds") {
 
@@ -105,7 +110,6 @@ class Inputbuy extends Component {
                 document.getElementById("error-text").innerHTML = "Error! Try again"
             } else {
                 this.props.inputBuys(this.state);
-                this.props.history.push('/');
             }
         }
         if (selectedValue === "Drug") {
@@ -114,7 +118,6 @@ class Inputbuy extends Component {
                 document.getElementById("error-text").innerHTML = "Error! Try again"
             } else {
                 this.props.inputBuys(this.state);
-                this.props.history.push('/');
             }
         }
         if (selectedValue === "Vaccines") {
@@ -123,7 +126,6 @@ class Inputbuy extends Component {
                 document.getElementById("error-text").innerHTML = "Error! Try again"
             } else {
                 this.props.inputBuys(this.state);
-                this.props.history.push('/');
             }
         }
         if (selectedValue !== "Vaccine" && selectedValue !== "Drug" && selectedValue !== "Other" && selectedValue !== "Feeds") {
@@ -132,7 +134,6 @@ class Inputbuy extends Component {
                 document.getElementById("error-text").innerHTML = "Error! Try again"
             } else {
                 this.props.inputBuys(this.state);
-                this.props.history.push('/');
             }
         }
 
@@ -225,9 +226,61 @@ class Inputbuy extends Component {
                                 <option value={false}>Not paid</option>
                             </select>
 
+                            <div style={{display: 'none'}} id="loading">
+                                <div className="preloader-wrapper big active">
+                                    <div className="spinner-layer spinner-blue">
+                                        <div className="circle-clipper left">
+                                            <div className="circle"/>
+                                        </div>
+                                        <div className="gap-patch">
+                                            <div className="circle"/>
+                                        </div>
+                                        <div className="circle-clipper right">
+                                            <div className="circle"/>
+                                        </div>
+                                    </div>
+
+                                    <div className="spinner-layer spinner-red">
+                                        <div className="circle-clipper left">
+                                            <div className="circle"/>
+                                        </div>
+                                        <div className="gap-patch">
+                                            <div className="circle"/>
+                                        </div>
+                                        <div className="circle-clipper right">
+                                            <div className="circle"/>
+                                        </div>
+                                    </div>
+
+                                    <div className="spinner-layer spinner-yellow">
+                                        <div className="circle-clipper left">
+                                            <div className="circle"/>
+                                        </div>
+                                        <div className="gap-patch">
+                                            <div className="circle"/>
+                                        </div>
+                                        <div className="circle-clipper right">
+                                            <div className="circle"/>
+                                        </div>
+                                    </div>
+
+                                    <div className="spinner-layer spinner-green">
+                                        <div className="circle-clipper left">
+                                            <div className="circle"/>
+                                        </div>
+                                        <div className="gap-patch">
+                                            <div className="circle"/>
+                                        </div>
+                                        <div className="circle-clipper right">
+                                            <div className="circle"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
                             <div className="input-field">
-                                <button type="Submit" className="btn pink lighten-1 z-depth-0">Submit</button>
+                                <button type="Submit" id="submit-btn" className="btn pink lighten-1 z-depth-0">Submit
+                                </button>
                             </div>
                         </div>
 
