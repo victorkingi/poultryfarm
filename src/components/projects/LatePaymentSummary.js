@@ -1,14 +1,17 @@
-import React from "react";
+import React, {useRef} from "react";
 import moment from "moment";
 import {connect} from "react-redux";
 import {latePays} from "../../store/actions/moneyAction";
 
 const LatePaymentSummary = (late) => {
+    const inputRef = useRef();
 
     const handleClick = (e) => {
         e.preventDefault();
+        const load = document.getElementById(`load${late.item.id}`);
+        load.style.display = 'block';
+        inputRef.current.attributes['3'].nodeValue = "display: none;";
         late.latePays(late.item);
-
     }
 
     if (late) {
@@ -23,9 +26,62 @@ const LatePaymentSummary = (late) => {
                     <p>Amount due: Ksh.{late.item.amountDue}</p>
                     <p className="grey-text">{moment(time).calendar()}</p>
 
-                    <button id="mySubmit" type="submit" onClick={(e) => {
-                        handleClick(e)
-                    }} className="btn pink lighten-2 z-depth-0">Payment received
+                    <div style={{display: 'none'}} id={`load${late.item.id}`}>
+                        <div className="preloader-wrapper medium active">
+                            <div className="spinner-layer spinner-blue">
+                                <div className="circle-clipper left">
+                                    <div className="circle"/>
+                                </div>
+                                <div className="gap-patch">
+                                    <div className="circle"/>
+                                </div>
+                                <div className="circle-clipper right">
+                                    <div className="circle"/>
+                                </div>
+                            </div>
+
+                            <div className="spinner-layer spinner-red">
+                                <div className="circle-clipper left">
+                                    <div className="circle"/>
+                                </div>
+                                <div className="gap-patch">
+                                    <div className="circle"/>
+                                </div>
+                                <div className="circle-clipper right">
+                                    <div className="circle"/>
+                                </div>
+                            </div>
+
+                            <div className="spinner-layer spinner-yellow">
+                                <div className="circle-clipper left">
+                                    <div className="circle"/>
+                                </div>
+                                <div className="gap-patch">
+                                    <div className="circle"/>
+                                </div>
+                                <div className="circle-clipper right">
+                                    <div className="circle"/>
+                                </div>
+                            </div>
+
+                            <div className="spinner-layer spinner-green">
+                                <div className="circle-clipper left">
+                                    <div className="circle"/>
+                                </div>
+                                <div className="gap-patch">
+                                    <div className="circle"/>
+                                </div>
+                                <div className="circle-clipper right">
+                                    <div className="circle"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button ref={inputRef} style={{display: 'block'}} id={`submit${late.item.id}`} type="submit"
+                            onClick={(e) => {
+                                handleClick(e)
+                            }} className="btn pink lighten-2 z-depth-0">Payment received
                     </button>
 
                 </div>

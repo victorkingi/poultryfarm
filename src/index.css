@@ -11,7 +11,7 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     background-size: 100%;
-    background: url(we.jpg) scroll;
+    background: url(seam.jpg) scroll;
     min-height: 100%;
 }
 
@@ -91,12 +91,17 @@ a {
     justify-content: flex-end;
 }
 
+.btn:disabled {
+    color: gray;
+    background: gray;
+}
+
 /* <li> */
 .nav-item {
-  width: calc(var(--nav-size) * 0.8);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    width: calc(var(--nav-size) * 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* Icon Button */

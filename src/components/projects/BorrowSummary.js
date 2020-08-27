@@ -1,12 +1,17 @@
-import React from "react";
+import React, {useRef} from "react";
 import moment from "moment";
 import {updateBorrowCleared} from "../../store/actions/moneyAction";
 import {connect} from "react-redux";
 
 const BorrowSummary = (borrow) => {
+    const inputRef = useRef();
 
-    const handleClick = (details) => {
-        borrow.updateBorrowCleared(details);
+    const handleClick = (e) => {
+        e.preventDefault();
+        const load = document.getElementById(`load${borrow.item.id}`);
+        load.style.display = 'block';
+        inputRef.current.attributes['2'].nodeValue = "display: none;";
+        borrow.updateBorrowCleared(borrow.item);
     }
 
     if (borrow.item.submittedOn) {
@@ -21,8 +26,61 @@ const BorrowSummary = (borrow) => {
                     <p>Ksh.{borrow.item.borrowAmount}</p>
                     <p className="grey-text">{moment(time).calendar()}</p>
                 </div>
-                <button onClick={() => {
-                    handleClick(borrow.item)
+
+                <div style={{display: 'none'}} id={`load${borrow.item.id}`}>
+                    <div className="preloader-wrapper medium active">
+                        <div className="spinner-layer spinner-blue">
+                            <div className="circle-clipper left">
+                                <div className="circle"/>
+                            </div>
+                            <div className="gap-patch">
+                                <div className="circle"/>
+                            </div>
+                            <div className="circle-clipper right">
+                                <div className="circle"/>
+                            </div>
+                        </div>
+
+                        <div className="spinner-layer spinner-red">
+                            <div className="circle-clipper left">
+                                <div className="circle"/>
+                            </div>
+                            <div className="gap-patch">
+                                <div className="circle"/>
+                            </div>
+                            <div className="circle-clipper right">
+                                <div className="circle"/>
+                            </div>
+                        </div>
+
+                        <div className="spinner-layer spinner-yellow">
+                            <div className="circle-clipper left">
+                                <div className="circle"/>
+                            </div>
+                            <div className="gap-patch">
+                                <div className="circle"/>
+                            </div>
+                            <div className="circle-clipper right">
+                                <div className="circle"/>
+                            </div>
+                        </div>
+
+                        <div className="spinner-layer spinner-green">
+                            <div className="circle-clipper left">
+                                <div className="circle"/>
+                            </div>
+                            <div className="gap-patch">
+                                <div className="circle"/>
+                            </div>
+                            <div className="circle-clipper right">
+                                <div className="circle"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button ref={inputRef} style={{display: 'block'}} id={`submit${borrow.item.id}`} onClick={(e) => {
+                    handleClick(e)
                 }} className="btn pink lighten-2 z-depth-0">Cleared
                 </button>
             </div>

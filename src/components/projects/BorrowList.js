@@ -11,7 +11,7 @@ const BorrowList = ({borrow}) => {
                 <div className="project-list section">
                     {borrow && borrow.map(item => {
                         return (
-                            <BorrowSummary item={item}/>
+                            <BorrowSummary item={item} key={item.id}/>
                         );
                     })}
                 </div>

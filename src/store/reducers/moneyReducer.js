@@ -11,15 +11,15 @@ const moneyReducer = (state = initState, action) => {
             window.alert("borrow balance cleared");
             return state;
 
+        case 'OWE_OTHERS':
+            console.log('balance ', action.details);
+            window.alert("balance " + action.details);
+            return state;
+
         case 'REPAID_ERROR':
             window.location = '/';
             console.log('borrow clearing error', action.error);
             window.alert("ERROR: ", action.error);
-            return state;
-
-        case 'UPDATE':
-            console.log('updated');
-            window.alert("Updated owe Jeff");
             return state;
 
         case 'BORROW_SUCCESS':

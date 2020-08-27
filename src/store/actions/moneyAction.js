@@ -273,6 +273,9 @@ export const clearedDebt = (details) => {
                             firestore.collection('otherDebt').where("buyKey", "==", details.buyKey).get().then(function (query) {
                                 query.forEach(function (doc) {
                                     doc.ref.delete().then(() => console.log("deleted respective debt"));
+                                }).then(() => {
+                                    const details = "owe Jeff";
+                                    dispatch({type: 'OWE_OTHERS', details});
                                 })
                             })
                         });
@@ -303,6 +306,9 @@ export const clearedDebt = (details) => {
                                 doc.ref.delete().then(() => console.log("deleted respective debt"));
                             })
                         })
+                    }).then(() => {
+                        const details = "cleared";
+                        dispatch({type: 'OWE_OTHERS', details});
                     });
                 } else {
                     dispatch({type: 'CLEAR_ERROR'});
@@ -334,35 +340,48 @@ export const updateBankBalance = (details) => {
                             const final = balance - debt;
 
                             if (final >= 0) {
-                                mydoc.ref.delete().then(() => console.log("deleted"));
-                                doc.ref.update({balance: final}).then(() => console.log("current changed"));
+                                mydoc.ref.delete().then(() => console.log("deleted")).then(() => {
+                                    doc.ref.update({balance: final}).then(() => console.log("current changed"))
+                                        .then(() => {
+                                            firestore.collection('userLogs').doc(user.uid).collection('logs').add({
+                                                event: 'all debt paid off',
+                                                amount: parseInt(debt),
+                                                oweKey: key,
+                                                submittedBy: profile.firstName + ' ' + profile.lastName,
+                                                submittedOn: firestore.FieldValue.serverTimestamp()
+                                            });
 
-                                firestore.collection('userLogs').doc(user.uid).collection('logs').add({
-                                    event: 'all debt paid off',
-                                    amount: parseInt(debt),
-                                    oweKey: key,
-                                    submittedBy: profile.firstName + ' ' + profile.lastName,
-                                    submittedOn: firestore.FieldValue.serverTimestamp()
+                                        }).then(() => {
+                                        const details = "cleared";
+                                        dispatch({type: 'OWE_OTHERS', details});
+                                        window.location = '/';
+                                    });
                                 });
 
                             } else {
                                 const myBalance = final * -1;
                                 mydoc.ref.update({balance: myBalance}).then(() => console.log("complete "));
-                                doc.ref.update({balance: 0}).then(() => console.log("current now 0"));
-
-                                firestore.collection('userLogs').doc(user.uid).collection('logs').add({
-                                    event: 'some debt paid off',
-                                    amount: parseInt(debt),
-                                    oweKey: key,
-                                    submittedBy: profile.firstName + ' ' + profile.lastName,
-                                    submittedOn: firestore.FieldValue.serverTimestamp()
+                                doc.ref.update({balance: 0}).then(() => console.log("current now 0")).then(() => {
+                                    firestore.collection('userLogs').doc(user.uid).collection('logs').add({
+                                        event: 'some debt paid off',
+                                        amount: parseInt(debt),
+                                        oweKey: key,
+                                        submittedBy: profile.firstName + ' ' + profile.lastName,
+                                        submittedOn: firestore.FieldValue.serverTimestamp()
+                                    });
+                                }).then(() => {
+                                    const details = "owe jeff";
+                                    dispatch({type: 'OWE_OTHERS', details});
+                                    window.location = '/';
                                 });
                             }
 
                         })
-                    }).then(() => {
-                        dispatch({type: 'UPDATE'});
                     })
+                } else {
+                    const details = "Insufficient funds";
+                    dispatch({type: 'OWE_OTHERS', details});
+                    window.location = '/';
                 }
             })
         })
@@ -446,7 +465,7 @@ export const updateBorrowCleared = (details) => {
         const key = makeid(28);
 
 
-        firestore.collection('borrow').where("borrowKey", "==", details.borrowKey).get().then((query) => {
+        firestore.collection('borrow').where("oweKey", "==", details.oweKey).get().then((query) => {
             query.forEach(function (doc) {
                 if (doc.exists) {
                     firestore.collection('current').doc(user.uid).get().then((doc) => {
