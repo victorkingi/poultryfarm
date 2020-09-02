@@ -42,8 +42,13 @@ const authReducer = (state = initState, action) => {
                 admin: false
             }
 
-        case 'SIGNOUT_ERROR':
+        case 'SIGN_OUT_ERROR':
             console.log('signout error');
+            return state;
+
+        case 'SIGN_OUT_SUCCESS':
+            console.log('signed out');
+            window.location = '/signin';
             return state;
 
         case 'SIGNUP_SUCCESS':
