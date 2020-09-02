@@ -34,8 +34,8 @@ const SickDeadDetails = (props) => {
                         <div className="card z-depth-0">
                             <div className="card-content">
                                 <span className="card-title">{ds.section} Chicken</span>
-                                <p>{ds.chickenNo} chickens was sick because of {ds.reason} and we
-                                    gave it {ds.treatment}</p>
+                                <p>{ds.chickenNo} chickens was sick because
+                                    of {ds.reason}.<br/>Treatment: {ds.treatment}</p>
                                 <img alt="chickensick" className="img" src={ds.photoURL}/>
                             </div>
                             <div className="card-action grey lighten-4 grey-text">

@@ -11,14 +11,7 @@ const buyReducer = (state = initState, action) => {
             console.log('bags reduced');
             return state;
         case 'INPUT_BUYING_ERROR':
-            window.location = '/';
-            console.log('buying data error', action.err);
-            window.alert('ERROR: ' + action.err);
-            return state;
-        case 'BUYS_DOC_EXISTS':
-            window.location = '/';
-            console.log('doc exists');
-            window.alert('ERROR');
+            console.log(action.error);
             return state;
         default:
             return state;

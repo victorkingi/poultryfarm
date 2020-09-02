@@ -11,8 +11,7 @@ function leapYear(year) {
     return ((year % 4 === 0) && (year % 100 !== 0)) || (year % 400 === 0);
 }
 
-
-export const inputBuys = (buys) => {
+export const inputPurchase = (buys) => {
     return (dispatch, getState, {getFirebase, getFirestore}) => {
         //make async call to database
         const firestore = getFirestore();
@@ -20,299 +19,178 @@ export const inputBuys = (buys) => {
         const firebase = getFirebase();
         const user = firebase.auth().currentUser;
         const date = new Date();
-        const month = date.getMonth() + 1;
+        const enteredMonth = parseInt(buys.month);
+        const newMonth = enteredMonth - 1;
         const section = buys.section;
         const key = makeid(28);
         const enteredDate = parseInt(buys.date);
         const year = date.getFullYear();
-        var prevDate = enteredDate - 1;
+        const isLeap = leapYear(year);
         const status = JSON.parse(buys.status);
-        var prevMonth = month;
+        const item = buys.itemName || buys.vaccineName || buys.drugName || buys.labourName;
+        const buyDocRef = firestore.collection("buys").doc('Month ' + enteredMonth + ' Date ' + enteredDate + ' ' + section + ': ' + item);
+        const currentDocRef = firestore.collection("current").doc(user.uid);
+        const bagsDocRef = firestore.collection("bags").doc("CurrentBags");
+        const userLogRef = firestore.collection("userLogs").doc(user.uid).collection("logs").doc();
+        const oweJeffDocRef = firestore.collection("oweJeff").doc('Month ' + enteredMonth);
+        const otherDebtDocRef = firestore.collection("otherDebt").doc('Month ' + enteredMonth + ' Date ' + enteredDate + ' ' + section + ': ' + item);
+        const total = parseInt(buys.objectNo) * parseInt(buys.objectPrice);
 
-        if (prevDate === 0) {
-            if (month === 2 || month === 4 || month === 6 || month === 8 || month === 9 || month === 11 || month === 1) {
-                prevDate = 31;
-                if (month === 1) {
-                    prevMonth = 12;
-                } else {
-                    prevMonth = month - 1;
-                }
-            } else if (month === 3) {
-                if (leapYear(new Date().getFullYear())) {
-                    prevDate = 29;
-                } else {
-                    prevDate = 28;
-                }
-                prevMonth = 2;
-            } else {
-                prevDate = 30;
-                if (month === 1) {
-                    prevMonth = 12;
-                } else {
-                    prevMonth = month - 1;
-                }
-            }
+        const dateChecks = (enteredMonth === 2 && (enteredDate > 28 || enteredDate < 1)) || (enteredMonth === 4
+            && (enteredDate > 30 || enteredDate < 1)) || (enteredMonth === 6 && (enteredDate > 30 || enteredDate < 1))
+            || (enteredMonth === 9 && (enteredDate > 30 || enteredDate < 1)) || (enteredMonth === 11
+                && (enteredDate > 30 || enteredDate < 1)) || (enteredMonth === 1 && (enteredDate > 31 || enteredDate < 1))
+            || (enteredMonth === 3 && (enteredDate > 31 || enteredDate < 1)) || (enteredMonth === 5
+                && (enteredDate > 31 || enteredDate < 1)) || (enteredMonth === 7 && (enteredDate > 31
+                || enteredDate < 1)) || (enteredMonth === 8 && (enteredDate > 31 || enteredDate < 1))
+            || (enteredMonth === 10 && (enteredDate > 31 || enteredDate < 1)) || (enteredMonth === 12
+                && (enteredDate > 31 || enteredDate < 1)) || (isLeap && enteredMonth === 2
+                && (enteredDate > 29 || enteredDate < 1));
+
+
+        if (dateChecks) {
+            const error = "ERROR: Impossible date entered";
+            dispatch({type: 'INPUT_BUYING_ERROR', error});
+
+            window.alert(error);
+            window.location = '/';
+            throw new Error("ERROR: Impossible date entered");
         }
 
-        const collect = () => {
-            firestore.collection('buys').doc('Month ' + month + ' Date '
-                + enteredDate + ' ' + section).get().then(function (doc) {
-                if (doc.exists) {
-                    dispatch({type: 'BUYS_DOC_EXISTS'});
-                } else {
-                    const total = parseInt(buys.objectNo) * parseInt(buys.objectPrice);
+        return firestore.runTransaction(function (transaction) {
 
-                    if (user.uid && status) {
+            return transaction.get(buyDocRef).then(function (buyDoc) {
+                return transaction.get(currentDocRef).then(function (currentDoc) {
+                    function commonTransactions() {
+                        if (section === "Feeds") {
+                            transaction.set(bagsDocRef, {
+                                number: parseInt(buys.objectNo),
+                                key: key,
+                                date: new Date(year, newMonth, enteredDate),
+                                submittedBy: profile.firstName + ' ' + profile.lastName,
+                                submittedOn: firestore.FieldValue.serverTimestamp()
+                            });
+                        }
 
-                        firestore.collection('current').doc(user.uid).get()
-                            .then(function (doc) {
-                                if (doc.exists) {
-                                    const data = doc.data();
-                                    const myTotal = parseInt(data.balance) - total;
-                                    const final = parseInt(myTotal);
-                                    const err = "Insufficient funds";
-
-                                    if (final < 0 && user.email !== "jeffkarue@gmail.com") {
-                                        dispatch({type: 'INPUT_BUYING_ERROR', err});
-                                    } else if (final < 0 && user.email === "jeffkarue@gmail.com") {
-
-                                        firestore.collection('current').where("fullName", "==", "Bank Account").get().then(function (query) {
-                                            query.forEach(function (doc) {
-                                                const id = doc.id;
-                                                const myBalance = parseInt(doc.data().balance);
-                                                const myFinal = myBalance - total;
-
-                                                if (myFinal < 0) {
-                                                    firestore.collection('oweJeff').doc("Month " + month).get().then((doc) => {
-                                                        if (doc.exists) {
-                                                            const balance = parseInt(doc.data().balance);
-                                                            const myInt = total + balance;
-
-                                                            firestore.collection('oweJeff').doc("Month " + month).update({
-                                                                balance: myInt,
-                                                                submittedBy: profile.firstName + ' ' + profile.lastName,
-                                                                submittedOn: firestore.FieldValue.serverTimestamp()
-                                                            }).then(() => {
-                                                                firestore.collection('buys').doc('Month ' + month + ' Date ' + enteredDate + ' ' + section).set({
-                                                                    ...buys,
-                                                                    date: new Date(year, date.getMonth(), enteredDate),
-                                                                    submittedBy: profile.firstName + ' ' + profile.lastName,
-                                                                    submittedOn: firestore.FieldValue.serverTimestamp()
-
-                                                                }).then(() => {
-                                                                    if (buys.section === "Feeds") {
-                                                                        firestore.collection('bags').doc('CurrentBags').set({
-                                                                            number: parseInt(buys.objectNo),
-                                                                            buyKey: key,
-                                                                            submittedBy: profile.firstName + ' ' + profile.lastName,
-                                                                            submittedOn: firestore.FieldValue.serverTimestamp()
-                                                                        })
-                                                                    }
-                                                                });
-                                                            }).then(() => {
-
-                                                                firestore.collection('userLogs').doc(user.uid).collection('logs').add({
-                                                                    event: 'purchase owe Jeff ' + buys.section,
-                                                                    spent: total,
-                                                                    buyKey: key,
-                                                                    submittedBy: profile.firstName + ' ' + profile.lastName,
-                                                                    submittedOn: firestore.FieldValue.serverTimestamp()
-                                                                });
-                                                            }).catch((err) => {
-                                                                dispatch({type: 'INPUT_BUYING_ERROR', err});
-                                                            });
-
-
-                                                        } else {
-
-                                                            firestore.collection('oweJeff').doc("Month " + month).set({
-                                                                oweKey: key,
-                                                                balance: total,
-                                                                submittedBy: profile.firstName + ' ' + profile.lastName,
-                                                                submittedOn: firestore.FieldValue.serverTimestamp()
-                                                            }).then(() => {
-
-                                                                firestore.collection('buys').doc('Month ' + month + ' Date ' + enteredDate + ' ' + section).set({
-                                                                    ...buys,
-                                                                    buyKey: key,
-                                                                    date: new Date(year, date.getMonth(), enteredDate),
-                                                                    submittedBy: profile.firstName + ' ' + profile.lastName,
-                                                                    submittedOn: firestore.FieldValue.serverTimestamp()
-
-                                                                }).catch((err) => {
-                                                                    dispatch({type: 'INPUT_BUYING_ERROR', err});
-                                                                });
-
-
-                                                            }).then(() => {
-
-
-                                                                firestore.collection('userLogs').doc(user.uid).collection('logs').add({
-                                                                    event: 'purchase owe Jeff ' + buys.section,
-                                                                    buyKey: key,
-                                                                    spent: total,
-                                                                    submittedBy: profile.firstName + ' ' + profile.lastName,
-                                                                    submittedOn: firestore.FieldValue.serverTimestamp()
-                                                                }).catch((err) => {
-                                                                    dispatch({type: 'INPUT_BUYING_ERROR', err});
-                                                                });
-
-
-                                                            }).then(() => {
-                                                                dispatch({type: 'INPUT_BUYING', buys});
-                                                                window.alert("Data submitted");
-                                                                window.location = '/';
-
-                                                            }).catch((err) => {
-                                                                dispatch({type: 'INPUT_BUYING_ERROR', err});
-                                                            });
-                                                        }
-                                                    }).catch((err) => {
-                                                        dispatch({type: 'INPUT_BUYING_ERROR', err});
-                                                    });
-                                                } else {
-                                                    firestore.collection('current').doc(id).set({
-                                                        balance: myFinal,
-                                                        fullName: "Bank Account",
-                                                        submittedBy: profile.firstName + ' ' + profile.lastName,
-                                                        submittedOn: firestore.FieldValue.serverTimestamp()
-
-                                                    }).then(() => {
-                                                        firestore.collection('buys').doc('Month ' + month + ' Date ' + enteredDate + ' ' + section).set({
-                                                            ...buys,
-                                                            buyKey: key,
-                                                            date: new Date(year, date.getMonth(), enteredDate),
-                                                            submittedBy: profile.firstName + ' ' + profile.lastName,
-                                                            submittedOn: firestore.FieldValue.serverTimestamp()
-
-                                                        });
-
-                                                    }).then(() => {
-                                                        firestore.collection('userLogs').doc(user.uid).collection('logs').add({
-                                                            event: 'purchase used bank balance ' + buys.section,
-                                                            spent: total,
-                                                            buyKey: key,
-                                                            submittedBy: profile.firstName + ' ' + profile.lastName,
-                                                            submittedOn: firestore.FieldValue.serverTimestamp()
-                                                        });
-                                                    })
-                                                }
-                                            })
-                                        }).catch((err) => {
-                                            dispatch({type: 'INPUT_BUYING_ERROR', err});
-                                        });
-                                    } else {
-                                        firestore.collection('buys').doc('Month ' + month + ' Date ' + enteredDate + ' ' + section).set({
-                                            ...buys,
-                                            buyKey: key,
-                                            date: new Date(year, date.getMonth(), enteredDate),
-                                            submittedBy: profile.firstName + ' ' + profile.lastName,
-                                            submittedOn: firestore.FieldValue.serverTimestamp()
-
-                                        }).then(() => {
-                                            firestore.collection('current').doc(user.uid).set({
-                                                balance: final,
-                                                fullName: profile.firstName + ' ' + profile.lastName,
-                                                submittedBy: profile.firstName + ' ' + profile.lastName,
-                                                submittedOn: firestore.FieldValue.serverTimestamp()
-
-                                            });
-                                        }).then(() => {
-                                            firestore.collection('userLogs').doc(user.uid).collection('logs').add({
-                                                event: 'purchase ' + buys.section,
-                                                spent: total,
-                                                buyKey: key,
-                                                submittedBy: profile.firstName + ' ' + profile.lastName,
-                                                submittedOn: firestore.FieldValue.serverTimestamp()
-                                            });
-                                        }).then(() => {
-                                            if (buys.section === "Feeds") {
-                                                firestore.collection('bags').doc('CurrentBags').set({
-                                                    number: parseInt(buys.objectNo),
-                                                    buyKey: key,
-                                                    submittedBy: profile.firstName + ' ' + profile.lastName,
-                                                    submittedOn: firestore.FieldValue.serverTimestamp()
-                                                });
-                                            }
-
-                                        }).then(() => {
-                                            dispatch({type: 'INPUT_BUYING', buys});
-                                            window.alert("Data submitted");
-                                            window.location = '/';
-
-
-                                        }).catch((err) => {
-                                            dispatch({type: 'INPUT_BUYING_ERROR', err});
-                                        });
-                                    }
-                                } else {
-                                    const err = "No account found"
-                                    dispatch({type: 'INPUT_BUYING_ERROR', err});
-                                }
-                            }).catch((err) => {
-                            dispatch({type: 'INPUT_BUYING_ERROR', err});
-                        });
-                    } else if (user.uid && !status) {
-                        firestore.collection('otherDebt').add({
-                            debter: buys.section,
-                            balance: total,
-                            buyKey: key,
-                            date: new Date(year, date.getMonth(), enteredDate),
+                        transaction.set(buyDocRef, {
+                            ...buys,
+                            key: key,
+                            date: new Date(year, newMonth, enteredDate),
                             submittedBy: profile.firstName + ' ' + profile.lastName,
                             submittedOn: firestore.FieldValue.serverTimestamp()
-                        }).then(() => {
-                            firestore.collection('buys').doc('Month ' + month + ' Date ' + enteredDate + ' ' + section).set({
-                                ...buys,
-                                buyKey: key,
-                                date: new Date(year, date.getMonth(), enteredDate),
-                                submittedBy: profile.firstName + ' ' + profile.lastName,
-                                submittedOn: firestore.FieldValue.serverTimestamp()
-
-                            }).then(() => {
-                                if (buys.section === "Feeds") {
-                                    firestore.collection('bags').doc('CurrentBags').set({
-                                        number: parseInt(buys.objectNo),
-                                        buyKey: key,
-                                        submittedBy: profile.firstName + ' ' + profile.lastName,
-                                        submittedOn: firestore.FieldValue.serverTimestamp()
-                                    })
-                                }
-                            });
-                        }).then(() => {
-
-                            firestore.collection('userLogs').doc(user.uid).collection('logs').add({
-                                event: 'purchase owe ' + buys.section,
-                                spent: total,
-                                buyKey: key,
-                                submittedBy: profile.firstName + ' ' + profile.lastName,
-                                submittedOn: firestore.FieldValue.serverTimestamp()
-                            });
-                        }).then(() => {
-                            dispatch({type: 'INPUT_BUYING', buys});
-                            window.alert("Data submitted");
-                            window.location = '/';
-
-                        }).catch((err) => {
-                            dispatch({type: 'INPUT_BUYING_ERROR', err});
                         });
                     }
-                }
-            }).catch((err) => {
 
-                if (err) {
-                    dispatch({type: 'INPUT_BUYING_ERROR', err});
-                } else {
-                    dispatch({type: 'INPUT_BUYING', buys});
-                    window.alert("Data submitted");
-                    window.location = '/';
+                    if (buyDoc.exists) {
+                        return Promise.reject("ERROR: Data already exists");
+                    } else {
+                        if (user.uid && status) {
+                            if (currentDoc.exists) {
+                                const currentData = currentDoc.data();
+                                const currentTotal = parseInt(currentData.balance) - total;
+                                const final = parseInt(currentTotal);
 
-                }
+                                if (final < 0 && user.email !== "jeffkarue@gmail.com") {
+                                    return Promise.reject("ERROR: Insufficient funds");
+                                } else if (final < 0 && user.email === "jeffkarue@gmail.com") {
+                                    transaction.update(currentDocRef, {
+                                        balance: 0,
+                                        submittedBy: profile.firstName + ' ' + profile.lastName,
+                                        submittedOn: firestore.FieldValue.serverTimestamp()
+                                    });
 
-            });
-        }
-        collect();
+                                    const newFinal = final * -1;
+
+                                    if (oweJeffDocRef.exists) {
+
+                                        transaction.update(oweJeffDocRef, {
+                                            balance: firestore.FieldValue.increment(newFinal),
+                                            submittedBy: profile.firstName + ' ' + profile.lastName,
+                                            submittedOn: firestore.FieldValue.serverTimestamp()
+                                        });
+                                    } else {
+
+                                        transaction.set(oweJeffDocRef, {
+                                            key: key,
+                                            balance: newFinal,
+                                            submittedBy: profile.firstName + ' ' + profile.lastName,
+                                            submittedOn: firestore.FieldValue.serverTimestamp()
+                                        });
+                                    }
+
+                                    transaction.set(userLogRef, {
+                                        event: 'purchase owe Jeff ' + buys.section,
+                                        spent: newFinal,
+                                        key: key,
+                                        submittedBy: profile.firstName + ' ' + profile.lastName,
+                                        submittedOn: firestore.FieldValue.serverTimestamp()
+                                    });
+
+                                    commonTransactions();
+
+                                } else if (final === 0 || final > 0) {
+                                    transaction.set(currentDocRef, {
+                                        balance: final,
+                                        fullName: profile.firstName + ' ' + profile.lastName,
+                                        submittedBy: profile.firstName + ' ' + profile.lastName,
+                                        submittedOn: firestore.FieldValue.serverTimestamp()
+                                    });
+
+                                    transaction.set(userLogRef, {
+                                        event: 'purchase ' + buys.section,
+                                        spent: total,
+                                        key: key,
+                                        submittedBy: profile.firstName + ' ' + profile.lastName,
+                                        submittedOn: firestore.FieldValue.serverTimestamp()
+                                    });
+
+                                    commonTransactions();
+
+                                }
+                            } else {
+                                throw new Error("Doc doesn't exist");
+                            }
+                        } else if (user.uid && !status) {
+                            transaction.set(otherDebtDocRef, {
+                                debtor: buys.section,
+                                balance: total,
+                                key: key,
+                                date: new Date(year, newMonth, enteredDate),
+                                submittedBy: profile.firstName + ' ' + profile.lastName,
+                                submittedOn: firestore.FieldValue.serverTimestamp()
+                            });
+
+                            commonTransactions();
+
+                            transaction.set(userLogRef, {
+                                event: 'purchase owe ' + buys.section,
+                                spent: total,
+                                key: key,
+                                submittedBy: profile.firstName + ' ' + profile.lastName,
+                                submittedOn: firestore.FieldValue.serverTimestamp()
+                            });
+                        } else {
+                            return Promise.reject("ERROR: Contact main admin for help");
+                        }
+                    }
+                })
+            })
+
+        }).then(() => {
+            dispatch({type: 'INPUT_BUYING', buys});
+            window.alert("Data Submitted");
+            window.location = '/';
+
+        }).catch(function (err) {
+            const error = err.message || err;
+
+            dispatch({type: 'INPUT_BUYING_ERROR', error});
+            window.alert(error);
+            window.location = '/';
+
+        });
     }
-};
+}
 
 export const updateBags = (state) => {
     return (dispatch, getState, {getFirestore}) => {
@@ -329,7 +207,7 @@ export const updateBags = (state) => {
         bagRef.update({
             number: myBags,
             submittedBy: profile.firstName + ' ' + profile.lastName,
-            submittedOn: state.submittedOn
+            submittedOn: firestore.FieldValue.serverTimestamp()
         }).then(() => dispatch({type: 'BAGS_CHANGE'}))
             .catch((err) => console.log(err.message));
     }

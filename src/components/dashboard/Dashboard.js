@@ -29,9 +29,9 @@ class Dashboard extends Component {
         }
 
 
-        var checkHour = new Date();
+        let checkHour = new Date();
         checkHour = checkHour.getHours();
-        var period = "";
+        let period = "";
 
         function time() {
             if ((checkHour >= 0) && (checkHour <= 12)) {
@@ -47,27 +47,25 @@ class Dashboard extends Component {
             time();
             if (balance && bags && trays && debt && notifications && news) {
 
-                var num = bags['0'].number;
+                let num = bags['0'].number;
                 const time = bags ? bags['0'].date.toDate() : "No date given";
                 const currentDay = parseInt(new Date().getDate());
                 const previous = parseInt(time.getDate());
-                const currentMonth = (new Date().getMonth()) + 1;
-                const prevMonth = time.getMonth() + 1;
-                var bagNo = undefined;
-                const finalMonth = parseInt(currentMonth) - parseInt(prevMonth);
+                let bagNo = undefined;
+                const submit = bags['0'].submittedOn ? bags['0'].submittedOn.toDate() : null;
+                const submitDate = submit.getDate();
 
-                if (previous < currentDay && finalMonth === 0) {
-                    const final = currentDay - previous;
-                    bagNo = num - final;
+                if (previous !== currentDay && submitDate !== currentDay) {
+                    bagNo = num--;
 
                     if (parseInt(bagNo) < 1) {
                         bagNo = 0;
                     }
 
                     const state = {
-                        submittedOn: bags['0'].submittedOn,
                         bagNo: bagNo
                     }
+
 
                     this.props.updateBags(state)
                 }

@@ -16,6 +16,7 @@ class InputDeadSick extends Component {
         const selectBox = document.getElementById("section");
         const selectedValue = selectBox.options[selectBox.selectedIndex].value;
         const date = document.getElementById('date').value;
+        const month = document.getElementById('month').value;
         const mysec = document.getElementById('mySection');
         const reason = document.getElementById('reason');
         const total = document.getElementById('total');
@@ -23,18 +24,17 @@ class InputDeadSick extends Component {
         const submit = document.getElementById('submit-btn');
         const upload = document.getElementById('upload');
         const chickenNo = document.getElementById('chickenNo').value;
+        const checks = parseInt(date) > 0 && parseInt(date) < 32 && date !== "" && parseInt(month) > 0 && parseInt(month) < 13;
 
 
-        if (parseInt(date) > 0 && parseInt(date) < 32 && date !== "") {
+        if (checks) {
             mysec.style.display = 'block';
-            document.getElementById("error-text").innerHTML = "";
         }
         if (parseInt(date) <= 0 || parseInt(date) >= 32 || date === "") {
             mysec.style.display = 'none';
             reason.style.display = 'none';
             total.style.display = 'none';
             sick.style.display = 'none';
-            document.getElementById("error-text").innerHTML = "ERROR: date ranges from 1 to 31";
         }
 
         if (selectedValue === "Dead" || selectedValue === "Sick") {
@@ -66,7 +66,7 @@ class InputDeadSick extends Component {
             }
         }
 
-        if (e.target.id === "date" || e.target.id === "chickenNo") {
+        if (e.target.id === "date" || e.target.id === "chickenNo" || e.target.id === "month") {
             if (isNaN(parseInt(e.target.value))) {
                 document.getElementById("error-text").innerHTML = "Error! Input needs to be a number";
             } else {
@@ -142,6 +142,11 @@ class InputDeadSick extends Component {
                             <label htmlFor="date">Select Date (range: 1 - 31)</label>
                             <input type="number" id="date" onChange={this.handleChange} required/>
                         </div>
+                        <br/>
+                        <div className="input-field">
+                            <label htmlFor="month">Select Month (range: 1 - 12)</label>
+                            <input type="number" id="month" onChange={this.handleChange} required/>
+                        </div>
 
                         <div style={{display: 'none'}} id="mySection">
                             <select id="section" onChange={this.handleChange} className="white" defaultValue="0">
@@ -186,7 +191,7 @@ class InputDeadSick extends Component {
                         </div>
 
                         <div style={{display: 'none'}} id="loading">
-                            <div className="preloader-wrapper big active">
+                            <div className="preloader-wrapper small active">
                                 <div className="spinner-layer spinner-blue">
                                     <div className="circle-clipper left">
                                         <div className="circle"/>

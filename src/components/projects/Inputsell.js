@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import {connect} from 'react-redux';
-import {inputSales} from "../../store/actions/salesAction";
+import {inputSell} from "../../store/actions/salesAction";
 import M from 'materialize-css';
 import {Redirect} from "react-router-dom";
 
@@ -16,17 +16,19 @@ class Inputsell extends Component {
         const status = document.getElementById('status');
         const statusValue = status.options[status.selectedIndex].value;
         const date = document.getElementById('date').value;
+        const month = document.getElementById('month').value;
         const mysec = document.getElementById('mySection');
         const sales = document.getElementById('sales');
         const trayPrice = document.getElementById('trayPrice').value;
+        const checks = parseInt(date) > 0 && parseInt(date) < 32 && date !== "" && parseInt(month) > 0 && parseInt(month) < 13;
 
-        if (parseInt(date) > 0 && parseInt(date) < 32 && date !== "") {
+
+        if (checks) {
             mysec.style.display = 'block';
-            document.getElementById("error-text").innerHTML = "";
         } else {
             mysec.style.display = 'none';
             sales.style.display = 'none';
-            document.getElementById("error-text").innerHTML = "ERROR: date ranges from 1 to 31";
+
         }
 
         if (selectedValue === "Cakes" || selectedValue === "Simbi" || selectedValue === "Thika Farmers") {
@@ -79,7 +81,7 @@ class Inputsell extends Component {
                 [e.target.id]: JSON.parse(e.target.value)
             });
         } else if (e.target.id === "date" || e.target.id === "trayNo" || e.target.id === "trayPrice"
-            || e.target.id === "chickenNo" || e.target.id === "chickenPrice") {
+            || e.target.id === "chickenNo" || e.target.id === "chickenPrice" || e.target.id === "month") {
             if (isNaN(parseInt(e.target.value))) {
                 document.getElementById("error-text").innerHTML = "Error! Input needs to be a number";
             } else {
@@ -111,7 +113,7 @@ class Inputsell extends Component {
             if (sales.value === "") {
                 document.getElementById("error-text").innerHTML = "Please input a buyer name"
             } else {
-                this.props.inputSales(this.state);
+                this.props.inputSell(this.state);
             }
         }
         if (selectedValue !== "Other" && selectedValue !== "Old Chickens") {
@@ -119,7 +121,7 @@ class Inputsell extends Component {
             if (sales.value !== "") {
                 document.getElementById("error-text").innerHTML = "Error! Try again"
             } else {
-                this.props.inputSales(this.state);
+                this.props.inputSell(this.state);
             }
         }
 
@@ -146,6 +148,11 @@ class Inputsell extends Component {
                     <div className="input-field">
                         <label htmlFor="date">Select Date (range: 1 - 31)</label>
                         <input type="number" id="date" onChange={this.handleChange} required/>
+                    </div>
+                    <br/>
+                    <div className="input-field">
+                        <label htmlFor="month">Select Month (range: 1 - 12)</label>
+                        <input type="number" id="month" onChange={this.handleChange} required/>
                     </div>
 
                     <div style={{display: 'none'}} id="mySection">
@@ -203,7 +210,7 @@ class Inputsell extends Component {
                     </div>
 
                     <div style={{display: 'none'}} id="loading">
-                        <div className="preloader-wrapper big active">
+                        <div className="preloader-wrapper small active">
                             <div className="spinner-layer spinner-blue">
                                 <div className="circle-clipper left">
                                     <div className="circle"/>
@@ -274,7 +281,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        inputSales: (sale) => dispatch(inputSales(sale))
+        inputSell: (sale) => dispatch(inputSell(sale))
     }
 }
 

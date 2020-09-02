@@ -10,9 +10,9 @@ const LatePaymentList = ({late}) => {
                 <div className="project-list section">
                     {late && late.map(item => {
                         return (
-                            <a key={item.id}>
+                            <li key={item.id}>
                                 <LatePaymentSummary item={item}/>
-                            </a>
+                            </li>
                         )
                     })}
                 </div>

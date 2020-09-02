@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import {connect} from 'react-redux';
-import {updateBorrow} from "../../store/actions/moneyAction";
+import {borrowSomeMoney} from "../../store/actions/moneyAction";
 import M from 'materialize-css';
 import {Redirect} from "react-router-dom";
 
@@ -50,7 +50,7 @@ class InputBorrow extends Component {
         submit.style.display = 'none';
         load.style.display = 'block';
 
-        this.props.updateBorrow(this.state);
+        //   this.props.borrowSomeMoney(this.state);
 
     }
 
@@ -92,7 +92,7 @@ class InputBorrow extends Component {
                     </div>
 
                     <div style={{display: 'none'}} id="loading">
-                        <div className="preloader-wrapper big active">
+                        <div className="preloader-wrapper small active">
                             <div className="spinner-layer spinner-blue">
                                 <div className="circle-clipper left">
                                     <div className="circle"/>
@@ -163,7 +163,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        updateBorrow: (details) => dispatch(updateBorrow(details))
+        borrowSomeMoney: (details) => dispatch(borrowSomeMoney(details))
     }
 }
 

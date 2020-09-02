@@ -1,6 +1,6 @@
 import React, {useRef} from "react";
 import moment from "moment";
-import {updateBorrowCleared} from "../../store/actions/moneyAction";
+import {borrowerReturnsFunds} from "../../store/actions/moneyAction";
 import {connect} from "react-redux";
 
 const BorrowSummary = (borrow) => {
@@ -11,7 +11,7 @@ const BorrowSummary = (borrow) => {
         const load = document.getElementById(`load${borrow.item.id}`);
         load.style.display = 'block';
         inputRef.current.attributes['2'].nodeValue = "display: none;";
-        borrow.updateBorrowCleared(borrow.item);
+        borrow.borrowerReturnsFunds(borrow.item);
     }
 
     if (borrow.item.submittedOn) {
@@ -100,7 +100,7 @@ const BorrowSummary = (borrow) => {
 const mapDispatchToProps = (dispatch) => {
 
     return {
-        updateBorrowCleared: (details) => dispatch(updateBorrowCleared(details))
+        borrowerReturnsFunds: (details) => dispatch(borrowerReturnsFunds(details))
     }
 }
 

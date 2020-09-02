@@ -1,7 +1,7 @@
 import React, {useRef} from "react";
 import moment from "moment";
 import {connect} from "react-redux";
-import {latePays} from "../../store/actions/moneyAction";
+import {hasPaidLate} from "../../store/actions/moneyAction";
 
 const LatePaymentSummary = (late) => {
     const inputRef = useRef();
@@ -11,7 +11,7 @@ const LatePaymentSummary = (late) => {
         const load = document.getElementById(`load${late.item.id}`);
         load.style.display = 'block';
         inputRef.current.attributes['3'].nodeValue = "display: none;";
-        late.latePays(late.item);
+        late.hasPaidLate(late.item);
     }
 
     if (late) {
@@ -104,7 +104,7 @@ const LatePaymentSummary = (late) => {
 const mapDispatchToProps = (dispatch) => {
 
     return {
-        latePays: (details) => dispatch(latePays(details))
+        hasPaidLate: (details) => dispatch(hasPaidLate(details))
     }
 }
 

@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import {connect} from 'react-redux';
-import {inputMoney} from "../../store/actions/moneyAction";
+import {sendMoney} from "../../store/actions/moneyAction";
 import M from 'materialize-css';
 import {Redirect} from "react-router-dom";
 import * as firebase from "firebase";
@@ -48,7 +48,7 @@ class Inputmoney extends Component {
             document.getElementById("error-text").innerHTML = "Error with selection";
         } else {
             document.getElementById("error-text").innerHTML = "";
-            this.props.inputMoney(this.state);
+            this.props.sendMoney(this.state);
         }
 
     }
@@ -88,7 +88,7 @@ class Inputmoney extends Component {
                     </div>
 
                     <div style={{display: 'none'}} id="loading">
-                        <div className="preloader-wrapper big active">
+                        <div className="preloader-wrapper small active">
                             <div className="spinner-layer spinner-blue">
                                 <div className="circle-clipper left">
                                     <div className="circle"/>
@@ -164,7 +164,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        inputMoney: (money) => dispatch(inputMoney(money)),
+        sendMoney: (money) => dispatch(sendMoney(money)),
     }
 }
 

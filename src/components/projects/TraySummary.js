@@ -8,7 +8,7 @@ const TraySummary = (tray) => {
 
         var link = <p>{tray.item.number} Trays in Store and {tray.item.remainder} eggs</p>;
 
-        if (parseInt(tray.item.number) === 1 && parseInt(tray.item.remainder) > 1 || parseInt(tray.item.remainder) === 0) {
+        if ((parseInt(tray.item.number) === 1 && parseInt(tray.item.remainder) > 1) || parseInt(tray.item.remainder) === 0) {
             link = <p>{tray.item.number} Tray in Store and {tray.item.remainder} eggs</p>;
         }
         if (parseInt(tray.item.number) > 1 && parseInt(tray.item.remainder) === 1) {
@@ -35,7 +35,7 @@ const TraySummary = (tray) => {
                 <div className="col s12 m7">
                     <div className="card">
                         <div className="card-image">
-                            <img alt="picture" src={sample}/>
+                            <img alt="forest" src={sample}/>
                             <span className="card-title">Trays In Store</span>
                         </div>
                         <div className="card-content">

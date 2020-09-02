@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import {connect} from 'react-redux';
-import {inputBuys} from "../../store/actions/buyAction";
+import {inputPurchase} from "../../store/actions/buyAction";
 import M from 'materialize-css';
 import {Redirect} from "react-router-dom";
 
@@ -15,8 +15,10 @@ class Inputbuy extends Component {
         const selectBox = document.getElementById("section");
         const selectedValue = selectBox.options[selectBox.selectedIndex].value;
         const date = document.getElementById('date').value;
+        const month = document.getElementById('month').value;
+        const checks = parseInt(date) > 0 && parseInt(date) < 32 && date !== "" && parseInt(month) > 0 && parseInt(month) < 13;
 
-        if (parseInt(date) > 0 && parseInt(date) < 32 && date !== "") {
+        if (checks) {
             const section = document.getElementById('mySection');
             section.style.display = 'block';
         } else {
@@ -71,7 +73,7 @@ class Inputbuy extends Component {
             this.setState({
                 [e.target.id]: JSON.parse(e.target.value)
             });
-        } else if (e.target.id === "date" || e.target.id === "objectNo" || e.target.id === "objectPrice") {
+        } else if (e.target.id === "date" || e.target.id === "objectNo" || e.target.id === "objectPrice" || e.target.id === "month") {
 
             if (isNaN(parseInt(e.target.value))) {
                 document.getElementById("error-text").innerHTML = "Error! Input needs to be a number";
@@ -109,7 +111,7 @@ class Inputbuy extends Component {
             if (other.value === "" || drug.value !== "" || vaccine.value !== "" || status.value === "") {
                 document.getElementById("error-text").innerHTML = "Error! Try again"
             } else {
-                this.props.inputBuys(this.state);
+                this.props.inputPurchase(this.state);
             }
         }
         if (selectedValue === "Drug") {
@@ -117,7 +119,7 @@ class Inputbuy extends Component {
             if (drug.value === "" || other.value !== "" || vaccine.value !== "" || status.value === "") {
                 document.getElementById("error-text").innerHTML = "Error! Try again"
             } else {
-                this.props.inputBuys(this.state);
+                this.props.inputPurchase(this.state);
             }
         }
         if (selectedValue === "Vaccines") {
@@ -125,15 +127,15 @@ class Inputbuy extends Component {
             if (vaccine.value === "" || other.value !== "" || drug.value !== "" || status.value === "") {
                 document.getElementById("error-text").innerHTML = "Error! Try again"
             } else {
-                this.props.inputBuys(this.state);
+                this.props.inputPurchase(this.state);
             }
         }
         if (selectedValue !== "Vaccine" && selectedValue !== "Drug" && selectedValue !== "Other" && selectedValue !== "Feeds") {
 
-            if (other.value !== "" || vaccine.value !== "" || drug.value !== "" || status.value === "") {
+            if (other.value === "" || vaccine.value !== "" || drug.value !== "" || status.value === "") {
                 document.getElementById("error-text").innerHTML = "Error! Try again"
             } else {
-                this.props.inputBuys(this.state);
+                this.props.inputPurchase(this.state);
             }
         }
 
@@ -144,7 +146,6 @@ class Inputbuy extends Component {
     }
 
     render() {
-
         const { auth } = this.props;
 
         if(!auth.uid) {
@@ -161,6 +162,11 @@ class Inputbuy extends Component {
                         <div className="input-field">
                             <label htmlFor="date">Select Date (range: 1 - 31)</label>
                             <input type="number" id="date" onChange={this.handleChange} required/>
+                        </div>
+                        <br/>
+                        <div className="input-field">
+                            <label htmlFor="month">Select Month (range: 1 - 12)</label>
+                            <input type="number" id="month" onChange={this.handleChange} required/>
                         </div>
 
                         <div style={{display: 'none'}} id="mySection">
@@ -227,7 +233,7 @@ class Inputbuy extends Component {
                             </select>
 
                             <div style={{display: 'none'}} id="loading">
-                                <div className="preloader-wrapper big active">
+                                <div className="preloader-wrapper small active">
                                     <div className="spinner-layer spinner-blue">
                                         <div className="circle-clipper left">
                                             <div className="circle"/>
@@ -300,7 +306,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        inputBuys: (buy) => dispatch(inputBuys(buy))
+        inputPurchase: (buy) => dispatch(inputPurchase(buy))
     }
 }
 

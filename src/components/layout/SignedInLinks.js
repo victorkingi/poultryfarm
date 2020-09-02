@@ -20,7 +20,7 @@ const SignedInLinks = (props) => {
                     </li>
 
                     <li>
-                        <a className="subheader">Inputs</a>
+                        <span className="subheader">Inputs</span>
                     </li>
 
                     <li><NavLink to='/sales'>Input Sales</NavLink></li>
@@ -34,7 +34,7 @@ const SignedInLinks = (props) => {
                     </li>
 
                     <li>
-                        <a className="subheader">Send</a>
+                        <span className="subheader">Send</span>
                     </li>
 
                     <li><NavLink to='/send'>Send money</NavLink></li>
@@ -44,7 +44,7 @@ const SignedInLinks = (props) => {
                     </li>
 
                     <li>
-                        <a className="subheader">Payments</a>
+                        <span className="subheader">Payments</span>
                     </li>
 
                     <li><NavLink to='/l'>Late Payments</NavLink></li>
@@ -56,7 +56,7 @@ const SignedInLinks = (props) => {
                     </li>
 
                     <li>
-                        <a className="subheader">Data</a>
+                        <span className="subheader">Data</span>
                     </li>
 
                     <li><NavLink to='/e'>Eggs collected</NavLink></li>
@@ -70,10 +70,10 @@ const SignedInLinks = (props) => {
                     </li>
 
                     <li>
-                        <a className="subheader">Exit</a>
+                        <span className="subheader">Exit</span>
                     </li>
 
-                    <li><a href='/' onClick={props.signOut}>Log Out</a></li>
+                    <li><NavLink to='/signin' onClick={props.signOut}>Log Out</NavLink></li>
                 </ul>
             </div>
         );
@@ -90,7 +90,7 @@ const SignedInLinks = (props) => {
                     </li>
 
                     <li>
-                        <a className="subheader">Inputs</a>
+                        <span className="subheader">Inputs</span>
                     </li>
 
                     <li><NavLink to='/sales'>Input Sales</NavLink></li>
@@ -102,7 +102,7 @@ const SignedInLinks = (props) => {
                     </li>
 
                     <li>
-                        <a className="subheader">Send</a>
+                        <span className="subheader">Send</span>
                     </li>
 
                     <li><NavLink to='/send'>Send money</NavLink></li>
@@ -112,7 +112,7 @@ const SignedInLinks = (props) => {
                     </li>
 
                     <li>
-                        <a className="subheader">Payments</a>
+                        <span className="subheader">Payments</span>
                     </li>
 
                     <li><NavLink to='/l'>Late Payments</NavLink></li>
@@ -122,10 +122,10 @@ const SignedInLinks = (props) => {
                     </li>
 
                     <li>
-                        <a className="subheader">Exit</a>
+                        <span className="subheader">Exit</span>
                     </li>
 
-                    <li><a href='/' onClick={props.signOut}>Log Out</a></li>
+                    <li><NavLink to='/signin' onClick={props.signOut}>Log Out</NavLink></li>
                 </ul>
             </div>
         );

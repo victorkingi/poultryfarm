@@ -2,65 +2,61 @@ function leapYear(year) {
     return ((year % 4 === 0) && (year % 100 !== 0)) || (year % 400 === 0);
 }
 
-
-export const inputEggs = (eggs) => {
+export const inputTray = (eggs) => {
     return (dispatch, getState, {getFirebase, getFirestore}) => {
-        //make async call to database
         const firestore = getFirestore();
         const profile = getState().firebase.profile;
         const firebase = getFirebase();
         const user = firebase.auth().currentUser;
-        const enteredDate = parseInt(eggs.date);
         const date = new Date();
+        const enteredMonth = parseInt(eggs.month);
+        const newMonth = enteredMonth - 1;
+        const enteredDate = parseInt(eggs.date);
         const year = date.getFullYear();
-        const month = date.getMonth() + 1;
-        var prevMonth = month;
-        var prevDate = enteredDate - 1;
+        const isLeap = leapYear(year);
+        const eggDocRef = firestore.collection("eggs").doc('Month ' + enteredMonth + ' Date ' + enteredDate);
+        const traysDocRef = firestore.collection("trays").doc("CurrentTrays");
+        const userLogRef = firestore.collection("userLogs").doc(user.uid).collection("logs").doc();
         const a1 = parseInt(eggs['A 1']);
         const a2 = parseInt(eggs['A 2']);
         const b1 = parseInt(eggs['B 1']);
         const b2 = parseInt(eggs['B 2']);
         const c1 = parseInt(eggs['C 1']);
         const c2 = parseInt(eggs['C 2']);
-        const mytotal = a1 + a2 + b1 + b2 + c1 + c2;
-        var total = parseInt(mytotal);
-        var trays = Math.floor(total / 30);
-        var remainder = total % 30;
+        const house = parseInt(eggs['house']);
+        const myTotal = a1 + a2 + b1 + b2 + c1 + c2 + house;
+        const total = parseInt(myTotal);
+
+        const dateCheck = (enteredMonth === 2 && (enteredDate > 28 || enteredDate < 1)) || (enteredMonth === 4
+            && (enteredDate > 30 || enteredDate < 1)) || (enteredMonth === 6 && (enteredDate > 30 || enteredDate < 1))
+            || (enteredMonth === 9 && (enteredDate > 30 || enteredDate < 1)) || (enteredMonth === 11
+                && (enteredDate > 30 || enteredDate < 1)) || (enteredMonth === 1 && (enteredDate > 31 || enteredDate < 1))
+            || (enteredMonth === 3 && (enteredDate > 31 || enteredDate < 1)) || (enteredMonth === 5
+                && (enteredDate > 31 || enteredDate < 1)) || (enteredMonth === 7 && (enteredDate > 31
+                || enteredDate < 1)) || (enteredMonth === 8 && (enteredDate > 31 || enteredDate < 1))
+            || (enteredMonth === 10 && (enteredDate > 31 || enteredDate < 1)) || (enteredMonth === 12
+                && (enteredDate > 31 || enteredDate < 1)) || (isLeap && enteredMonth === 2
+                && (enteredDate > 29 || enteredDate < 1));
 
 
-        if (prevDate === 0) {
-            if (month === 2 || month === 4 || month === 6 || month === 8 || month === 9 || month === 11 || month === 1) {
-                prevDate = 31;
-                if (month === 1) {
-                    prevMonth = 12;
-                } else {
-                    prevMonth = month - 1;
-                }
-            } else if (month === 3) {
-                if (leapYear(new Date().getFullYear())) {
-                    prevDate = 29;
-                } else {
-                    prevDate = 28;
-                }
-                prevMonth = 2;
-            } else {
-                prevDate = 30;
-                if (month === 1) {
-                    prevMonth = 12;
-                } else {
-                    prevMonth = month - 1;
-                }
-            }
+        if (dateCheck) {
+            const error = "ERROR: Impossible date entered";
+            dispatch({type: 'INPUT_BUYING_ERROR', error});
+
+            window.alert(error);
+            window.location = '/';
+            throw new Error("ERROR: Impossible date entered");
         }
 
-        const collect = () => {
-            firestore.collection('eggs').doc('Month ' + month + ' Date ' + enteredDate).get().then(function (doc) {
-                if (doc.exists) {
-                    dispatch({type: 'EGGS_DOC_EXISTS'});
-                } else {
-                    firestore.collection('trays').doc('Month ' + prevMonth + ' Date ' + prevDate).get().then(function (doc) {
-                        if (doc.exists) {
-                            const data = doc.data();
+        return firestore.runTransaction(function (transaction) {
+
+            return transaction.get(eggDocRef).then(function (eggDoc) {
+                return transaction.get(traysDocRef).then(function (trayDoc) {
+                    if (eggDoc.exists) {
+                        return Promise.reject("ERROR: Data already exists");
+                    } else {
+                        if (trayDoc.exists) {
+                            const data = trayDoc.data();
                             const remNum = parseInt(data.remainder);
                             const trayNum = parseInt(data.number);
                             const myTotal = total + remNum;
@@ -68,86 +64,50 @@ export const inputEggs = (eggs) => {
                             const final = myTrays + trayNum;
                             const myRemainder = myTotal % 30;
 
-                            firestore.collection('trays').doc('Month ' + month + ' Date ' + enteredDate).set({
+                            transaction.set(traysDocRef, {
                                 number: final,
                                 remainder: myRemainder,
                                 submittedBy: profile.firstName + ' ' + profile.lastName,
                                 submittedOn: firestore.FieldValue.serverTimestamp()
-                            }).then(() => {
-                                doc.ref.delete().then(() => console.log("tray doc deleted"));
-                            });
+                            })
 
-                            firestore.collection('eggs').doc('Month ' + month + ' Date ' + enteredDate).set({
+                            transaction.set(eggDocRef, {
                                 ...eggs,
-                                date: new Date(year, date.getMonth(), enteredDate),
+                                date: new Date(year, newMonth, enteredDate),
                                 submittedBy: profile.firstName + ' ' + profile.lastName,
                                 submittedOn: firestore.FieldValue.serverTimestamp()
-
-                            }).then(() => {
-                                if (user.uid) {
-
-                                    firestore.collection('userLogs').doc(user.uid).set({dummy: 'dummy'});
-
-                                    firestore.collection('userLogs').doc(user.uid).collection('logs').add({
-                                        event: 'eggs collected',
-                                        total: total,
-                                        submittedBy: profile.firstName + ' ' + profile.lastName,
-                                        submittedOn: firestore.FieldValue.serverTimestamp()
-                                    });
-
-                                }
                             })
-                                .then(() => {
-                                    dispatch({type: 'INPUT_EGGS', eggs});
-                                    window.alert("Data submitted");
-                                    window.location = '/';
-                                }).catch((err) => {
-                                dispatch({type: 'INPUT_EGGS_ERROR', err});
-                            });
+
+                            if (user.uid) {
+
+                                transaction.set(userLogRef, {
+                                    event: 'eggs collected',
+                                    total: total,
+                                    submittedBy: profile.firstName + ' ' + profile.lastName,
+                                    submittedOn: firestore.FieldValue.serverTimestamp()
+                                });
+
+                            } else {
+                                return Promise.reject("ERROR: Contact admin for help");
+                            }
 
                         } else {
-
-                            firestore.collection('trays').doc('Month ' + month + ' Date ' + enteredDate).set({
-                                number: trays,
-                                remainder: remainder,
-                                submittedBy: profile.firstName + ' ' + profile.lastName,
-                                submittedOn: firestore.FieldValue.serverTimestamp()
-                            });
-
-                            firestore.collection('eggs').doc('Month ' + month + ' Date ' + enteredDate).set({
-                                ...eggs,
-                                date: new Date(year, date.getMonth(), enteredDate),
-                                submittedBy: profile.firstName + ' ' + profile.lastName,
-                                submittedOn: firestore.FieldValue.serverTimestamp()
-
-                            }).then(() => {
-                                if (user.uid) {
-
-                                    firestore.collection('userLogs').doc(user.uid).set({dummy: 'dummy'});
-
-                                    firestore.collection('userLogs').doc(user.uid).collection('logs').add({
-                                        event: 'eggs collected',
-                                        total: total,
-                                        submittedBy: profile.firstName + ' ' + profile.lastName,
-                                        submittedOn: firestore.FieldValue.serverTimestamp()
-                                    });
-
-                                }
-                            })
-                                .then(() => {
-                                    dispatch({type: 'INPUT_EGGS', eggs});
-                                    window.alert("Data submitted");
-                                    window.location = '/';
-                                }).catch((err) => {
-                                dispatch({type: 'INPUT_EGGS_ERROR', err});
-                            });
+                            return Promise.reject("ERROR: No tray doc found");
                         }
-                    })
+                    }
+                })
+            })
+        }).then(() => {
+            dispatch({type: 'INPUT_EGGS', eggs});
+            window.alert("Data submitted");
+            window.location = '/';
+        }).catch((err) => {
+            const error = err.message || err;
+            dispatch({type: 'INPUT_EGGS_ERROR', error});
 
-                }
-            });
-        }
-        collect();
+            window.alert(err);
+            window.location = '/';
+        })
 
     }
 };

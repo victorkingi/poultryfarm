@@ -221,7 +221,15 @@ function Charts(eggs) {
     const options1 = {
         title: {
             display: true,
+            fontSize: 20,
+            fontColor: '#000000',
             text: 'Number of eggs collected against time'
+        },
+        legend: {
+            labels: {
+                fontSize: 15,
+                fontColor: '#000000'
+            }
         },
         scales: {
             yAxes: [
@@ -239,7 +247,15 @@ function Charts(eggs) {
     const options2 = {
         title: {
             display: true,
+            fontSize: 20,
+            fontColor: '#000000',
             text: 'Weekly Laying Percentage'
+        },
+        legend: {
+            labels: {
+                fontSize: 15,
+                fontColor: '#000000'
+            }
         },
         scales: {
             yAxes: [
@@ -257,7 +273,15 @@ function Charts(eggs) {
     const options3 = {
         title: {
             display: true,
+            fontSize: 20,
+            fontColor: '#000000',
             text: 'Total Eggs against time'
+        },
+        legend: {
+            labels: {
+                fontSize: 15,
+                fontColor: '#000000'
+            }
         },
         scales: {
             yAxes: [

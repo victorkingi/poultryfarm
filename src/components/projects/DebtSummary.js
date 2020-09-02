@@ -1,6 +1,6 @@
 import React, {useRef} from "react";
 import moment from "moment";
-import {updateBankBalance} from "../../store/actions/moneyAction";
+import {payBackJeff} from "../../store/actions/moneyAction";
 import {connect} from "react-redux";
 
 const DebtSummary = (debt) => {
@@ -12,7 +12,7 @@ const DebtSummary = (debt) => {
         const load = document.getElementById(`load${debt.item.id}`);
         load.style.display = 'block';
         inputRef.current.attributes['3'].nodeValue = "display: none;";
-        debt.updateBankBalance(debt.item);
+        debt.payBackJeff(debt.item);
     }
 
     if (debt.item.submittedOn) {
@@ -22,7 +22,7 @@ const DebtSummary = (debt) => {
         return (
             <div className="card z-depth-0 project-summary">
                 <div className="card-content grey-text text-darken-3">
-                    <span className="card-title">Debts Owing Dad</span>
+                    <span className="card-title">Debts Owing Jeff</span>
                     <p>Ksh.{debt.item.balance}</p>
                     <p className="grey-text">{moment(time).calendar()}</p>
                 </div>
@@ -101,7 +101,7 @@ const DebtSummary = (debt) => {
 const mapDispatchToProps = (dispatch) => {
 
     return {
-        updateBankBalance: (details) => dispatch(updateBankBalance(details))
+        payBackJeff: (details) => dispatch(payBackJeff(details))
     }
 }
 

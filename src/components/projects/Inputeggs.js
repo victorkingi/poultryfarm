@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import {connect} from 'react-redux';
-import {inputEggs} from "../../store/actions/eggsAction";
+import {inputTray} from "../../store/actions/eggsAction";
 import M from 'materialize-css';
 import {Redirect} from "react-router-dom";
 
@@ -12,6 +12,7 @@ class Inputeggs extends Component {
 
     handleChange = (e) => {
         const date = document.getElementById("date").value;
+        const month = document.getElementById("month").value;
         const a1 = parseInt(document.getElementById("A 1").value);
         const a2 = parseInt(document.getElementById("A 2").value);
         const b1 = parseInt(document.getElementById("B 1").value);
@@ -29,11 +30,14 @@ class Inputeggs extends Component {
         const egg5 = document.getElementById("egg5");
         const egg6 = document.getElementById("egg6");
         const egg7 = document.getElementById("egg7");
+        const checks = parseInt(date) > 0 && parseInt(date) < 32 && date !== "" && parseInt(month) > 0 && parseInt(month) < 13;
 
 
-        if (parseInt(date) > 0 && parseInt(date) < 32 && date !== "") {
+        if (checks) {
             document.getElementById("error-text").innerHTML = "";
             egg0.style.display = 'block';
+        } else {
+            egg0.style.display = 'none';
         }
 
         if (parseInt(date) <= 0 || parseInt(date) >= 32 || date === "") {
@@ -98,14 +102,16 @@ class Inputeggs extends Component {
         const myInt = parseInt(e.target.value);
 
         if (isNaN(myInt)) {
-            this.setState({
-                [e.target.id]: e.target.value
-            });
+            document.getElementById("error-text").innerHTML = "Error! Input needs to be a number";
+
         } else {
+            document.getElementById("error-text").innerHTML = "";
+
             this.setState({
                 [e.target.id]: myInt
             });
         }
+
     }
 
 
@@ -117,7 +123,7 @@ class Inputeggs extends Component {
         submit.style.display = 'none';
         load.style.display = 'block';
 
-        this.props.inputEggs(this.state);
+        this.props.inputTray(this.state);
     }
 
     componentDidMount = () => {
@@ -143,6 +149,11 @@ class Inputeggs extends Component {
                         <div className="input-field">
                             <label htmlFor="date">Select Date (range: 1 - 31)</label>
                             <input type="number" id="date" onChange={this.handleChange} required/>
+                        </div>
+                        <br/>
+                        <div className="input-field">
+                            <label htmlFor="month">Select Month (range: 1 - 12)</label>
+                            <input type="number" id="month" onChange={this.handleChange} required/>
                         </div>
 
                         <div className="input-field" style={{display: 'none'}} id="egg0">
@@ -198,7 +209,7 @@ class Inputeggs extends Component {
                             </div>
 
                             <div style={{display: 'none'}} id="loading">
-                                <div className="preloader-wrapper big active">
+                                <div className="preloader-wrapper small active">
                                     <div className="spinner-layer spinner-blue">
                                         <div className="circle-clipper left">
                                             <div className="circle"/>
@@ -272,7 +283,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        inputEggs: (egg) => dispatch(inputEggs(egg))
+        inputTray: (egg) => dispatch(inputTray(egg))
     }
 }
 

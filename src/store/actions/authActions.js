@@ -10,6 +10,7 @@ export const signIn = (credentials) => {
         }).catch((err) => {
             dispatch({type: 'LOGIN_ERROR', err})
         });
+
     }
 }
 
@@ -41,9 +42,9 @@ export const signOut = () => {
         firebase.auth().signOut(
 
         ).then(() => {
-            dispatch({ type: 'SIGNOUT_SUCCESS'})
+            dispatch({type: 'SIGN_OUT_SUCCESS'})
         }).catch((err) => {
-            dispatch({ type: 'SIGNOUT_ERROR', err })
+            dispatch({type: 'SIGN_OUT_ERROR', err})
         });
     }
 }

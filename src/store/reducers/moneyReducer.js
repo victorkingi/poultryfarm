@@ -8,18 +8,14 @@ const moneyReducer = (state = initState, action) => {
 
         case 'REPAID':
             console.log('borrow cleared ');
-            window.alert("borrow balance cleared");
             return state;
 
         case 'OWE_OTHERS':
-            console.log('balance ', action.details);
-            window.alert("balance " + action.details);
+            console.log('balance partially/fully cleared ');
             return state;
 
         case 'REPAID_ERROR':
-            window.location = '/';
             console.log('borrow clearing error', action.error);
-            window.alert("ERROR: ", action.error);
             return state;
 
         case 'BORROW_SUCCESS':
@@ -27,9 +23,7 @@ const moneyReducer = (state = initState, action) => {
             return state;
 
         case 'BORROW_FAILED':
-            window.location = '/';
-            console.log('borrowing failed');
-            window.alert('ERROR: ', action.err);
+            console.log('borrowing failed ', action.error);
             return state;
 
         case 'LATE_REPAID':
@@ -37,19 +31,13 @@ const moneyReducer = (state = initState, action) => {
             return state;
 
         case 'LATE_ERROR':
-            window.location = '/';
             console.log('error with payment');
-            window.alert("error with payment");
             return state;
         case 'MONEY_ERROR':
-            window.location = '/';
-            console.log('error sending money', action.err);
-            window.alert("ERROR: " + action.err);
+            console.log('error sending money', action.error);
             return state;
         case 'CLEAR_ERROR':
-            window.location = '/';
-            console.log('ERROR: Insufficient funds');
-            window.alert("ERROR: Insufficient funds");
+            console.log('Clearing balance error', action.error);
             return state;
         default:
             return state;

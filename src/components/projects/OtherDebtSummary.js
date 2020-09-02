@@ -1,6 +1,6 @@
 import React, {useRef} from "react";
 import moment from "moment";
-import {clearedDebt} from "../../store/actions/moneyAction";
+import {weClearedOurDebt} from "../../store/actions/moneyAction";
 import {connect} from 'react-redux';
 
 const OtherDebtSummary = (otherDebt) => {
@@ -13,7 +13,7 @@ const OtherDebtSummary = (otherDebt) => {
         load.style.display = 'block';
         inputRef.current.attributes['3'].nodeValue = "display: none;";
 
-        otherDebt.clearedDebt(otherDebt.item);
+        otherDebt.weClearedOurDebt(otherDebt.item);
     }
 
     if (otherDebt.item.submittedOn) {
@@ -102,7 +102,7 @@ const OtherDebtSummary = (otherDebt) => {
 const mapDispatchToProps = (dispatch) => {
 
     return {
-        clearedDebt: (details) => dispatch(clearedDebt(details))
+        weClearedOurDebt: (details) => dispatch(weClearedOurDebt(details))
     }
 }
 

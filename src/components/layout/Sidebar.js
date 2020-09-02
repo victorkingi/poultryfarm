@@ -29,7 +29,7 @@ const Sidebar = (props) => {
                 <ul id="slide-out" className="sidenav">
                     {auth.isLoaded && links}
                 </ul>
-                <a href='#' data-target="slide-out" className="sidenav-trigger">
+                <a href='/' data-target="slide-out" className="sidenav-trigger">
                     <i className="material-icons">menu</i>
                 </a>
             </div>

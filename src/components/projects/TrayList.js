@@ -22,7 +22,7 @@ const TrayList = (trays) => {
                     <div className="col s12 m7">
                         <div className="card">
                             <div className="card-image">
-                                <img alt="picture" src={sample}/>
+                                <img alt="forest" src={sample}/>
                                 <span className="card-title">Trays In Store</span>
                             </div>
                             <div className="card-content">

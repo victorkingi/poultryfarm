@@ -1,94 +1,121 @@
-import React from "react";
-import 'react-toastify/dist/ReactToastify.css';
-
+function leapYear(year) {
+    return ((year % 4 === 0) && (year % 100 !== 0)) || (year % 400 === 0);
+}
 
 export const inputDeadSick = (deadSick, image) => {
     return (dispatch, getState, {getFirebase, getFirestore}) => {
         //make async call to database
 
+        const firestore = getFirestore();
         const profile = getState().firebase.profile;
         const firebase = getFirebase();
-        const firestore = getFirestore();
         const user = firebase.auth().currentUser;
-        const enteredDate = deadSick.date;
-        const section = deadSick.section;
         const date = new Date();
-        const month = date.getMonth() + 1;
+        const enteredMonth = parseInt(deadSick.month);
+        const newMonth = enteredMonth - 1;
+        const section = deadSick.section;
+        const enteredDate = parseInt(deadSick.date);
         const year = date.getFullYear();
+        const isLeap = leapYear(year);
+        const deadSickDocRef = firestore.collection("deadSick").doc('Month ' + enteredMonth + ' Date ' + enteredDate + ' ' + section);
+        const userLogRef = firestore.collection("userLogs").doc(user.uid).collection("logs").doc();
+        const chickenDocRef = firestore.collection("chickenDetails").doc("2020");
 
-        firestore.collection('deadSick').doc('Month ' + month + ' Date ' + enteredDate + ' ' + section).get().then(function (doc) {
-            if (doc.exists) {
-                const err = "Doc exists";
-                dispatch({type: 'DOC_EXISTS', err});
-            } else {
-
-                var storageRef = firebase.storage().ref();
-
-                var uploadImagesRef = storageRef.child(`deadSick/${image.name}`);
-
-                var uploadTask = uploadImagesRef.put(image);
-
-
-                uploadTask.then(function (snapshot) {
-                    var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                    console.log(progress + " %");
-                }).then(() => {
-                    firebase.storage().ref()
-                        .child(`deadSick/${image.name}`)
-                        .getDownloadURL()
-                        .then((url) => {
-
-                            firestore.collection('deadSick').doc('Month ' + month + ' Date ' + enteredDate + ' ' + section).set({
-                                ...deadSick,
-                                photoURL: url,
-                                date: new Date(year, date.getMonth(), enteredDate),
-                                submittedBy: profile.firstName + ' ' + profile.lastName,
-                                submittedOn: firestore.FieldValue.serverTimestamp()
-
-                            }).then(() => {
-                                dispatch({type: 'UPLOAD_DONE'});
-                                const upload = document.getElementById("uploadLoad");
-                                upload.style.display = 'block';
-
-                                function uploadNotify() {
-                                    upload.style.display = 'none';
-                                }
-
-                                setTimeout(uploadNotify, 3000);
+        const dateCheck = (enteredMonth === 2 && (enteredDate > 28 || enteredDate < 1)) || (enteredMonth === 4
+            && (enteredDate > 30 || enteredDate < 1)) || (enteredMonth === 6 && (enteredDate > 30 || enteredDate < 1))
+            || (enteredMonth === 9 && (enteredDate > 30 || enteredDate < 1)) || (enteredMonth === 11
+                && (enteredDate > 30 || enteredDate < 1)) || (enteredMonth === 1 && (enteredDate > 31 || enteredDate < 1))
+            || (enteredMonth === 3 && (enteredDate > 31 || enteredDate < 1)) || (enteredMonth === 5
+                && (enteredDate > 31 || enteredDate < 1)) || (enteredMonth === 7 && (enteredDate > 31
+                || enteredDate < 1)) || (enteredMonth === 8 && (enteredDate > 31 || enteredDate < 1))
+            || (enteredMonth === 10 && (enteredDate > 31 || enteredDate < 1)) || (enteredMonth === 12
+                && (enteredDate > 31 || enteredDate < 1)) || (isLeap && enteredMonth === 2
+                && (enteredDate > 29 || enteredDate < 1));
 
 
-                            }).then(() => {
-                                if (section === "Dead") {
-                                    firestore.collection('chickenDetails').doc('2020').get().then(function (doc) {
-                                        if (doc.exists) {
-                                            const data = doc.data();
-                                            const total = parseInt(data.total);
-                                            const myTotal = total - 1;
+        if (dateCheck) {
+            const error = "ERROR: Impossible date entered";
+            dispatch({type: 'INPUT_BUYING_ERROR', error});
 
-                                            doc.ref.update({
-                                                total: myTotal
-                                            })
-                                        }
+            window.alert(error);
+            window.location = '/';
+            throw new Error("ERROR: Impossible date entered");
+        }
+
+
+        return firestore.runTransaction(function (transaction) {
+
+            return transaction.get(deadSickDocRef).then(function (deadSickDoc) {
+                if (deadSickDoc.exists) {
+                    return Promise.reject("ERROR: Data already exists");
+                } else {
+
+                    if (section === "Dead") {
+
+                        chickenDocRef.get().then(function (doc) {
+                            if (doc.exists) {
+                                const data = parseInt(doc.data().total);
+                                const final = data - 1;
+
+                                if (final < 0) {
+                                    throw new Error("ERROR: No more chickens left");
+                                } else {
+                                    doc.ref.update({
+                                        total: final,
+                                        submittedOn: firestore.FieldValue.serverTimestamp()
                                     })
                                 }
+                            } else {
+                                throw new Error("ERROR: Doc doesn't exist");
+                            }
+                        })
+                    }
 
-                                firestore.collection('userLogs').doc(user.uid).set({dummy: 'dummy'});
+                    const storageRef = firebase.storage().ref();
 
-                                firestore.collection('userLogs').doc(user.uid).collection('logs').add({
+                    const uploadImagesRef = storageRef.child(`deadSick/${image.name}`);
+
+                    const uploadTask = uploadImagesRef.put(image);
+
+
+                    uploadTask.then(function (snapshot) {
+                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                        console.log(progress + " %");
+                    }).then(() => {
+                        firebase.storage().ref()
+                            .child(`deadSick/${image.name}`)
+                            .getDownloadURL()
+                            .then((url) => {
+                                transaction.set(deadSickDocRef, {
+                                    ...deadSick,
+                                    photoURL: url,
+                                    date: new Date(year, newMonth, enteredDate),
+                                    submittedBy: profile.firstName + ' ' + profile.lastName,
+                                    submittedOn: firestore.FieldValue.serverTimestamp()
+
+                                })
+
+                                transaction.set(userLogRef, {
                                     event: deadSick.section + " Chicken",
                                     submittedBy: profile.firstName + ' ' + profile.lastName,
                                     submittedOn: firestore.FieldValue.serverTimestamp()
-                                });
-                            });
-                        }).then(() => {
-                        dispatch({type: 'SUBMIT'});
-                        window.alert("Data submitted");
-                        window.location = '/';
+                                })
+                            })
+                    })
+                }
 
-                    });
-                });
-            }
+            })
+        }).then(() => {
+            dispatch({type: 'UPLOAD_DONE'});
+            window.alert("Data submitted");
+            window.location = '/';
 
+        }).catch((err) => {
+            const error = err.message || err;
+            dispatch({type: 'INPUT_SALES_ERROR', error});
+
+            window.alert(error);
+            window.location = '/';
         });
     }
 }
