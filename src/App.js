@@ -24,6 +24,7 @@ import OtherDebts from "./components/dashboard/OtherDebts";
 import SickDead from "./components/dashboard/SickDead";
 import InputDeadSick from "./components/projects/InputDeadSick";
 import SickDeadDetails from "./components/projects/SickDeadDetails";
+import InputNews from "./components/projects/InputNews";
 
 class App extends Component {
 
@@ -43,6 +44,7 @@ class App extends Component {
                         <Route path='/signin' component={SignIn}/>
                         <Route path='/signup' component={SignUp}/>
                         <Route path='/sales' component={Inputsell}/>
+                        <Route path='/news' component={InputNews}/>
                         <Route path='/buy' component={Inputbuy}/>
                         <Route path='/eggs' component={Inputeggs}/>
                         <Route path='/send' component={Inputmoney}/>

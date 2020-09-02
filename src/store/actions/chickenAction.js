@@ -21,6 +21,43 @@ export const updateChickens = () => {
     }
 }
 
+export const inputNews = (details) => {
+    return (dispatch, getState, {getFirestore}) => {
+        //make async call to database
+        const firestore = getFirestore();
+
+        firestore.collection("latestNews").doc("WZj6mDlVZMyVrCvPDOym").get().then(function (doc) {
+            if (doc.exists) {
+                doc.ref.set({
+                    title: details.title,
+                    content: details.content,
+                    provider: details.provider,
+                    link: details.link,
+                    time: firestore.FieldValue.serverTimestamp()
+                }).then(() => {
+                    dispatch({type: 'UPLOAD_DONE'});
+                    window.alert("Data submitted");
+                    window.location = '/';
+                }).catch((err) => {
+                    dispatch({type: 'UPLOAD_ERROR'});
+                    window.alert("ERROR: " + err.message);
+                    window.location = '/';
+                })
+            } else {
+                const error = "Doc not found"
+                dispatch({type: 'UPLOAD_ERROR', error});
+                window.alert("ERROR");
+                window.location = '/';
+            }
+        }).catch((err) => {
+            dispatch({type: 'UPLOAD_ERROR'});
+            window.alert("ERROR: " + err.message);
+            window.location = '/';
+        })
+
+    }
+}
+
 
 export const handleToken = () => {
 

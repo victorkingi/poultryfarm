@@ -6,6 +6,7 @@ export const signIn = (credentials) => {
             credentials.email,
             credentials.password
         ).then(() => {
+
             dispatch({type: 'LOGIN_SUCCESS'})
         }).catch((err) => {
             dispatch({type: 'LOGIN_ERROR', err})
@@ -21,8 +22,13 @@ export const checkClaims = () => {
         firebase.auth().onAuthStateChanged(user => {
             if (user) {
                 user.getIdTokenResult().then(idToken => {
+
                     if (idToken.claims.admin) {
                         dispatch({type: 'ADMIN_ACCESS'})
+                    } else if (idToken.claims.moderator) {
+                        dispatch({type: 'MOD_ACCESS'})
+                    } else if (idToken.claims.changer) {
+                        dispatch({type: 'CHANGER_ACCESS'})
                     } else {
                         dispatch({type: 'ADMIN_DENIED'})
                     }

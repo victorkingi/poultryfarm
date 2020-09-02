@@ -13,11 +13,12 @@ import ChickenDetails from "./ChickenDetails";
 import News from "./News";
 import {handleToken} from "../../store/actions/chickenAction";
 import {updateBags} from "../../store/actions/buyAction";
+import InputNews from "../projects/InputNews";
 
 class Dashboard extends Component {
 
     render() {
-        const {news, chicken, balance, bags, trays, debt, auth, admin, profile, notifications} = this.props;
+        const {news, chicken, balance, bags, trays, debt, auth, admin, moderator, changer, profile, notifications} = this.props;
         this.props.checkClaims();
         // this.props.handleToken();
 
@@ -116,10 +117,14 @@ class Dashboard extends Component {
                     </div>
                 );
             }
-        } else {
+        } else if (moderator) {
+            return (
+                <InputNews/>
+            )
+        } else if (changer) {
             time();
 
-            if(profile.firstName) {
+            if (profile.firstName) {
                 return (
                     <div className="dashboard container">
 
@@ -137,14 +142,17 @@ class Dashboard extends Component {
 
                     </div>
                 )
-            }
-            else {
+            } else {
                 return (
                     <div className="progress">
                         <div className="indeterminate"/>
                     </div>
                 );
             }
+        } else {
+            return (
+                <div/>
+            )
         }
 
     }
@@ -157,6 +165,8 @@ const mapStateToProps = (state) => {
         balance: state.firestore.ordered.current,
         auth: state.firebase.auth,
         admin: state.auth.admin,
+        moderator: state.auth.moderator,
+        changer: state.auth.changer,
         profile: state.firebase.profile,
         notifications: state.firestore.ordered.notifications,
         trays: state.firestore.ordered.trays,

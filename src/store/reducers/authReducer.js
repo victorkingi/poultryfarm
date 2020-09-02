@@ -1,7 +1,8 @@
 const initState = {
     authError: null,
     admin: false,
-
+    moderator: false,
+    changer: false
 }
 
 
@@ -22,10 +23,20 @@ const authReducer = (state = initState, action) => {
             }
 
         case 'ADMIN_ACCESS':
-            //console.log("you are admin")
             return {
                 ...state,
                 admin: true
+            }
+
+        case 'MOD_ACCESS':
+            return {
+                ...state,
+                moderator: true,
+            }
+        case 'CHANGER_ACCESS':
+            return {
+                ...state,
+                changer: true
             }
         case 'ADMIN_DENIED':
             return {

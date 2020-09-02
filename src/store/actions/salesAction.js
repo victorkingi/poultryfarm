@@ -26,7 +26,7 @@ export const inputSell = (sales) => {
         const year = date.getFullYear();
         const isLeap = leapYear(year);
         const status = JSON.parse(sales.status);
-        const buyer = sales.buyerName ? sales.buyerName : "No buyer name";
+        const buyer = sales.buyerName ? sales.buyerName : sales.section;
         const salesDocRef = buyer ? firestore.collection("sales").doc('Month ' + enteredMonth + ' Date ' + enteredDate + ' ' + section + ': ' + buyer) : firestore.collection("sales").doc('Month ' + enteredMonth + ' Date ' + enteredDate + ' ' + section);
         const currentDocRef = firestore.collection("current").doc(user.uid);
         const traysDocRef = firestore.collection("trays").doc("CurrentTrays");
