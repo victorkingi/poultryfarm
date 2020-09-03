@@ -48,27 +48,31 @@ class Dashboard extends Component {
             time();
             if (balance && bags && trays && debt && notifications && news) {
 
-                let num = bags['0'].number;
+                let num = parseInt(bags['0'].number);
                 const time = bags ? bags['0'].date.toDate() : "No date given";
                 const currentDay = parseInt(new Date().getDate());
                 const previous = parseInt(time.getDate());
-                let bagNo = undefined;
-                const submit = bags['0'].submittedOn ? bags['0'].submittedOn.toDate() : null;
-                const submitDate = submit.getDate();
+                try {
+                    const submit = bags['0'].submittedOn.toDate();
+                    const submitDate = submit.getDate();
 
-                if (previous !== currentDay && submitDate !== currentDay) {
-                    bagNo = num--;
+                    if (previous !== currentDay && submitDate !== currentDay) {
+                        num = num - 1;
 
-                    if (parseInt(bagNo) < 1) {
-                        bagNo = 0;
+                        if (parseInt(num) < 1) {
+                            num = 0;
+                        }
+
+                        const state = {
+                            bagNo: num
+                        }
+
+
+                        this.props.updateBags(state)
                     }
 
-                    const state = {
-                        bagNo: bagNo
-                    }
-
-
-                    this.props.updateBags(state)
+                } catch (error) {
+                    console.log("Waiting for response...", error);
                 }
 
                 return (
