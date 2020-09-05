@@ -27,9 +27,10 @@ export const inputPurchase = (buys) => {
         const year = date.getFullYear();
         const isLeap = leapYear(year);
         const status = JSON.parse(buys.status);
+        const fullName = profile.firstName + ' ' + profile.lastName;
         const item = buys.itemName || buys.vaccineName || buys.drugName || buys.labourName;
         const buyDocRef = firestore.collection("buys").doc('Month ' + enteredMonth + ' Date ' + enteredDate + ' ' + section + ': ' + item);
-        const currentDocRef = firestore.collection("current").doc(user.uid);
+        const currentDocRef = firestore.collection("current").doc(fullName);
         const bagsDocRef = firestore.collection("bags").doc("CurrentBags");
         const userLogRef = firestore.collection("userLogs").doc(user.uid).collection("logs").doc();
         const oweJeffDocRef = firestore.collection("oweJeff").doc('Month ' + enteredMonth);
@@ -49,12 +50,12 @@ export const inputPurchase = (buys) => {
 
 
         if (dateChecks) {
-            const error = "ERROR: Impossible date entered";
+            const error = "ERROR: Impossible date entered!";
             dispatch({type: 'INPUT_BUYING_ERROR', error});
 
             window.alert(error);
             window.location = '/';
-            throw new Error("ERROR: Impossible date entered");
+            throw new Error("ERROR: Impossible date entered!");
         }
 
         return firestore.runTransaction(function (transaction) {
@@ -66,8 +67,9 @@ export const inputPurchase = (buys) => {
                             transaction.set(bagsDocRef, {
                                 number: parseInt(buys.objectNo),
                                 key: key,
+                                counter: new Date(year, newMonth, enteredDate),
                                 date: new Date(year, newMonth, enteredDate),
-                                submittedBy: profile.firstName + ' ' + profile.lastName,
+                                submittedBy: fullName,
                                 submittedOn: firestore.FieldValue.serverTimestamp()
                             });
                         }
@@ -76,13 +78,13 @@ export const inputPurchase = (buys) => {
                             ...buys,
                             key: key,
                             date: new Date(year, newMonth, enteredDate),
-                            submittedBy: profile.firstName + ' ' + profile.lastName,
+                            submittedBy: fullName,
                             submittedOn: firestore.FieldValue.serverTimestamp()
                         });
                     }
 
                     if (buyDoc.exists) {
-                        return Promise.reject("ERROR: Data already exists");
+                        return Promise.reject("ERROR: Data already exists!");
                     } else {
                         if (user.uid && status) {
                             if (currentDoc.exists) {
@@ -91,11 +93,11 @@ export const inputPurchase = (buys) => {
                                 const final = parseInt(currentTotal);
 
                                 if (final < 0 && user.email !== "jeffkarue@gmail.com") {
-                                    return Promise.reject("ERROR: Insufficient funds");
+                                    return Promise.reject("ERROR: Insufficient funds!");
                                 } else if (final < 0 && user.email === "jeffkarue@gmail.com") {
                                     transaction.update(currentDocRef, {
                                         balance: 0,
-                                        submittedBy: profile.firstName + ' ' + profile.lastName,
+                                        submittedBy: fullName,
                                         submittedOn: firestore.FieldValue.serverTimestamp()
                                     });
 
@@ -105,7 +107,7 @@ export const inputPurchase = (buys) => {
 
                                         transaction.update(oweJeffDocRef, {
                                             balance: firestore.FieldValue.increment(newFinal),
-                                            submittedBy: profile.firstName + ' ' + profile.lastName,
+                                            submittedBy: fullName,
                                             submittedOn: firestore.FieldValue.serverTimestamp()
                                         });
                                     } else {
@@ -113,7 +115,7 @@ export const inputPurchase = (buys) => {
                                         transaction.set(oweJeffDocRef, {
                                             key: key,
                                             balance: newFinal,
-                                            submittedBy: profile.firstName + ' ' + profile.lastName,
+                                            submittedBy: fullName,
                                             submittedOn: firestore.FieldValue.serverTimestamp()
                                         });
                                     }
@@ -122,7 +124,7 @@ export const inputPurchase = (buys) => {
                                         event: 'purchase owe Jeff ' + buys.section,
                                         spent: newFinal,
                                         key: key,
-                                        submittedBy: profile.firstName + ' ' + profile.lastName,
+                                        submittedBy: fullName,
                                         submittedOn: firestore.FieldValue.serverTimestamp()
                                     });
 
@@ -132,7 +134,7 @@ export const inputPurchase = (buys) => {
                                     transaction.set(currentDocRef, {
                                         balance: final,
                                         fullName: profile.firstName + ' ' + profile.lastName,
-                                        submittedBy: profile.firstName + ' ' + profile.lastName,
+                                        submittedBy: fullName,
                                         submittedOn: firestore.FieldValue.serverTimestamp()
                                     });
 
@@ -140,7 +142,7 @@ export const inputPurchase = (buys) => {
                                         event: 'purchase ' + buys.section,
                                         spent: total,
                                         key: key,
-                                        submittedBy: profile.firstName + ' ' + profile.lastName,
+                                        submittedBy: fullName,
                                         submittedOn: firestore.FieldValue.serverTimestamp()
                                     });
 
@@ -156,7 +158,7 @@ export const inputPurchase = (buys) => {
                                 balance: total,
                                 key: key,
                                 date: new Date(year, newMonth, enteredDate),
-                                submittedBy: profile.firstName + ' ' + profile.lastName,
+                                submittedBy: fullName,
                                 submittedOn: firestore.FieldValue.serverTimestamp()
                             });
 
@@ -166,11 +168,11 @@ export const inputPurchase = (buys) => {
                                 event: 'purchase owe ' + buys.section,
                                 spent: total,
                                 key: key,
-                                submittedBy: profile.firstName + ' ' + profile.lastName,
+                                submittedBy: fullName,
                                 submittedOn: firestore.FieldValue.serverTimestamp()
                             });
                         } else {
-                            return Promise.reject("ERROR: Contact main admin for help");
+                            return Promise.reject("ERROR: Contact main admin for help!");
                         }
                     }
                 })
@@ -197,15 +199,16 @@ export const updateBags = (state) => {
         //make async call to database
         const firestore = getFirestore();
         const profile = getState().firebase.profile;
-        var myBags = parseInt(state.bagNo);
+        let myBags = parseInt(state.bagNo);
         if (myBags < 1) {
             myBags = 0;
         }
 
-        var bagRef = firestore.collection("bags").doc("CurrentBags");
+        const bagRef = firestore.collection("bags").doc("CurrentBags");
 
         bagRef.update({
             number: myBags,
+            counter: state.counter,
             submittedBy: profile.firstName + ' ' + profile.lastName,
             submittedOn: firestore.FieldValue.serverTimestamp()
         }).then(() => dispatch({type: 'BAGS_CHANGE'}))

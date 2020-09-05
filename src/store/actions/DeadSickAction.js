@@ -34,12 +34,12 @@ export const inputDeadSick = (deadSick, image) => {
 
 
         if (dateCheck) {
-            const error = "ERROR: Impossible date entered";
+            const error = "ERROR: Impossible date entered!";
             dispatch({type: 'INPUT_BUYING_ERROR', error});
 
             window.alert(error);
             window.location = '/';
-            throw new Error("ERROR: Impossible date entered");
+            throw new Error("ERROR: Impossible date entered!");
         }
 
 
@@ -47,7 +47,7 @@ export const inputDeadSick = (deadSick, image) => {
 
             return transaction.get(deadSickDocRef).then(function (deadSickDoc) {
                 if (deadSickDoc.exists) {
-                    return Promise.reject("ERROR: Data already exists");
+                    return Promise.reject("ERROR: Data already exists!");
                 } else {
 
                     if (section === "Dead") {
@@ -58,7 +58,7 @@ export const inputDeadSick = (deadSick, image) => {
                                 const final = data - 1;
 
                                 if (final < 0) {
-                                    throw new Error("ERROR: No more chickens left");
+                                    throw new Error("ERROR: No more chickens left!");
                                 } else {
                                     doc.ref.update({
                                         total: final,
@@ -66,7 +66,7 @@ export const inputDeadSick = (deadSick, image) => {
                                     })
                                 }
                             } else {
-                                throw new Error("ERROR: Doc doesn't exist");
+                                throw new Error("ERROR: Doc doesn't exist!");
                             }
                         })
                     }

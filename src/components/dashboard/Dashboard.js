@@ -11,17 +11,32 @@ import TrayList from "../projects/TrayList";
 import BagsList from "../projects/BagsList";
 import ChickenDetails from "./ChickenDetails";
 import News from "./News";
-import {handleToken} from "../../store/actions/chickenAction";
+import {sendTokenToServer} from "../../store/actions/chickenAction";
 import {updateBags} from "../../store/actions/buyAction";
 import InputNews from "../projects/InputNews";
+import {messaging} from "../../config/fbConfig";
+
+async function componentDidMount(sendToken) {
+    messaging.requestPermission()
+        .then(async function () {
+            const token = await messaging.getToken();
+            sendToken(token);
+        })
+        .catch(function (err) {
+            console.log("Unable to get permission to notify.", err);
+        });
+    navigator.serviceWorker.addEventListener("message", (message) => console.log(message));
+}
+
 
 class Dashboard extends Component {
 
     render() {
         const {news, chicken, balance, bags, trays, debt, auth, admin, moderator, changer, profile, notifications} = this.props;
         this.props.checkClaims();
-        // this.props.handleToken();
-
+        // this.props.sendTokenToServern();
+        componentDidMount(this.props.sendTokenToServer).then(() => console.log("success")).catch((err) => console.log("error: ", err));
+        messaging.onMessage((payload) => console.log('Message received. ', payload))
 
         if (!auth.uid) {
             return (
@@ -49,22 +64,27 @@ class Dashboard extends Component {
             if (balance && bags && trays && debt && notifications && news) {
 
                 let num = parseInt(bags['0'].number);
-                const time = bags ? bags['0'].date.toDate() : "No date given";
+                const time = bags ? bags['0'].counter.toDate() : "No date given";
                 const currentDay = parseInt(new Date().getDate());
-                const previous = parseInt(time.getDate());
+                let counter = parseInt(time.getDate());
+                const month = time.getMonth() + 1;
+                const year = time.getFullYear();
                 try {
                     const submit = bags['0'].submittedOn.toDate();
                     const submitDate = submit.getDate();
 
-                    if (previous !== currentDay && submitDate !== currentDay) {
-                        num = num - 1;
+                    if (counter < currentDay && submitDate !== currentDay) {
+                        counter = currentDay - counter;
+                        num = num - counter;
+                        counter = new Date(year, month, currentDay);
 
                         if (parseInt(num) < 1) {
                             num = 0;
                         }
 
                         const state = {
-                            bagNo: num
+                            bagNo: num,
+                            counter: counter
                         }
 
 
@@ -182,7 +202,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         checkClaims: () => dispatch(checkClaims()),
-        handleToken: () => dispatch(handleToken()),
+        sendTokenToServer: (token) => dispatch(sendTokenToServer(token)),
         updateBags: (state) => dispatch(updateBags(state))
 
     }

@@ -23,7 +23,7 @@ const OtherDebtSummary = (otherDebt) => {
         return (
             <div className="card z-depth-0 project-summary">
                 <div className="card-content grey-text text-darken-3">
-                    <span className="card-title">Other Debt: {otherDebt.item.debter}</span>
+                    <span className="card-title">Other Debt: {otherDebt.item.debtor}</span>
                     <p>Amount we owe them is Ksh.{otherDebt.item.balance}</p>
                     <p className="grey-text">{moment(time).calendar()}</p>
 

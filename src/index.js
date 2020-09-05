@@ -4,19 +4,31 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import {applyMiddleware, compose, createStore} from 'redux';
-import rootReducer from './store/reducers/rootReducer'
-import {Provider} from 'react-redux'
-import thunk from 'redux-thunk'
-import {createFirestoreInstance, getFirestore, reduxFirestore} from 'redux-firestore'
+import rootReducer from './store/reducers/rootReducer';
+import {Provider} from 'react-redux';
+import thunk from 'redux-thunk';
+import {createFirestoreInstance, getFirestore, reduxFirestore} from 'redux-firestore';
 import {getFirebase, ReactReduxFirebaseProvider} from 'react-redux-firebase';
-import firebase from 'firebase/app'
-import fbConfig from './config/fbConfig'
+import firebase from 'firebase/app';
+import {myFirebase} from "./config/fbConfig";
+
+
+if ("serviceWorker" in navigator) {
+    navigator.serviceWorker
+        .register("./firebase-messaging-sw.js")
+        .then(function (registration) {
+            console.log("Registration successful, scope is:", registration.scope);
+        })
+        .catch(function (err) {
+            console.log("Service worker registration failed, error:", err);
+        });
+}
 
 
 const store = createStore(rootReducer,
     compose(
         applyMiddleware(thunk.withExtraArgument({getFirebase, getFirestore})),
-        reduxFirestore(fbConfig)
+        reduxFirestore(myFirebase)
     )
 );
 

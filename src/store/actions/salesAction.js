@@ -48,153 +48,148 @@ export const inputSell = (sales) => {
 
 
         if (dateCheck) {
-            const error = "ERROR: Impossible date entered";
+            const error = "ERROR: Impossible date entered!";
             dispatch({type: 'INPUT_BUYING_ERROR', error});
 
             window.alert(error);
             window.location = '/';
-            throw new Error("ERROR: Impossible date entered");
+            throw new Error("ERROR: Impossible date entered!");
         }
 
+        firestore.collection("current").where("fullName", "==", "Jeff Karue").get().then(function (querySnapshot) {
+            querySnapshot.forEach(function (doc) {
+                const currentJeffRef = firestore.collection("current").doc(doc.id);
 
-        return firestore.runTransaction(function (transaction) {
+                return firestore.runTransaction(function (transaction) {
 
-            return transaction.get(salesDocRef).then(function (salesDoc) {
-                return transaction.get(currentDocRef).then(function (currentDoc) {
-                    return transaction.get(traysDocRef).then(function (traysDoc) {
-                        function commonTransaction() {
-                            if (traysDoc.exists) {
-                                const trayData = traysDoc.data().number;
-                                const final = parseInt(trayData) - parseInt(sales.trayNo);
+                    return transaction.get(salesDocRef).then(function (salesDoc) {
+                        return transaction.get(currentDocRef).then(function (currentDoc) {
+                            return transaction.get(traysDocRef).then(function (traysDoc) {
+                                function commonTransaction() {
+                                    if (traysDoc.exists) {
+                                        const trayData = traysDoc.data().number;
+                                        const final = parseInt(trayData) - parseInt(sales.trayNo);
 
-                                if (final === 0 || final > 0) {
-                                    transaction.update(traysDocRef, {
-                                        number: final,
-                                        submittedBy: profile.firstName + ' ' + profile.lastName,
-                                        submittedOn: firestore.FieldValue.serverTimestamp()
-                                    })
+                                        if (final === 0 || final > 0) {
+                                            transaction.update(traysDocRef, {
+                                                number: final,
+                                                submittedBy: profile.firstName + ' ' + profile.lastName,
+                                                submittedOn: firestore.FieldValue.serverTimestamp()
+                                            })
 
-                                } else {
-                                    return Promise.reject("ERROR: Not enough trays in store");
-                                }
-                            }
-                        }
-
-                        if (salesDoc.exists) {
-                            return Promise.reject("ERROR: Data already exists");
-                        } else {
-                            if (user.uid && status) {
-                                if (currentDoc.exists) {
-
-                                    if (sales.trayNo) {
-                                        commonTransaction();
+                                        } else {
+                                            return Promise.reject("ERROR: Not enough trays in store!");
+                                        }
                                     }
+                                }
 
-                                    transaction.set(salesDocRef, {
-                                        ...sales,
-                                        key: key,
-                                        date: new Date(year, newMonth, enteredDate),
-                                        submittedBy: profile.firstName + ' ' + profile.lastName,
-                                        submittedOn: firestore.FieldValue.serverTimestamp()
-                                    });
+                                if (salesDoc.exists) {
+                                    return Promise.reject("ERROR: Data already exists!");
+                                } else {
+                                    if (user.uid && status) {
+                                        if (currentDoc.exists) {
 
-                                    if (section === "Simbi") {
+                                            if (sales.trayNo) {
+                                                commonTransaction();
+                                            }
 
-                                        firestore.collection("current").where("fullName", "==", "Jeff Karue").get().then(function (querySnapshot) {
-                                            querySnapshot.forEach(function (doc) {
-                                                const currentJeffRef = firestore.collection("current").doc(doc.data().id);
-                                                const batch = firestore.batch();
+                                            transaction.set(salesDocRef, {
+                                                ...sales,
+                                                key: key,
+                                                date: new Date(year, newMonth, enteredDate),
+                                                submittedBy: profile.firstName + ' ' + profile.lastName,
+                                                submittedOn: firestore.FieldValue.serverTimestamp()
+                                            });
 
-                                                batch.update(currentJeffRef, {
+                                            if (section === "Simbi") {
+                                                transaction.update(currentJeffRef, {
                                                     balance: firestore.FieldValue.increment(total),
                                                     submittedBy: profile.firstName + ' ' + profile.lastName,
                                                     submittedOn: firestore.FieldValue.serverTimestamp()
                                                 });
 
-                                                batch.commit().then(() => console.log("trays sold to simbi"));
+                                            } else {
+
+                                                transaction.update(currentDocRef, {
+                                                    balance: firestore.FieldValue.increment(total),
+                                                    submittedBy: profile.firstName + ' ' + profile.lastName,
+                                                    submittedOn: firestore.FieldValue.serverTimestamp()
+                                                });
+
+                                            }
+
+                                            transaction.set(userLogRef, {
+                                                event: 'sale ' + sales.section + ' to ' + buyer,
+                                                earned: total,
+                                                key: key,
+                                                submittedBy: profile.firstName + ' ' + profile.lastName,
+                                                submittedOn: firestore.FieldValue.serverTimestamp()
+                                            });
+                                        } else {
+                                            return Promise.reject("ERROR: Document doesn't exist!");
+                                        }
+                                    } else if (user.uid && !status) {
+
+                                        if (sales.trayNo) {
+                                            commonTransaction();
+
+                                            transaction.set(latePaymentDocRef, {
+                                                amountDue: total,
+                                                trayNo: sales.trayNo,
+                                                key: key,
+                                                trayPrice: sales.trayPrice,
+                                                date: new Date(year, newMonth, enteredDate),
+                                                section: sales.section,
+                                                buyer: buyer,
+                                                submittedBy: profile.firstName + ' ' + profile.lastName,
+                                                submittedOn: firestore.FieldValue.serverTimestamp()
                                             })
-                                        })
+
+                                            transaction.set(salesDocRef, {
+                                                ...sales,
+                                                key: key,
+                                                date: new Date(year, newMonth, enteredDate),
+                                                submittedBy: profile.firstName + ' ' + profile.lastName,
+                                                submittedOn: firestore.FieldValue.serverTimestamp()
+                                            });
+
+                                        } else if (sales.chickenNo) {
+                                            transaction.set(latePaymentDocRef, {
+                                                amountDue: total,
+                                                chickenNo: sales.chickenNo,
+                                                key: key,
+                                                chickenPrice: sales.chickenPrice,
+                                                date: new Date(year, newMonth, enteredDate),
+                                                section: sales.section,
+                                                buyer: buyer,
+                                                submittedBy: profile.firstName + ' ' + profile.lastName,
+                                                submittedOn: firestore.FieldValue.serverTimestamp()
+                                            })
+                                        } else {
+                                            return Promise.reject("ERROR: Contact main admin for help!");
+                                        }
 
                                     } else {
-
-                                        transaction.update(currentDocRef, {
-                                            balance: firestore.FieldValue.increment(total),
-                                            submittedBy: profile.firstName + ' ' + profile.lastName,
-                                            submittedOn: firestore.FieldValue.serverTimestamp()
-                                        });
-
+                                        return Promise.reject("ERROR: Contact main admin for help!");
                                     }
-
-                                    transaction.set(userLogRef, {
-                                        event: 'sale ' + sales.section + ' to ' + buyer,
-                                        earned: total,
-                                        key: key,
-                                        submittedBy: profile.firstName + ' ' + profile.lastName,
-                                        submittedOn: firestore.FieldValue.serverTimestamp()
-                                    });
-                                } else {
-                                    return Promise.reject("ERROR: Document doesn't exist");
                                 }
-                            } else if (user.uid && !status) {
-
-                                if (sales.trayNo) {
-                                    commonTransaction();
-
-                                    transaction.set(latePaymentDocRef, {
-                                        amountDue: total,
-                                        trayNo: sales.trayNo,
-                                        key: key,
-                                        trayPrice: sales.trayPrice,
-                                        date: new Date(year, newMonth, enteredDate),
-                                        section: sales.section,
-                                        buyer: buyer,
-                                        submittedBy: profile.firstName + ' ' + profile.lastName,
-                                        submittedOn: firestore.FieldValue.serverTimestamp()
-                                    })
-
-                                    transaction.set(salesDocRef, {
-                                        ...sales,
-                                        key: key,
-                                        date: new Date(year, newMonth, enteredDate),
-                                        submittedBy: profile.firstName + ' ' + profile.lastName,
-                                        submittedOn: firestore.FieldValue.serverTimestamp()
-                                    });
-
-                                } else if (sales.chickenNo) {
-                                    transaction.set(latePaymentDocRef, {
-                                        amountDue: total,
-                                        chickenNo: sales.chickenNo,
-                                        key: key,
-                                        chickenPrice: sales.chickenPrice,
-                                        date: new Date(year, newMonth, enteredDate),
-                                        section: sales.section,
-                                        buyer: buyer,
-                                        submittedBy: profile.firstName + ' ' + profile.lastName,
-                                        submittedOn: firestore.FieldValue.serverTimestamp()
-                                    })
-                                } else {
-                                    return Promise.reject("ERROR: Contact main admin for help");
-                                }
-
-                            } else {
-                                return Promise.reject("ERROR: Contact main admin for help");
-                            }
-                        }
+                            })
+                        })
                     })
-                })
+                }).then(() => {
+                    dispatch({type: 'INPUT_SALES', sales});
+                    window.alert("Data Submitted");
+                    window.location = '/';
+
+                }).catch((err) => {
+                    const error = err.message || err;
+                    dispatch({type: 'INPUT_SALES_ERROR', error});
+
+                    window.alert(error);
+                    window.location = '/';
+                });
             })
-        }).then(() => {
-            dispatch({type: 'INPUT_SALES', sales});
-            window.alert("Data Submitted");
-            window.location = '/';
-
-        }).catch((err) => {
-            const error = err.message || err;
-            dispatch({type: 'INPUT_SALES_ERROR', error});
-
-            window.alert(error);
-            window.location = '/';
-        });
+        })
 
     }
 }

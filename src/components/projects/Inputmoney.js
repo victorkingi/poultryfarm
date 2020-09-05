@@ -59,7 +59,7 @@ class Inputmoney extends Component {
 
     render() {
         const {auth, admin} = this.props;
-        const links = admin ? <option value="bank@account.com">Bank</option> : null;
+        const links = admin ? <option value="Bank Account">Bank</option> : null;
         if (!auth.uid) {
             return (
                 <Redirect to="/signin"/>
@@ -73,10 +73,10 @@ class Inputmoney extends Component {
 
                     <select id="receiver" onChange={this.handleChange} className="white" defaultValue="0">
                         <option value="0" disabled="disabled">Choose User</option>
-                        <option value="victorkarue712@gmail.com">Victor</option>
-                        <option value="mukomauapurity@gmail.com">Purity</option>
-                        <option value="jeffkarue@gmail.com">Jeff</option>
-                        <option value="karueanne@gmail.com">Anne</option>
+                        <option value="Victor Kingi">Victor</option>
+                        <option value="Purity Mukomaua">Purity</option>
+                        <option value="Jeff Karue">Jeff</option>
+                        <option value="Anne Kingi">Anne</option>
                         {links}
                     </select>
 

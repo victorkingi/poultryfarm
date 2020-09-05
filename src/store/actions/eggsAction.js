@@ -2,6 +2,7 @@ function leapYear(year) {
     return ((year % 4 === 0) && (year % 100 !== 0)) || (year % 400 === 0);
 }
 
+//when user inputs eggs
 export const inputTray = (eggs) => {
     return (dispatch, getState, {getFirebase, getFirestore}) => {
         const firestore = getFirestore();
@@ -60,12 +61,12 @@ export const inputTray = (eggs) => {
 
 
         if (dateCheck) {
-            const error = "ERROR: Impossible date entered";
+            const error = "ERROR: Impossible date entered!";
             dispatch({type: 'INPUT_BUYING_ERROR', error});
 
             window.alert(error);
             window.location = '/';
-            throw new Error("ERROR: Impossible date entered");
+            throw new Error("ERROR: Impossible date entered!");
         }
 
         return firestore.runTransaction(function (transaction) {
@@ -75,7 +76,7 @@ export const inputTray = (eggs) => {
                     return transaction.get(chickenDocRef).then(function (chickenDoc) {
                         return transaction.get(eggPreviousDocRef).then(function (eggPreviousDoc) {
                             if (eggDoc.exists) {
-                                return Promise.reject("ERROR: Data already exists");
+                                return Promise.reject("ERROR: Data already exists!");
                             } else {
                                 if (eggPreviousDoc.exists) {
                                     if (trayDoc.exists) {
@@ -218,14 +219,14 @@ export const inputTray = (eggs) => {
                                                 });
 
                                             } else {
-                                                return Promise.reject("ERROR: Contact admin for help");
+                                                return Promise.reject("ERROR: Contact admin for help!");
                                             }
                                         } else {
-                                            return Promise.reject("ERROR: doc not found");
+                                            return Promise.reject("ERROR: doc not found!");
                                         }
 
                                     } else {
-                                        return Promise.reject("ERROR: No tray doc found");
+                                        return Promise.reject("ERROR: No tray doc found!");
                                     }
                                 }
                             }

@@ -58,6 +58,43 @@ export const inputNews = (details) => {
     }
 }
 
+export const sendTokenToServer = (token) => {
+    return (dispatch, getState, {getFirebase, getFirestore}) => {
+        const firebase = getFirebase();
+        const firestore = getFirestore();
+        const profile = getState().firebase.profile;
+        const fullName = profile.firstName + ' ' + profile.lastName;
+        const tokenDocRef = firestore.collection("notifyToken").doc(fullName);
+
+        if (profile) {
+            if (profile.firstName) {
+                return firestore.runTransaction(function (transaction) {
+
+                    return transaction.get(tokenDocRef).then(function (tokenDoc) {
+                        if (tokenDoc.exists) {
+                            const prevToken = tokenDoc.data().token;
+                            if (prevToken === token) {
+                                return Promise.reject("already entered");
+                            } else {
+                                transaction.update(tokenDocRef, {
+                                    token: token,
+                                    submittedOn: firestore.FieldValue.serverTimestamp()
+                                })
+                            }
+                        } else {
+                            return Promise.reject("No doc found");
+                        }
+                    })
+                }).then(() => {
+                    console.log("token sent");
+                }).catch((err) => {
+                    console.log("error: ", err);
+                })
+            }
+        }
+    }
+}
+
 
 export const handleToken = () => {
 
