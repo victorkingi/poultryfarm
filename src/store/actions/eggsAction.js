@@ -184,23 +184,22 @@ export const inputTray = (eggs) => {
                                                     submittedBy: profile.firstName + ' ' + profile.lastName,
                                                     submittedOn: firestore.FieldValue.serverTimestamp()
                                                 })
+                                            } else {
+                                                transaction.set(eggDocRef, {
+                                                    ...eggs,
+                                                    numPercent: numPercent,
+                                                    numMonthPercent: numMonthPercent,
+                                                    allWeeklyEggs: allWeeklyEggs,
+                                                    cageWeeklyEggs: cageWeeklyEggs,
+                                                    houseWeeklyEggs: houseWeeklyEggs,
+                                                    allMonthlyEggs: allMonthlyEggs,
+                                                    cageMonthlyEggs: cageMonthlyEggs,
+                                                    houseMonthlyEggs: houseMonthlyEggs,
+                                                    date: new Date(year, newMonth, enteredDate),
+                                                    submittedBy: profile.firstName + ' ' + profile.lastName,
+                                                    submittedOn: firestore.FieldValue.serverTimestamp()
+                                                })
                                             }
-
-                                            transaction.set(eggDocRef, {
-                                                ...eggs,
-                                                numPercent: numPercent,
-                                                numMonthPercent: numMonthPercent,
-                                                allWeeklyEggs: allWeeklyEggs,
-                                                cageWeeklyEggs: cageWeeklyEggs,
-                                                houseWeeklyEggs: houseWeeklyEggs,
-                                                allMonthlyEggs: allMonthlyEggs,
-                                                cageMonthlyEggs: cageMonthlyEggs,
-                                                houseMonthlyEggs: houseMonthlyEggs,
-                                                date: new Date(year, newMonth, enteredDate),
-                                                submittedBy: profile.firstName + ' ' + profile.lastName,
-                                                submittedOn: firestore.FieldValue.serverTimestamp()
-                                            })
-
 
                                             transaction.set(traysDocRef, {
                                                 number: final,

@@ -15,8 +15,11 @@ import {sendTokenToServer} from "../../store/actions/chickenAction";
 import {updateBags} from "../../store/actions/buyAction";
 import InputNews from "../projects/InputNews";
 import {messaging} from "../../config/fbConfig";
+import {toast, ToastContainer} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 async function componentDidMount(sendToken) {
+
     messaging.requestPermission()
         .then(async function () {
             const token = await messaging.getToken();
@@ -25,7 +28,23 @@ async function componentDidMount(sendToken) {
         .catch(function (err) {
             console.log("Unable to get permission to notify.", err);
         });
-    navigator.serviceWorker.addEventListener("message", (message) => console.log(message));
+    navigator.serviceWorker.addEventListener("message", (message) => {
+        const customId = "myToast";
+        if (message.data) {
+
+            toast.info(`${message.data['firebase-messaging-msg-data'].data.title}`, {
+                toastId: customId,
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+        }
+
+    });
 }
 
 
@@ -98,7 +117,17 @@ class Dashboard extends Component {
                 return (
                     <div className="dashboard container">
                         <div className="row">
-
+                            <ToastContainer
+                                position="top-right"
+                                autoClose={5000}
+                                hideProgressBar={false}
+                                newestOnTop={false}
+                                closeOnClick
+                                rtl={false}
+                                pauseOnFocusLoss
+                                draggable
+                                pauseOnHover
+                            />
                             <div className="center-align">
                                 <h3 className="spinner-blue" id="details"> {period} {profile.firstName}</h3>
                             </div>

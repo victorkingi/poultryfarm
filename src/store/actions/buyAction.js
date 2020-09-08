@@ -58,139 +58,191 @@ export const inputPurchase = (buys) => {
             throw new Error("ERROR: Impossible date entered!");
         }
 
-        return firestore.runTransaction(function (transaction) {
+        firestore.collection('buys').orderBy("date", "desc").limit(1).get().then(function (snapshot) {
+            if (snapshot.size === 0) {
+                throw new Error("ERROR: Contact admin for help!");
+            }
 
-            return transaction.get(buyDocRef).then(function (buyDoc) {
-                return transaction.get(currentDocRef).then(function (currentDoc) {
-                    function commonTransactions() {
-                        if (section === "Feeds") {
-                            transaction.set(bagsDocRef, {
-                                number: parseInt(buys.objectNo),
-                                key: key,
-                                counter: new Date(year, newMonth, enteredDate),
-                                date: new Date(year, newMonth, enteredDate),
-                                submittedBy: fullName,
-                                submittedOn: firestore.FieldValue.serverTimestamp()
-                            });
-                        }
+            snapshot.docs.forEach(function (doc) {
+                const prevWeeklySpend = parseInt(doc.data().weeklySpend);
+                const prevMonthlySpend = parseInt(doc.data().monthlySpend);
+                const prevNumWeekDay = parseInt(doc.data().numWeekDay);
+                const prevNumMonthDay = parseInt(doc.data().numMonthDay);
 
-                        transaction.set(buyDocRef, {
-                            ...buys,
-                            key: key,
-                            date: new Date(year, newMonth, enteredDate),
-                            submittedBy: fullName,
-                            submittedOn: firestore.FieldValue.serverTimestamp()
-                        });
-                    }
+                const newWeeklySpend = total + prevWeeklySpend;
+                const newMonthlySpend = total + prevMonthlySpend;
+                let newNumWeekDay = prevNumWeekDay + 1;
+                let newNumMonthDay = prevNumMonthDay + 1;
 
-                    if (buyDoc.exists) {
-                        return Promise.reject("ERROR: Data already exists!");
-                    } else {
-                        if (user.uid && status) {
-                            if (currentDoc.exists) {
-                                const currentData = currentDoc.data();
-                                const currentTotal = parseInt(currentData.balance) - total;
-                                const final = parseInt(currentTotal);
+                return firestore.runTransaction(function (transaction) {
 
-                                if (final < 0 && user.email !== "jeffkarue@gmail.com") {
-                                    return Promise.reject("ERROR: Insufficient funds!");
-                                } else if (final < 0 && user.email === "jeffkarue@gmail.com") {
-                                    transaction.update(currentDocRef, {
-                                        balance: 0,
+                    return transaction.get(buyDocRef).then(function (buyDoc) {
+                        return transaction.get(currentDocRef).then(function (currentDoc) {
+                            function commonTransactions() {
+                                if (section === "Feeds") {
+                                    transaction.set(bagsDocRef, {
+                                        number: parseInt(buys.objectNo),
+                                        key: key,
+                                        counter: new Date(year, newMonth, enteredDate),
+                                        date: new Date(year, newMonth, enteredDate),
                                         submittedBy: fullName,
                                         submittedOn: firestore.FieldValue.serverTimestamp()
                                     });
+                                }
 
-                                    const newFinal = final * -1;
+                                transaction.set(buyDocRef, {
+                                    ...buys,
+                                    key: key,
+                                    weeklySpend: newWeeklySpend,
+                                    monthlySpend: newMonthlySpend,
+                                    numWeekDay: newNumWeekDay,
+                                    numMonthDay: newNumMonthDay,
+                                    date: new Date(year, newMonth, enteredDate),
+                                    submittedBy: fullName,
+                                    submittedOn: firestore.FieldValue.serverTimestamp()
+                                });
 
-                                    if (oweJeffDocRef.exists) {
+                                if (newNumWeekDay === 8 && newNumMonthDay !== 31) {
+                                    newNumWeekDay = 1;
 
-                                        transaction.update(oweJeffDocRef, {
-                                            balance: firestore.FieldValue.increment(newFinal),
-                                            submittedBy: fullName,
-                                            submittedOn: firestore.FieldValue.serverTimestamp()
-                                        });
+                                    transaction.update(buyDocRef, {
+                                        numWeekDay: newNumWeekDay,
+                                        weeklySpend: total
+                                    });
+
+                                } else if (newNumWeekDay !== 8 && newNumMonthDay === 31) {
+                                    newNumMonthDay = 1;
+
+                                    transaction.update(buyDocRef, {
+                                        numMonthDay: newNumMonthDay,
+                                        monthlySpend: total
+                                    });
+
+                                } else if (newNumWeekDay === 8 && newNumMonthDay === 31) {
+                                    newNumWeekDay = 1;
+                                    newNumMonthDay = 1;
+
+                                    transaction.update(buyDocRef, {
+                                        numWeekDay: newNumWeekDay,
+                                        numMonthDay: newNumMonthDay,
+                                        monthlySpend: total,
+                                        weeklySpend: total
+                                    });
+
+                                }
+                            }
+
+                            if (buyDoc.exists) {
+                                return Promise.reject("ERROR: Data already exists!");
+                            } else {
+                                if (user.uid && status) {
+                                    if (currentDoc.exists) {
+                                        const currentData = currentDoc.data();
+                                        const currentTotal = parseInt(currentData.balance) - total;
+                                        const final = parseInt(currentTotal);
+
+                                        if (final < 0 && user.email !== "jeffkarue@gmail.com") {
+                                            return Promise.reject("ERROR: Insufficient funds!");
+                                        } else if (final < 0 && user.email === "jeffkarue@gmail.com") {
+                                            transaction.update(currentDocRef, {
+                                                balance: 0,
+                                                submittedBy: fullName,
+                                                submittedOn: firestore.FieldValue.serverTimestamp()
+                                            });
+
+                                            const newFinal = final * -1;
+
+                                            if (oweJeffDocRef.exists) {
+
+                                                transaction.update(oweJeffDocRef, {
+                                                    balance: firestore.FieldValue.increment(newFinal),
+                                                    submittedBy: fullName,
+                                                    submittedOn: firestore.FieldValue.serverTimestamp()
+                                                });
+                                            } else {
+
+                                                transaction.set(oweJeffDocRef, {
+                                                    key: key,
+                                                    balance: newFinal,
+                                                    submittedBy: fullName,
+                                                    submittedOn: firestore.FieldValue.serverTimestamp()
+                                                });
+                                            }
+
+                                            transaction.set(userLogRef, {
+                                                event: 'purchase owe Jeff ' + buys.section,
+                                                spent: newFinal,
+                                                key: key,
+                                                submittedBy: fullName,
+                                                submittedOn: firestore.FieldValue.serverTimestamp()
+                                            });
+
+                                            commonTransactions();
+
+                                        } else if (final === 0 || final > 0) {
+                                            transaction.set(currentDocRef, {
+                                                balance: final,
+                                                fullName: profile.firstName + ' ' + profile.lastName,
+                                                submittedBy: fullName,
+                                                submittedOn: firestore.FieldValue.serverTimestamp()
+                                            });
+
+                                            transaction.set(userLogRef, {
+                                                event: 'purchase ' + buys.section,
+                                                spent: total,
+                                                key: key,
+                                                submittedBy: fullName,
+                                                submittedOn: firestore.FieldValue.serverTimestamp()
+                                            });
+
+                                            commonTransactions();
+
+                                        }
                                     } else {
-
-                                        transaction.set(oweJeffDocRef, {
-                                            key: key,
-                                            balance: newFinal,
-                                            submittedBy: fullName,
-                                            submittedOn: firestore.FieldValue.serverTimestamp()
-                                        });
+                                        throw new Error("Doc doesn't exist");
                                     }
-
-                                    transaction.set(userLogRef, {
-                                        event: 'purchase owe Jeff ' + buys.section,
-                                        spent: newFinal,
+                                } else if (user.uid && !status) {
+                                    transaction.set(otherDebtDocRef, {
+                                        debtor: buys.section,
+                                        balance: total,
                                         key: key,
+                                        date: new Date(year, newMonth, enteredDate),
                                         submittedBy: fullName,
                                         submittedOn: firestore.FieldValue.serverTimestamp()
                                     });
 
                                     commonTransactions();
 
-                                } else if (final === 0 || final > 0) {
-                                    transaction.set(currentDocRef, {
-                                        balance: final,
-                                        fullName: profile.firstName + ' ' + profile.lastName,
-                                        submittedBy: fullName,
-                                        submittedOn: firestore.FieldValue.serverTimestamp()
-                                    });
-
                                     transaction.set(userLogRef, {
-                                        event: 'purchase ' + buys.section,
+                                        event: 'purchase owe ' + buys.section,
                                         spent: total,
                                         key: key,
                                         submittedBy: fullName,
                                         submittedOn: firestore.FieldValue.serverTimestamp()
                                     });
-
-                                    commonTransactions();
-
+                                } else {
+                                    return Promise.reject("ERROR: Contact main admin for help!");
                                 }
-                            } else {
-                                throw new Error("Doc doesn't exist");
                             }
-                        } else if (user.uid && !status) {
-                            transaction.set(otherDebtDocRef, {
-                                debtor: buys.section,
-                                balance: total,
-                                key: key,
-                                date: new Date(year, newMonth, enteredDate),
-                                submittedBy: fullName,
-                                submittedOn: firestore.FieldValue.serverTimestamp()
-                            });
+                        })
+                    })
 
-                            commonTransactions();
+                }).then(() => {
+                    dispatch({type: 'INPUT_BUYING', buys});
+                    window.alert("Data Submitted");
+                    window.location = '/';
 
-                            transaction.set(userLogRef, {
-                                event: 'purchase owe ' + buys.section,
-                                spent: total,
-                                key: key,
-                                submittedBy: fullName,
-                                submittedOn: firestore.FieldValue.serverTimestamp()
-                            });
-                        } else {
-                            return Promise.reject("ERROR: Contact main admin for help!");
-                        }
-                    }
-                })
+                }).catch(function (err) {
+                    const error = err.message || err;
+
+                    dispatch({type: 'INPUT_BUYING_ERROR', error});
+                    window.alert(error);
+                    window.location = '/';
+
+                });
+
             })
-
-        }).then(() => {
-            dispatch({type: 'INPUT_BUYING', buys});
-            window.alert("Data Submitted");
-            window.location = '/';
-
-        }).catch(function (err) {
-            const error = err.message || err;
-
-            dispatch({type: 'INPUT_BUYING_ERROR', error});
-            window.alert(error);
-            window.location = '/';
-
-        });
+        })
     }
 }
 

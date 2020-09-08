@@ -64,6 +64,7 @@ export const sendMoney = (money) => {
 
                                     transaction.set(userLogRef, {
                                         event: 'sent money to ' + name,
+                                        receiver: name,
                                         amount: amount,
                                         submittedBy: fullName,
                                         submittedOn: firestore.FieldValue.serverTimestamp()

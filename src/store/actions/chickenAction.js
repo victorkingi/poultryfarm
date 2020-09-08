@@ -59,8 +59,7 @@ export const inputNews = (details) => {
 }
 
 export const sendTokenToServer = (token) => {
-    return (dispatch, getState, {getFirebase, getFirestore}) => {
-        const firebase = getFirebase();
+    return (dispatch, getState, {getFirestore}) => {
         const firestore = getFirestore();
         const profile = getState().firebase.profile;
         const fullName = profile.firstName + ' ' + profile.lastName;
@@ -69,26 +68,20 @@ export const sendTokenToServer = (token) => {
         if (profile) {
             if (profile.firstName) {
                 return firestore.runTransaction(function (transaction) {
-
                     return transaction.get(tokenDocRef).then(function (tokenDoc) {
                         if (tokenDoc.exists) {
-                            const prevToken = tokenDoc.data().token;
-                            if (prevToken === token) {
-                                return Promise.reject("already entered");
-                            } else {
-                                transaction.update(tokenDocRef, {
-                                    token: token,
-                                    submittedOn: firestore.FieldValue.serverTimestamp()
-                                })
-                            }
+                            return Promise.reject("entered");
                         } else {
-                            return Promise.reject("No doc found");
+                            transaction.set(tokenDocRef, {
+                                token: token,
+                                submittedOn: firestore.FieldValue.serverTimestamp()
+                            })
                         }
                     })
                 }).then(() => {
                     console.log("token sent");
                 }).catch((err) => {
-                    console.log("error: ", err);
+                    console.log(err);
                 })
             }
         }
