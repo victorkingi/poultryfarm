@@ -118,6 +118,12 @@ export const inputTray = (eggs) => {
                                                 numMonthPercent = 1;
                                                 numPercent = 1;
 
+                                                transaction.update(chickenDocRef, {
+                                                    weekPercent: weeklyAllPercent,
+                                                    monthPercent: monthAllPercent,
+                                                    submittedOn: firestore.FieldValue.serverTimestamp()
+                                                })
+
                                                 transaction.set(eggDocRef, {
                                                     ...eggs,
                                                     numPercent: numPercent,
@@ -144,6 +150,11 @@ export const inputTray = (eggs) => {
                                                 const weeklyHousePercent = ((prevHouseWeeklyEggs / 7) / houseNo) * 100;
                                                 numPercent = 1;
 
+                                                transaction.update(chickenDocRef, {
+                                                    weekPercent: weeklyAllPercent,
+                                                    submittedOn: firestore.FieldValue.serverTimestamp()
+                                                })
+
                                                 transaction.set(eggDocRef, {
                                                     ...eggs,
                                                     numPercent: numPercent,
@@ -166,6 +177,11 @@ export const inputTray = (eggs) => {
                                                 const monthCagePercent = ((prevCageMonthlyEggs / 30) / cageNo) * 100;
                                                 const monthHousePercent = ((prevHouseMonthlyEggs / 30) / houseNo) * 100;
                                                 numMonthPercent = 1;
+
+                                                transaction.update(chickenDocRef, {
+                                                    monthPercent: monthAllPercent,
+                                                    submittedOn: firestore.FieldValue.serverTimestamp()
+                                                })
 
                                                 transaction.set(eggDocRef, {
                                                     ...eggs,

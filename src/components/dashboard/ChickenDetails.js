@@ -16,6 +16,7 @@ const ChickenDetails = (props) => {
                         <ul className="notifications">
                             {chicken && chicken.map(
                                 item => {
+                                    const weekPercent = Math.round((item.weekPercent + Number.EPSILON) * 100) / 100;
                                     return (
                                         <li key={item.id}>
                                             <span style={{fontSize: "20px"}}>No. of Months</span>
@@ -23,7 +24,7 @@ const ChickenDetails = (props) => {
                                             <span style={{fontSize: "20px"}}>No. of weeks</span>
                                             <p style={{fontSize: "18px"}}>{item.weekNo}</p>
                                             <span style={{fontSize: "20px"}}>Weekly laying percentage</span>
-                                            <p style={{fontSize: "18px"}}>{item.weekPercent}%</p>
+                                            <p style={{fontSize: "18px"}}>{weekPercent}%</p>
                                             <span style={{fontSize: "20px"}}>Total Birds</span>
                                             <p style={{fontSize: "18px"}}>{item.total}</p>
                                         </li>
