@@ -29,10 +29,16 @@ messaging.setBackgroundMessageHandler(function (payload) {
             }
         })
         .then(() => {
-            return registration.showNotification(payload.data.title, {body: payload.data.body});
+            return registration.showNotification(payload.data.title, {
+                body: payload.data.body,
+                icon: 'chicken.jpg',
+                sound: "iphone.mp3",
+                requireInteraction: true,
+                silent: false
+            });
         });
 });
 self.addEventListener('notificationclick', function (event) {
-    // do what you want
-    // ...
+    event.notification.close();
+    clients.openWindow("https://poultryfarm.web.app");
 });
