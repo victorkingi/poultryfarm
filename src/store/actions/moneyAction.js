@@ -153,6 +153,7 @@ export const weClearedOurDebt = (details) => {
         const currentDocRef = firestore.collection("current").doc(fullName);
         const oweJeffDocRef = firestore.collection("oweJeff").doc(halfId);
         const otherDebtDocRef = firestore.collection("otherDebt").doc(details.id);
+        const thikaDebtDocRef = firestore.collection("otherDebt").doc("TotalThikaFarmers");
         const userLogRef = firestore.collection("userLogs").doc(user.uid).collection("logs").doc();
 
         return firestore.runTransaction(function (transaction) {
@@ -161,80 +162,101 @@ export const weClearedOurDebt = (details) => {
                 return transaction.get(buyDocRef).then(function (buyDoc) {
                     return transaction.get(oweJeffDocRef).then(function (oweJeffDoc) {
                         return transaction.get(otherDebtDocRef).then(function (otherDebtDoc) {
-                            if (currentDoc.exists) {
-                                const currentData = currentDoc.data().balance;
-                                const final = parseInt(currentData) - parseInt(details.balance);
+                            return transaction.get(thikaDebtDocRef).then(function (thikaDoc) {
+                                if (currentDoc.exists) {
+                                    const currentData = currentDoc.data().balance;
+                                    const final = parseInt(currentData) - parseInt(details.balance);
 
-                                if (final < 0 && user.email !== "jeffkarue@gmail.com") {
+                                    if (final < 0 && user.email !== "jeffkarue@gmail.com") {
 
-                                    return Promise.reject("ERROR: Insufficient funds");
-                                } else if (final < 0 && user.email === "jeffkarue@gmail.com") {
-                                    const newFinal = final * -1;
+                                        return Promise.reject("ERROR: Insufficient funds");
+                                    } else if (final < 0 && user.email === "jeffkarue@gmail.com") {
+                                        const newFinal = final * -1;
 
-                                    transaction.update(currentDocRef, {
-                                        balance: 0,
-                                        submittedBy: fullName,
-                                        submittedOn: firestore.FieldValue.serverTimestamp()
-                                    });
-
-                                    if (oweJeffDoc.exists) {
-                                        transaction.update(oweJeffDocRef, {
-                                            balance: firestore.FieldValue.increment(newFinal),
+                                        transaction.update(currentDocRef, {
+                                            balance: 0,
                                             submittedBy: fullName,
                                             submittedOn: firestore.FieldValue.serverTimestamp()
                                         });
-                                    } else {
-                                        transaction.set(oweJeffDocRef, {
-                                            UsedOn: details.debtor,
-                                            balance: balance,
+
+                                        if (oweJeffDoc.exists) {
+                                            transaction.update(oweJeffDocRef, {
+                                                balance: firestore.FieldValue.increment(newFinal),
+                                                submittedBy: fullName,
+                                                submittedOn: firestore.FieldValue.serverTimestamp()
+                                            });
+                                        } else {
+                                            transaction.set(oweJeffDocRef, {
+                                                UsedOn: details.debtor,
+                                                balance: balance,
+                                                submittedBy: fullName,
+                                                submittedOn: firestore.FieldValue.serverTimestamp()
+                                            });
+                                        }
+
+                                        if (buyDoc.exists && otherDebtDoc.exists && thikaDoc.exists) {
+                                            const dataDebt = parseInt(otherDebtDoc.data().balance);
+                                            const thikaTotal = parseInt(thikaDoc.data().total);
+                                            const final = thikaTotal - dataDebt;
+
+                                            if (final < 0) {
+                                                return Promise.reject("ERROR: Contact main admin for help!");
+                                            } else if (final === 0) {
+                                                transaction.delete(thikaDebtDocRef);
+
+                                                transaction.update(buyDocRef, {status: true});
+
+                                                transaction.delete(otherDebtDocRef);
+                                            } else {
+                                                transaction.update(buyDocRef, {status: true});
+
+                                                transaction.delete(otherDebtDocRef);
+
+                                                transaction.update(thikaDebtDocRef, {
+                                                    total: final,
+                                                    submittedOn: firestore.FieldValue.serverTimestamp()
+                                                })
+                                            }
+
+                                        } else {
+                                            return Promise.reject("ERROR: No document found");
+                                        }
+
+                                        transaction.set(userLogRef, {
+                                            event: 'balance partly cleared of ' + details.debtor,
+                                            amount: balance,
                                             submittedBy: fullName,
                                             submittedOn: firestore.FieldValue.serverTimestamp()
                                         });
+
+                                    } else if (final === 0 || final > 0) {
+                                        transaction.update(currentDocRef, {
+                                            balance: final,
+                                            submittedBy: fullName,
+                                            submittedOn: firestore.FieldValue.serverTimestamp()
+                                        });
+
+                                        if (buyDoc.exists && otherDebtDoc.exists) {
+                                            transaction.update(buyDocRef, {status: true});
+
+                                            transaction.delete(otherDebtDocRef);
+
+                                        } else {
+                                            return Promise.reject("ERROR: No document found");
+                                        }
+
+                                        transaction.set(userLogRef, {
+                                            event: 'balance cleared of ' + details.debtor,
+                                            amount: balance,
+                                            submittedBy: fullName,
+                                            submittedOn: firestore.FieldValue.serverTimestamp()
+                                        });
+
                                     }
-
-                                    if (buyDoc.exists && otherDebtDoc.exists) {
-                                        transaction.update(buyDocRef, {status: true});
-
-                                        transaction.delete(otherDebtDocRef);
-
-                                    } else {
-                                        return Promise.reject("ERROR: No document found");
-                                    }
-
-                                    transaction.set(userLogRef, {
-                                        event: 'balance partly cleared of ' + details.debtor,
-                                        amount: balance,
-                                        submittedBy: fullName,
-                                        submittedOn: firestore.FieldValue.serverTimestamp()
-                                    });
-
-                                } else if (final === 0 || final > 0) {
-                                    transaction.update(currentDocRef, {
-                                        balance: final,
-                                        submittedBy: fullName,
-                                        submittedOn: firestore.FieldValue.serverTimestamp()
-                                    });
-
-                                    if (buyDoc.exists && otherDebtDoc.exists) {
-                                        transaction.update(buyDocRef, {status: true});
-
-                                        transaction.delete(otherDebtDocRef);
-
-                                    } else {
-                                        return Promise.reject("ERROR: No document found");
-                                    }
-
-                                    transaction.set(userLogRef, {
-                                        event: 'balance cleared of ' + details.debtor,
-                                        amount: balance,
-                                        submittedBy: fullName,
-                                        submittedOn: firestore.FieldValue.serverTimestamp()
-                                    });
-
+                                } else {
+                                    return Promise.reject("ERROR: No document found");
                                 }
-                            } else {
-                                return Promise.reject("ERROR: No document found");
-                            }
+                            })
                         })
                     })
                 })
