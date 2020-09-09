@@ -334,6 +334,7 @@ export const updateOtherDebtDoc = (sales) => {
         const firestore = getFirestore();
         const profile = getState().firebase.profile;
         let total = sales.trayNo ? parseInt(sales.trayNo) * parseInt(sales.trayPrice) : parseInt(sales.chickenNo) * parseInt(sales.chickenPrice);
+        const currentDocRef = firestore.collection("current").doc("Jeff Karue");
         const batch = firestore.batch();
 
         if (sales.section === "Thika Farmers") {
@@ -348,6 +349,7 @@ export const updateOtherDebtDoc = (sales) => {
                         if (thikaDoc.exists) {
                             const myTotal = parseInt(thikaDoc.data().total);
                             const newTotal = myTotal - total;
+                            const current = total * -1;
 
                             if (newTotal > 0) {
                                 batch.update(allThikaDocRef, {
@@ -357,6 +359,11 @@ export const updateOtherDebtDoc = (sales) => {
                             } else if (newTotal <= 0) {
                                 batch.delete(allThikaDocRef);
                             }
+
+                            batch.update(currentDocRef, {
+                                balance: firestore.FieldValue.increment(current),
+                                submittedOn: firestore.FieldValue.serverTimestamp()
+                            })
                         } else {
                             return new Error("ERROR: No doc found");
                         }
@@ -382,6 +389,7 @@ export const updateOtherDebtDoc = (sales) => {
                             })
 
                             updateThikaDoc(allThikaDocRef);
+                            batch.commit().then(() => console.log("debt updated"));
 
                             break;
                         } else if (final === 0) {
@@ -389,13 +397,18 @@ export const updateOtherDebtDoc = (sales) => {
 
                             updateThikaDoc(allThikaDocRef);
 
+                            batch.commit().then(() => console.log("debt updated"));
+
                             break;
 
                         } else if (final > 0) {
                             batch.delete(otherDebtDocRef);
                             updateThikaDoc(allThikaDocRef);
                             total = final;
+
+                            batch.commit().then(() => console.log("debt updated"));
                         }
+
                     } else {
                         return null;
                     }
@@ -403,7 +416,10 @@ export const updateOtherDebtDoc = (sales) => {
                 }
 
 
+            }).then(() => {
+
             })
+
         } else {
             return null;
         }
