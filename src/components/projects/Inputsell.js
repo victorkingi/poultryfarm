@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import {connect} from 'react-redux';
-import {inputSell} from "../../store/actions/salesAction";
+import {inputSell, updateOtherDebtDoc} from "../../store/actions/salesAction";
 import M from 'materialize-css';
 import {Redirect} from "react-router-dom";
 
@@ -114,6 +114,7 @@ class Inputsell extends Component {
                 document.getElementById("error-text").innerHTML = "Please input a buyer name"
             } else {
                 this.props.inputSell(this.state);
+                this.props.updateOtherDebtDoc(this.state);
             }
         }
         if (selectedValue !== "Other" && selectedValue !== "Old Chickens") {
@@ -122,6 +123,7 @@ class Inputsell extends Component {
                 document.getElementById("error-text").innerHTML = "Error! Try again"
             } else {
                 this.props.inputSell(this.state);
+                this.props.updateOtherDebtDoc(this.state)
             }
         }
 
@@ -281,7 +283,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        inputSell: (sale) => dispatch(inputSell(sale))
+        inputSell: (sale) => dispatch(inputSell(sale)),
+        updateOtherDebtDoc: (sale) => dispatch(updateOtherDebtDoc(sale))
     }
 }
 

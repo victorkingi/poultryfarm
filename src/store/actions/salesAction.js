@@ -327,3 +327,86 @@ export const inputSell = (sales) => {
         })
     }
 }
+
+//update otherDebtDoc as required when trays sold to thika farmers
+export const updateOtherDebtDoc = (sales) => {
+    return (dispatch, getState, {getFirestore}) => {
+        const firestore = getFirestore();
+        const profile = getState().firebase.profile;
+        let total = sales.trayNo ? parseInt(sales.trayNo) * parseInt(sales.trayPrice) : parseInt(sales.chickenNo) * parseInt(sales.chickenPrice);
+        const batch = firestore.batch();
+
+        if (sales.section === "Thika Farmers") {
+
+            firestore.collection("otherDebt").orderBy("date", "desc").get().then(function (snapshot) {
+                if (snapshot.size === 0) {
+                    return null;
+                }
+
+                function updateThikaDoc(allThikaDocRef) {
+                    allThikaDocRef.get().then(function (thikaDoc) {
+                        if (thikaDoc.exists) {
+                            const myTotal = parseInt(thikaDoc.data().total);
+                            const newTotal = myTotal - total;
+
+                            if (newTotal > 0) {
+                                batch.update(allThikaDocRef, {
+                                    total: newTotal,
+                                    submittedOn: firestore.FieldValue.serverTimestamp()
+                                })
+                            } else if (newTotal <= 0) {
+                                batch.delete(allThikaDocRef);
+                            }
+                        } else {
+                            return new Error("ERROR: No doc found");
+                        }
+                    }).catch((err) => {
+                        console.log("ERROR: ", err.message);
+                    })
+                }
+
+                for (let i = 0; i < snapshot.size; i++) {
+                    const balance = parseInt(snapshot.docs[i].data().balance);
+
+                    if (profile.firstName === "Jeff") {
+                        const final = total - balance;
+                        const otherDebtDocRef = firestore.collection("otherDebt").doc(snapshot.docs[i].id);
+                        const allThikaDocRef = firestore.collection("otherDebt").doc("TotalThikaFarmers");
+
+                        if (final < 0) {
+                            const newFinal = final * -1;
+
+                            batch.update(otherDebtDocRef, {
+                                balance: newFinal,
+                                submittedOn: firestore.FieldValue.serverTimestamp()
+                            })
+
+                            updateThikaDoc(allThikaDocRef);
+
+                            break;
+                        } else if (final === 0) {
+                            batch.delete(otherDebtDocRef);
+
+                            updateThikaDoc(allThikaDocRef);
+
+                            break;
+
+                        } else if (final > 0) {
+                            batch.delete(otherDebtDocRef);
+                            updateThikaDoc(allThikaDocRef);
+                            total = final;
+                        }
+                    } else {
+                        return null;
+                    }
+
+                }
+
+
+            })
+        } else {
+            return null;
+        }
+
+    }
+}
