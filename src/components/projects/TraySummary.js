@@ -6,9 +6,9 @@ const TraySummary = (tray) => {
     if (tray.item.submittedOn && (parseInt(tray.item.number) > 0 || parseInt(tray.item.remainder) > 0)) {
         const time = tray.item.submittedOn.toDate() ? tray.item.submittedOn.toDate() : "No date given";
 
-        var link = <p>{tray.item.number} Trays in Store and {tray.item.remainder} eggs</p>;
+        let link = <p>{tray.item.number} Trays in Store and {tray.item.remainder} eggs</p>;
 
-        if ((parseInt(tray.item.number) === 1 && parseInt(tray.item.remainder) > 1) || parseInt(tray.item.remainder) === 0) {
+        if ((parseInt(tray.item.number) === 1 && parseInt(tray.item.remainder) > 1)) {
             link = <p>{tray.item.number} Tray in Store and {tray.item.remainder} eggs</p>;
         }
         if (parseInt(tray.item.number) > 1 && parseInt(tray.item.remainder) === 1) {

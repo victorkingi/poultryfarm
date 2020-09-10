@@ -3,7 +3,6 @@ import {connect} from 'react-redux';
 import {inputDeadSick} from "../../store/actions/DeadSickAction";
 import M from "materialize-css";
 import {Redirect} from "react-router-dom";
-import {toast, ToastContainer} from "react-toastify";
 
 class InputDeadSick extends Component {
 
@@ -96,15 +95,6 @@ class InputDeadSick extends Component {
 
     componentDidMount = () => {
         M.AutoInit();
-        toast.success('🦄 Image Uploaded', {
-            position: "top-right",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-        });
     }
 
     render() {
@@ -120,19 +110,6 @@ class InputDeadSick extends Component {
 
         return (
             <div>
-                <div style={{display: 'none'}} id="uploadLoad">
-                    <ToastContainer
-                        position="top-right"
-                        autoClose={3000}
-                        hideProgressBar={false}
-                        newestOnTop
-                        closeOnClick
-                        rtl={false}
-                        pauseOnFocusLoss
-                        draggable
-                        pauseOnHover
-                    />
-                </div>
 
                 <div className="container">
                     <form onSubmit={this.handleSubmit} className="white">
@@ -154,6 +131,13 @@ class InputDeadSick extends Component {
                                 <option value="Dead">Dead</option>
                                 <option value="Sick">Sick</option>
                             </select>
+                            <br/>
+                            <select id="place" onChange={this.handleChange} className="white" defaultValue="0">
+                                <option value="0" disabled="disabled">Choose Location</option>
+                                <option value="Cage">Cage</option>
+                                <option value="House">House</option>
+                            </select>
+
                         </div>
 
                         <div style={{display: 'none'}} id="reason">
