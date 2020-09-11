@@ -13,105 +13,6 @@ function leapYear(year) {
     return ((year % 4 === 0) && (year % 100 !== 0)) || (year % 400 === 0);
 }
 
-//update otherDebtDoc as required when trays sold to thika farmers
-const updateOtherDebtDoc = (sales) => {
-    return (dispatch, getState, {getFirestore}) => {
-        const firestore = getFirestore();
-        const profile = getState().firebase.profile;
-        let total = sales.trayNo ? parseInt(sales.trayNo) * parseInt(sales.trayPrice) : parseInt(sales.chickenNo) * parseInt(sales.chickenPrice);
-        const currentDocRef = firestore.collection("current").doc("Jeff Karue");
-        const batch = firestore.batch();
-
-        if (sales.section === "Thika Farmers") {
-
-            firestore.collection("otherDebt").orderBy("date", "desc").get().then(function (snapshot) {
-                if (snapshot.size === 0) {
-                    return null;
-                }
-
-                function updateThikaDoc(allThikaDocRef) {
-                    allThikaDocRef.get().then(function (thikaDoc) {
-                        if (thikaDoc.exists) {
-                            const myTotal = parseInt(thikaDoc.data().total);
-                            const newTotal = myTotal - total;
-                            const current = total * -1;
-
-                            if (newTotal > 0) {
-                                batch.update(allThikaDocRef, {
-                                    total: newTotal,
-                                    submittedOn: firestore.FieldValue.serverTimestamp()
-                                })
-                            } else if (newTotal <= 0) {
-                                batch.delete(allThikaDocRef);
-                            }
-
-                            batch.update(currentDocRef, {
-                                balance: firestore.FieldValue.increment(current),
-                                submittedOn: firestore.FieldValue.serverTimestamp()
-                            })
-                        } else {
-                            return new Error("ERROR: No doc found");
-                        }
-                    }).catch((err) => {
-                        console.log("ERROR: ", err.message);
-                    })
-                }
-
-                for (let i = 0; i < snapshot.size; i++) {
-                    const balance = parseInt(snapshot.docs[i].data().balance);
-
-                    if (profile.firstName === "Jeff") {
-                        const final = total - balance;
-                        const otherDebtDocRef = firestore.collection("otherDebt").doc(snapshot.docs[i].id);
-                        const allThikaDocRef = firestore.collection("otherDebt").doc("TotalThikaFarmers");
-
-                        if (final < 0) {
-                            const newFinal = final * -1;
-
-                            batch.update(otherDebtDocRef, {
-                                balance: newFinal,
-                                submittedOn: firestore.FieldValue.serverTimestamp()
-                            })
-
-                            updateThikaDoc(allThikaDocRef);
-                            batch.commit().then(() => console.log("debt updated"));
-
-                            break;
-                        } else if (final === 0) {
-                            batch.delete(otherDebtDocRef);
-
-                            updateThikaDoc(allThikaDocRef);
-
-                            batch.commit().then(() => console.log("debt updated"));
-
-                            break;
-
-                        } else if (final > 0) {
-                            batch.delete(otherDebtDocRef);
-                            updateThikaDoc(allThikaDocRef);
-                            total = final;
-
-                            batch.commit().then(() => console.log("debt updated"));
-                        }
-
-                    } else {
-                        return null;
-                    }
-
-                }
-
-
-            }).then(() => {
-
-            })
-
-        } else {
-            return null;
-        }
-
-    }
-}
-
 export const inputSell = (sales) => {
     return (dispatch, getState, {getFirebase, getFirestore}) => {
         const firestore = getFirestore();
@@ -132,15 +33,21 @@ export const inputSell = (sales) => {
         const isLeap = leapYear(year);
         const status = JSON.parse(sales.status);
         const buyer = sales.buyerName ? sales.buyerName : sales.section;
-        const salesDocRef = buyer ? firestore.collection("sales").doc('Month ' + enteredMonth + ' Date ' + enteredDate + ' ' + section + ': ' + buyer) : firestore.collection("sales").doc('Month ' + enteredMonth + ' Date ' + enteredDate + ' ' + section);
+        const salesDocRef = buyer ? firestore.collection("sales").doc('Month ' + enteredMonth + ' Date ' + enteredDate
+            + ' ' + section + ': ' + buyer) : firestore.collection("sales").doc('Month ' + enteredMonth
+            + ' Date ' + enteredDate + ' ' + section);
         const currentDocRef = firestore.collection("current").doc(fullName);
         const profitDocRef = firestore.collection("profit").doc('Month ' + enteredMonth + 'Week ' + weekNo);
         const currentJeffRef = firestore.collection("current").doc("Jeff Karue");
         const traysDocRef = firestore.collection("trays").doc("CurrentTrays");
         const userLogRef = firestore.collection("userLogs").doc(user.uid).collection("logs").doc();
-        const latePaymentDocRef = buyer ? firestore.collection("latePayment").doc('Month ' + enteredMonth + ' Date ' + enteredDate + ' ' + section + ': ' + buyer) : firestore.collection("latePayment").doc('Month ' + enteredMonth + ' Date ' + enteredDate + ' ' + section);
+        const latePaymentDocRef = buyer ? firestore.collection("latePayment").doc('Month ' + enteredMonth
+            + ' Date ' + enteredDate + ' ' + section + ': ' + buyer) : firestore.collection("latePayment")
+            .doc('Month ' + enteredMonth + ' Date ' + enteredDate + ' ' + section);
 
-        const total = sales.trayNo ? parseInt(sales.trayNo) * parseInt(sales.trayPrice) : parseInt(sales.chickenNo) * parseInt(sales.chickenPrice);
+
+        let total = sales.trayNo ? parseInt(sales.trayNo) * parseInt(sales.trayPrice)
+            : parseInt(sales.chickenNo) * parseInt(sales.chickenPrice);
 
         const dateCheck = (enteredMonth === 2 && (enteredDate > 28 || enteredDate < 1)) || (enteredMonth === 4
             && (enteredDate > 30 || enteredDate < 1)) || (enteredMonth === 6 && (enteredDate > 30 || enteredDate < 1))
@@ -220,7 +127,6 @@ export const inputSell = (sales) => {
                                                                 }
 
                                                                 if (transMade) {
-                                                                    const buyDocRef = firestore.collection("buys").doc(buyDoc.id);
 
                                                                     transaction.set(salesDocRef, {
                                                                         ...sales,
@@ -233,83 +139,6 @@ export const inputSell = (sales) => {
                                                                         submittedBy: profile.firstName + ' ' + profile.lastName,
                                                                         submittedOn: firestore.FieldValue.serverTimestamp()
                                                                     });
-
-                                                                    if (newNumWeekDay === 8 && newNumMonthDay !== 31) {
-                                                                        newNumWeekDay = 1;
-                                                                        const weeklySpend = parseInt(buyDoc.data().weeklySpend);
-                                                                        const used = JSON.parse(buyDoc.data().used);
-
-                                                                        if (!used) {
-                                                                            const weekProfit = prevWeeklyTotal - weeklySpend;
-
-                                                                            transaction.set(profitDocRef, {
-                                                                                weekProfit: weekProfit,
-                                                                                submittedOn: firestore.FieldValue.serverTimestamp()
-                                                                            })
-
-                                                                            transaction.update(buyDocRef, {
-                                                                                used: true
-                                                                            })
-                                                                        }
-
-                                                                        transaction.update(salesDocRef, {
-                                                                            numWeekDay: newNumWeekDay,
-                                                                            weeklyTotal: total,
-                                                                        });
-
-                                                                    } else if (newNumWeekDay !== 8 && newNumMonthDay === 31) {
-                                                                        newNumMonthDay = 1;
-                                                                        const monthlySpend = parseInt(buyDoc.data().monthlySpend);
-                                                                        const used = JSON.parse(buyDoc.data().used);
-
-                                                                        if (!used) {
-                                                                            const monthProfit = prevMonthlyTotal - monthlySpend;
-
-                                                                            transaction.set(profitDocRef, {
-                                                                                monthProfit: monthProfit,
-                                                                                submittedOn: firestore.FieldValue.serverTimestamp()
-                                                                            })
-
-                                                                            transaction.update(buyDocRef, {
-                                                                                used: true
-                                                                            })
-                                                                        }
-
-                                                                        transaction.update(salesDocRef, {
-                                                                            numMonthDay: newNumMonthDay,
-                                                                            monthlyTotal: total,
-                                                                        });
-
-                                                                    } else if (newNumWeekDay === 8 && newNumMonthDay === 31) {
-                                                                        const monthlySpend = parseInt(buyDoc.data().monthlySpend);
-                                                                        const weeklySpend = parseInt(buyDoc.data().weeklySpend);
-                                                                        const used = JSON.parse(buyDoc.data().used);
-
-                                                                        newNumMonthDay = 1;
-                                                                        newNumWeekDay = 1;
-
-                                                                        if (!used) {
-                                                                            const monthProfit = prevMonthlyTotal - monthlySpend;
-                                                                            const weekProfit = prevWeeklyTotal - weeklySpend;
-
-                                                                            transaction.set(profitDocRef, {
-                                                                                monthProfit: monthProfit,
-                                                                                weekProfit: weekProfit,
-                                                                                submittedOn: firestore.FieldValue.serverTimestamp()
-                                                                            })
-
-                                                                            transaction.update(buyDocRef, {
-                                                                                used: true
-                                                                            })
-                                                                        }
-
-                                                                        transaction.update(salesDocRef, {
-                                                                            numWeekDay: newNumWeekDay,
-                                                                            numMonthDay: newNumMonthDay,
-                                                                            weeklyTotal: total,
-                                                                            monthlyTotal: total
-                                                                        });
-                                                                    }
 
                                                                     if (section === "Simbi" && jeffDoc.exists) {
                                                                         transaction.update(currentJeffRef, {
@@ -340,8 +169,12 @@ export const inputSell = (sales) => {
                                                                 return Promise.reject("ERROR: Document doesn't exist!");
                                                             }
                                                         } else if (user.uid && !status) {
+                                                            let transMade = false;
                                                             if (sales.trayNo) {
-                                                                commonTransaction();
+                                                                transMade = commonTransaction();
+                                                            }
+
+                                                            if (transMade) {
 
                                                                 transaction.set(latePaymentDocRef, {
                                                                     amountDue: total,
@@ -355,19 +188,15 @@ export const inputSell = (sales) => {
                                                                     submittedOn: firestore.FieldValue.serverTimestamp()
                                                                 })
 
-                                                                transaction.set(salesDocRef, {
-                                                                    ...sales,
-                                                                    key: key,
-                                                                    date: new Date(year, newMonth, enteredDate),
-                                                                    submittedBy: profile.firstName + ' ' + profile.lastName,
-                                                                    submittedOn: firestore.FieldValue.serverTimestamp()
-                                                                });
-
                                                             } else if (sales.chickenNo) {
                                                                 transaction.set(latePaymentDocRef, {
                                                                     amountDue: total,
                                                                     chickenNo: sales.chickenNo,
                                                                     key: key,
+                                                                    weeklyTotal: newWeeklyTotal,
+                                                                    monthlyTotal: newMonthlyTotal,
+                                                                    numWeekDay: newNumWeekDay,
+                                                                    numMonthDay: newNumMonthDay,
                                                                     chickenPrice: sales.chickenPrice,
                                                                     date: new Date(year, newMonth, enteredDate),
                                                                     section: sales.section,
@@ -379,8 +208,107 @@ export const inputSell = (sales) => {
                                                                 return Promise.reject("ERROR: Contact main admin for help!");
                                                             }
 
+                                                            transaction.set(salesDocRef, {
+                                                                ...sales,
+                                                                key: key,
+                                                                weeklyTotal: newWeeklyTotal,
+                                                                monthlyTotal: newMonthlyTotal,
+                                                                numWeekDay: newNumWeekDay,
+                                                                numMonthDay: newNumMonthDay,
+                                                                date: new Date(year, newMonth, enteredDate),
+                                                                submittedBy: profile.firstName + ' ' + profile.lastName,
+                                                                submittedOn: firestore.FieldValue.serverTimestamp()
+                                                            });
+
+                                                            transaction.set(userLogRef, {
+                                                                event: 'sale ' + sales.section + ' to ' + buyer + ' but not paid',
+                                                                earned: total,
+                                                                key: key,
+                                                                submittedBy: profile.firstName + ' ' + profile.lastName,
+                                                                submittedOn: firestore.FieldValue.serverTimestamp()
+                                                            });
+
                                                         } else {
                                                             return Promise.reject("ERROR: Contact main admin for help!");
+                                                        }
+
+                                                        const buyDocRef = firestore.collection("buys").doc(buyDoc.id);
+
+                                                        if (newNumWeekDay === 8 && newNumMonthDay !== 31) {
+                                                            newNumWeekDay = 1;
+                                                            const weeklySpend = parseInt(buyDoc.data().weeklySpend);
+                                                            const used = JSON.parse(buyDoc.data().used);
+
+                                                            if (!used) {
+                                                                const weekProfit = prevWeeklyTotal - weeklySpend;
+
+                                                                transaction.set(profitDocRef, {
+                                                                    weekProfit: weekProfit,
+                                                                    submittedOn: firestore.FieldValue.serverTimestamp()
+                                                                })
+
+                                                                transaction.update(buyDocRef, {
+                                                                    used: true
+                                                                })
+                                                            }
+
+                                                            transaction.update(salesDocRef, {
+                                                                numWeekDay: newNumWeekDay,
+                                                                weeklyTotal: total,
+                                                            });
+
+                                                        } else if (newNumWeekDay !== 8 && newNumMonthDay === 31) {
+                                                            newNumMonthDay = 1;
+                                                            const monthlySpend = parseInt(buyDoc.data().monthlySpend);
+                                                            const used = JSON.parse(buyDoc.data().used);
+
+                                                            if (!used) {
+                                                                const monthProfit = prevMonthlyTotal - monthlySpend;
+
+                                                                transaction.set(profitDocRef, {
+                                                                    monthProfit: monthProfit,
+                                                                    submittedOn: firestore.FieldValue.serverTimestamp()
+                                                                })
+
+                                                                transaction.update(buyDocRef, {
+                                                                    used: true
+                                                                })
+                                                            }
+
+                                                            transaction.update(salesDocRef, {
+                                                                numMonthDay: newNumMonthDay,
+                                                                monthlyTotal: total,
+                                                            });
+
+                                                        } else if (newNumWeekDay === 8 && newNumMonthDay === 31) {
+                                                            const monthlySpend = parseInt(buyDoc.data().monthlySpend);
+                                                            const weeklySpend = parseInt(buyDoc.data().weeklySpend);
+                                                            const used = JSON.parse(buyDoc.data().used);
+
+                                                            newNumMonthDay = 1;
+                                                            newNumWeekDay = 1;
+
+                                                            if (!used) {
+                                                                const monthProfit = prevMonthlyTotal - monthlySpend;
+                                                                const weekProfit = prevWeeklyTotal - weeklySpend;
+
+                                                                transaction.set(profitDocRef, {
+                                                                    monthProfit: monthProfit,
+                                                                    weekProfit: weekProfit,
+                                                                    submittedOn: firestore.FieldValue.serverTimestamp()
+                                                                })
+
+                                                                transaction.update(buyDocRef, {
+                                                                    used: true
+                                                                })
+                                                            }
+
+                                                            transaction.update(salesDocRef, {
+                                                                numWeekDay: newNumWeekDay,
+                                                                numMonthDay: newNumMonthDay,
+                                                                weeklyTotal: total,
+                                                                monthlyTotal: total
+                                                            });
                                                         }
                                                     }
                                                 })
@@ -388,6 +316,69 @@ export const inputSell = (sales) => {
                                         })
                                     })
                                 }).then(() => {
+
+                                    const batch = firestore.batch();
+                                    const allThikaDocRef = firestore.collection("otherDebt").doc("TotalThikaFarmers");
+
+                                    if (sales.section === "Thika Farmers") {
+
+                                        firestore.collection("otherDebt").orderBy("date", "desc").get().then(function (snapshot) {
+                                            if (snapshot.size === 0) {
+                                                return null;
+                                            }
+
+                                            for (let i = 0; i < snapshot.size; i++) {
+                                                const balance = parseInt(snapshot.docs[i].data().balance);
+
+                                                if (profile.firstName === "Jeff") {
+                                                    const final = total - balance;
+                                                    const otherDebtDocRef = firestore.collection("otherDebt").doc(snapshot.docs[i].id);
+
+                                                    if (final < 0) {
+                                                        const newFinal = final * -1;
+
+                                                        batch.update(otherDebtDocRef, {
+                                                            balance: newFinal,
+                                                            submittedOn: firestore.FieldValue.serverTimestamp()
+                                                        })
+
+                                                        break;
+                                                    } else if (final === 0) {
+                                                        batch.delete(otherDebtDocRef);
+
+                                                        break;
+
+                                                    } else if (final > 0) {
+                                                        batch.delete(otherDebtDocRef);
+                                                        total = final;
+                                                    }
+
+
+                                                }
+
+                                            }
+
+                                            const newTotal = total * -1;
+
+                                            batch.update(allThikaDocRef, {
+                                                total: firestore.FieldValue.increment(newTotal),
+                                                submittedOn: firestore.FieldValue.serverTimestamp()
+                                            })
+
+                                            batch.update(currentDocRef, {
+                                                balance: firestore.FieldValue.increment(newTotal),
+                                                submittedOn: firestore.FieldValue.serverTimestamp()
+                                            })
+
+
+                                            batch.commit().then(() => console.log("debt updated"));
+
+                                        }).catch((err) => {
+                                            console.log("error, ", err.message);
+                                        })
+
+                                    }
+
                                     dispatch({type: 'INPUT_SALES', sales});
                                     window.alert("Data Submitted");
                                     window.location = '/';
@@ -418,8 +409,5 @@ export const inputSell = (sales) => {
                 }
             })
         })
-            .then(() => {
-                updateOtherDebtDoc(sales);
-            })
     }
 }
