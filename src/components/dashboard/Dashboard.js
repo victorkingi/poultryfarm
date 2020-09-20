@@ -28,6 +28,14 @@ async function componentDidMount(sendToken) {
         .catch(function (err) {
             console.log("Unable to get permission to notify.", err);
         });
+    messaging.onTokenRefresh(() => {
+        messaging.getToken().then((refreshedToken) => {
+            console.log('Token refreshed.');
+            sendToken(refreshedToken);
+        }).catch((err) => {
+            console.log('Unable to retrieve refreshed token ', err);
+        });
+    });
     navigator.serviceWorker.addEventListener("message", (message) => {
         const customId = "myToast";
         if (message.data) {
@@ -55,7 +63,7 @@ class Dashboard extends Component {
         this.props.checkClaims();
         // this.props.sendTokenToServern();
         componentDidMount(this.props.sendTokenToServer).then(() => console.log("success")).catch((err) => console.log("error: ", err));
-        messaging.onMessage((payload) => console.log('Message received. ', payload))
+
 
         if (!auth.uid) {
             return (

@@ -1,15 +1,4 @@
-function makeid(l) {
-    var text = "";
-    var char_list = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    for (var i = 0; i < l; i++) {
-        text += char_list.charAt(Math.floor(Math.random() * char_list.length));
-    }
-    return text;
-}
-
-function leapYear(year) {
-    return ((year % 4 === 0) && (year % 100 !== 0)) || (year % 400 === 0);
-}
+import {dateCheck, isLastDay, leapYear, makeid} from "./salesAction";
 
 export const inputPurchase = (buys) => {
     return (dispatch, getState, {getFirebase, getFirestore}) => {
@@ -19,8 +8,8 @@ export const inputPurchase = (buys) => {
         const firebase = getFirebase();
         const user = firebase.auth().currentUser;
         const date = new Date();
-        const currentDate = date.getDate();
-        const currentMonth = date.getMonth() + 1;
+        const dayOfTheWeek = date.getDay();
+        const endMonth = isLastDay(date);
         const enteredMonth = parseInt(buys.month);
         const section = buys.section;
         const key = makeid(28);
@@ -39,16 +28,7 @@ export const inputPurchase = (buys) => {
         const totalThikaDebtDocRef = firestore.collection("otherDebt").doc("TotalThikaFarmers");
         const total = parseInt(buys.objectNo) * parseInt(buys.objectPrice);
 
-        const dateChecks = (enteredMonth === 2 && (enteredDate > 28 || enteredDate < 1)) || (enteredMonth === 4
-            && (enteredDate > 30 || enteredDate < 1)) || (enteredMonth === 6 && (enteredDate > 30 || enteredDate < 1))
-            || (enteredMonth === 9 && (enteredDate > 30 || enteredDate < 1)) || (enteredMonth === 11
-                && (enteredDate > 30 || enteredDate < 1)) || (enteredMonth === 1 && (enteredDate > 31 || enteredDate < 1))
-            || (enteredMonth === 3 && (enteredDate > 31 || enteredDate < 1)) || (enteredMonth === 5
-                && (enteredDate > 31 || enteredDate < 1)) || (enteredMonth === 7 && (enteredDate > 31
-                || enteredDate < 1)) || (enteredMonth === 8 && (enteredDate > 31 || enteredDate < 1))
-            || (enteredMonth === 10 && (enteredDate > 31 || enteredDate < 1)) || (enteredMonth === 12
-                && (enteredDate > 31 || enteredDate < 1)) || (isLeap && enteredMonth === 2
-                && (enteredDate > 29 || enteredDate < 1));
+        const dateChecks = dateCheck(enteredMonth, enteredDate, isLeap);
 
 
         if (dateChecks) {
@@ -68,21 +48,10 @@ export const inputPurchase = (buys) => {
             snapshot.docs.forEach(function (doc) {
                 const prevWeeklySpend = parseInt(doc.data().weeklySpend);
                 const prevMonthlySpend = parseInt(doc.data().monthlySpend);
-                const prevNumWeekDay = parseInt(doc.data().numWeekDay);
-                const prevNumMonthDay = parseInt(doc.data().numMonthDay);
 
                 const newWeeklySpend = total + prevWeeklySpend;
                 const newMonthlySpend = total + prevMonthlySpend;
-
-                let dateDif = 1;
-                const newMonth = currentMonth - enteredMonth;
-
-                if (newMonth === 0) {
-                    dateDif = currentDate - enteredDate;
-                }
-
-                let newNumWeekDay = prevNumWeekDay + dateDif;
-                let newNumMonthDay = prevNumMonthDay + dateDif;
+                const newMonth = enteredMonth + 1;
 
                 return firestore.runTransaction(function (transaction) {
 
@@ -107,37 +76,26 @@ export const inputPurchase = (buys) => {
                                         used: false,
                                         weeklySpend: newWeeklySpend,
                                         monthlySpend: newMonthlySpend,
-                                        numWeekDay: newNumWeekDay,
-                                        numMonthDay: newNumMonthDay,
                                         date: new Date(year, newMonth, enteredDate),
                                         submittedBy: fullName,
                                         submittedOn: firestore.FieldValue.serverTimestamp()
                                     });
 
-                                    if (newNumWeekDay === 8 && newNumMonthDay !== 31) {
-                                        newNumWeekDay = 1;
+                                    if (dayOfTheWeek === 0 && endMonth) {
 
                                         transaction.update(buyDocRef, {
-                                            numWeekDay: newNumWeekDay,
+                                            monthlySpend: total,
                                             weeklySpend: total
                                         });
 
-                                    } else if (newNumWeekDay !== 8 && newNumMonthDay === 31) {
-                                        newNumMonthDay = 1;
+                                    } else if (endMonth) {
 
                                         transaction.update(buyDocRef, {
-                                            numMonthDay: newNumMonthDay,
                                             monthlySpend: total
                                         });
 
-                                    } else if (newNumWeekDay === 8 && newNumMonthDay === 31) {
-                                        newNumWeekDay = 1;
-                                        newNumMonthDay = 1;
-
+                                    } else if (dayOfTheWeek === 0) {
                                         transaction.update(buyDocRef, {
-                                            numWeekDay: newNumWeekDay,
-                                            numMonthDay: newNumMonthDay,
-                                            monthlySpend: total,
                                             weeklySpend: total
                                         });
 

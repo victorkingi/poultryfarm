@@ -1,16 +1,35 @@
 import moment from "moment";
 
 function makeid(l) {
-    var text = "";
-    var char_list = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    let text = "";
+    const char_list = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     for (var i = 0; i < l; i++) {
         text += char_list.charAt(Math.floor(Math.random() * char_list.length));
     }
     return text;
 }
 
+function isLastDay(dt) {
+    const test = new Date(dt.getTime());
+    test.setDate(test.getDate() + 1);
+    return test.getDate() === 1;
+}
+
 function leapYear(year) {
     return ((year % 4 === 0) && (year % 100 !== 0)) || (year % 400 === 0);
+}
+
+function dateCheck(enteredMonth, enteredDate, isLeap) {
+    return (enteredMonth === 2 && (enteredDate > 28 || enteredDate < 1)) || (enteredMonth === 4
+        && (enteredDate > 30 || enteredDate < 1)) || (enteredMonth === 6 && (enteredDate > 30 || enteredDate < 1))
+        || (enteredMonth === 9 && (enteredDate > 30 || enteredDate < 1)) || (enteredMonth === 11
+            && (enteredDate > 30 || enteredDate < 1)) || (enteredMonth === 1 && (enteredDate > 31 || enteredDate < 1))
+        || (enteredMonth === 3 && (enteredDate > 31 || enteredDate < 1)) || (enteredMonth === 5
+            && (enteredDate > 31 || enteredDate < 1)) || (enteredMonth === 7 && (enteredDate > 31
+            || enteredDate < 1)) || (enteredMonth === 8 && (enteredDate > 31 || enteredDate < 1))
+        || (enteredMonth === 10 && (enteredDate > 31 || enteredDate < 1)) || (enteredMonth === 12
+            && (enteredDate > 31 || enteredDate < 1)) || (isLeap && enteredMonth === 2
+            && (enteredDate > 29 || enteredDate < 1));
 }
 
 export const inputSell = (sales) => {
@@ -21,7 +40,8 @@ export const inputSell = (sales) => {
         const user = firebase.auth().currentUser;
         const fullName = profile.firstName + ' ' + profile.lastName;
         const date = new Date();
-        const currentDate = date.getDate();
+        const dayOfTheWeek = date.getDay();
+        const endMonth = isLastDay(date);
         const enteredMonth = parseInt(sales.month);
         const newMonth = enteredMonth - 1;
         const section = sales.section;
@@ -49,19 +69,10 @@ export const inputSell = (sales) => {
         let total = sales.trayNo ? parseInt(sales.trayNo) * parseInt(sales.trayPrice)
             : parseInt(sales.chickenNo) * parseInt(sales.chickenPrice);
 
-        const dateCheck = (enteredMonth === 2 && (enteredDate > 28 || enteredDate < 1)) || (enteredMonth === 4
-            && (enteredDate > 30 || enteredDate < 1)) || (enteredMonth === 6 && (enteredDate > 30 || enteredDate < 1))
-            || (enteredMonth === 9 && (enteredDate > 30 || enteredDate < 1)) || (enteredMonth === 11
-                && (enteredDate > 30 || enteredDate < 1)) || (enteredMonth === 1 && (enteredDate > 31 || enteredDate < 1))
-            || (enteredMonth === 3 && (enteredDate > 31 || enteredDate < 1)) || (enteredMonth === 5
-                && (enteredDate > 31 || enteredDate < 1)) || (enteredMonth === 7 && (enteredDate > 31
-                || enteredDate < 1)) || (enteredMonth === 8 && (enteredDate > 31 || enteredDate < 1))
-            || (enteredMonth === 10 && (enteredDate > 31 || enteredDate < 1)) || (enteredMonth === 12
-                && (enteredDate > 31 || enteredDate < 1)) || (isLeap && enteredMonth === 2
-                && (enteredDate > 29 || enteredDate < 1));
+        const dateChecks = dateCheck(enteredMonth, enteredDate, isLeap);
 
 
-        if (dateCheck) {
+        if (dateChecks) {
             const error = "ERROR: Impossible date entered!";
             dispatch({type: 'INPUT_BUYING_ERROR', error});
 
@@ -79,14 +90,8 @@ export const inputSell = (sales) => {
 
                     const prevWeeklyTotal = parseInt(doc.data().weeklyTotal);
                     const prevMonthlyTotal = parseInt(doc.data().monthlyTotal);
-                    const prevNumWeekDay = parseInt(doc.data().numWeekDay);
-                    const prevNumMonthDay = parseInt(doc.data().numMonthDay);
-                    const prevDate = parseInt(doc.data().date.toDate().getDate());
                     const newWeeklyTotal = total + prevWeeklyTotal;
                     const newMonthlyTotal = total + prevMonthlyTotal;
-                    const dateDif = currentDate - prevDate;
-                    let newNumWeekDay = prevNumWeekDay + dateDif;
-                    let newNumMonthDay = prevNumMonthDay + dateDif;
 
                     firestore.collection("buys").orderBy("date", "desc").limit(1).get().then(function (query) {
                         query.forEach(function (buyDoc) {
@@ -133,8 +138,6 @@ export const inputSell = (sales) => {
                                                                         key: key,
                                                                         weeklyTotal: newWeeklyTotal,
                                                                         monthlyTotal: newMonthlyTotal,
-                                                                        numWeekDay: newNumWeekDay,
-                                                                        numMonthDay: newNumMonthDay,
                                                                         date: new Date(year, newMonth, enteredDate),
                                                                         submittedBy: profile.firstName + ' ' + profile.lastName,
                                                                         submittedOn: firestore.FieldValue.serverTimestamp()
@@ -195,8 +198,6 @@ export const inputSell = (sales) => {
                                                                     key: key,
                                                                     weeklyTotal: newWeeklyTotal,
                                                                     monthlyTotal: newMonthlyTotal,
-                                                                    numWeekDay: newNumWeekDay,
-                                                                    numMonthDay: newNumMonthDay,
                                                                     chickenPrice: sales.chickenPrice,
                                                                     date: new Date(year, newMonth, enteredDate),
                                                                     section: sales.section,
@@ -213,8 +214,6 @@ export const inputSell = (sales) => {
                                                                 key: key,
                                                                 weeklyTotal: newWeeklyTotal,
                                                                 monthlyTotal: newMonthlyTotal,
-                                                                numWeekDay: newNumWeekDay,
-                                                                numMonthDay: newNumMonthDay,
                                                                 date: new Date(year, newMonth, enteredDate),
                                                                 submittedBy: profile.firstName + ' ' + profile.lastName,
                                                                 submittedOn: firestore.FieldValue.serverTimestamp()
@@ -233,16 +232,19 @@ export const inputSell = (sales) => {
                                                         }
 
                                                         const buyDocRef = firestore.collection("buys").doc(buyDoc.id);
+                                                        const monthlySpend = parseInt(buyDoc.data().monthlySpend);
+                                                        const weeklySpend = parseInt(buyDoc.data().weeklySpend);
+                                                        const used = JSON.parse(buyDoc.data().used);
 
-                                                        if (newNumWeekDay === 8 && newNumMonthDay !== 31) {
-                                                            newNumWeekDay = 1;
-                                                            const weeklySpend = parseInt(buyDoc.data().weeklySpend);
+                                                        if (dayOfTheWeek === 0 && endMonth) {
                                                             const used = JSON.parse(buyDoc.data().used);
 
                                                             if (!used) {
+                                                                const monthProfit = prevMonthlyTotal - monthlySpend;
                                                                 const weekProfit = prevWeeklyTotal - weeklySpend;
 
                                                                 transaction.set(profitDocRef, {
+                                                                    monthProfit: monthProfit,
                                                                     weekProfit: weekProfit,
                                                                     submittedOn: firestore.FieldValue.serverTimestamp()
                                                                 })
@@ -253,14 +255,11 @@ export const inputSell = (sales) => {
                                                             }
 
                                                             transaction.update(salesDocRef, {
-                                                                numWeekDay: newNumWeekDay,
                                                                 weeklyTotal: total,
+                                                                monthlyTotal: total
                                                             });
 
-                                                        } else if (newNumWeekDay !== 8 && newNumMonthDay === 31) {
-                                                            newNumMonthDay = 1;
-                                                            const monthlySpend = parseInt(buyDoc.data().monthlySpend);
-                                                            const used = JSON.parse(buyDoc.data().used);
+                                                        } else if (endMonth) {
 
                                                             if (!used) {
                                                                 const monthProfit = prevMonthlyTotal - monthlySpend;
@@ -276,24 +275,15 @@ export const inputSell = (sales) => {
                                                             }
 
                                                             transaction.update(salesDocRef, {
-                                                                numMonthDay: newNumMonthDay,
                                                                 monthlyTotal: total,
                                                             });
 
-                                                        } else if (newNumWeekDay === 8 && newNumMonthDay === 31) {
-                                                            const monthlySpend = parseInt(buyDoc.data().monthlySpend);
-                                                            const weeklySpend = parseInt(buyDoc.data().weeklySpend);
-                                                            const used = JSON.parse(buyDoc.data().used);
-
-                                                            newNumMonthDay = 1;
-                                                            newNumWeekDay = 1;
+                                                        } else if (dayOfTheWeek === 0) {
 
                                                             if (!used) {
-                                                                const monthProfit = prevMonthlyTotal - monthlySpend;
                                                                 const weekProfit = prevWeeklyTotal - weeklySpend;
 
                                                                 transaction.set(profitDocRef, {
-                                                                    monthProfit: monthProfit,
                                                                     weekProfit: weekProfit,
                                                                     submittedOn: firestore.FieldValue.serverTimestamp()
                                                                 })
@@ -304,10 +294,7 @@ export const inputSell = (sales) => {
                                                             }
 
                                                             transaction.update(salesDocRef, {
-                                                                numWeekDay: newNumWeekDay,
-                                                                numMonthDay: newNumMonthDay,
                                                                 weeklyTotal: total,
-                                                                monthlyTotal: total
                                                             });
                                                         }
                                                     }
@@ -411,3 +398,5 @@ export const inputSell = (sales) => {
         })
     }
 }
+
+export {makeid, isLastDay, leapYear, dateCheck};

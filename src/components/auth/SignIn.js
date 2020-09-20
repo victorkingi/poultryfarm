@@ -30,7 +30,14 @@ class SignIn extends Component {
 
     render() {
         const {authError, auth} = this.props;
+        const load = document.getElementById("loading");
+        const submit = document.getElementById("login");
         if (auth.uid) return <Redirect to='/'/>
+
+        if (authError) {
+            submit.style.display = 'block';
+            load.style.display = 'none';
+        }
 
 
         return (

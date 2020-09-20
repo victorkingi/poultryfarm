@@ -8,7 +8,7 @@ const eggsReducer = (state = initState, action) => {
             console.log('eggs data added', action.eggs);
             return state;
         case 'INPUT_EGGS_ERROR':
-            console.log('eggs data error', action.err);
+            console.log('eggs data error', action.error);
             return state;
         default:
             return state;

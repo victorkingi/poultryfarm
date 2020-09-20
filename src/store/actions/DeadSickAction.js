@@ -1,6 +1,4 @@
-function leapYear(year) {
-    return ((year % 4 === 0) && (year % 100 !== 0)) || (year % 400 === 0);
-}
+import {dateCheck, leapYear} from "./salesAction";
 
 export const inputDeadSick = (deadSick, image) => {
     return (dispatch, getState, {getFirebase, getFirestore}) => {
@@ -22,19 +20,9 @@ export const inputDeadSick = (deadSick, image) => {
         const userLogRef = firestore.collection("userLogs").doc(user.uid).collection("logs").doc();
         const chickenDocRef = firestore.collection("chickenDetails").doc("2020");
 
-        const dateCheck = (enteredMonth === 2 && (enteredDate > 28 || enteredDate < 1)) || (enteredMonth === 4
-            && (enteredDate > 30 || enteredDate < 1)) || (enteredMonth === 6 && (enteredDate > 30 || enteredDate < 1))
-            || (enteredMonth === 9 && (enteredDate > 30 || enteredDate < 1)) || (enteredMonth === 11
-                && (enteredDate > 30 || enteredDate < 1)) || (enteredMonth === 1 && (enteredDate > 31 || enteredDate < 1))
-            || (enteredMonth === 3 && (enteredDate > 31 || enteredDate < 1)) || (enteredMonth === 5
-                && (enteredDate > 31 || enteredDate < 1)) || (enteredMonth === 7 && (enteredDate > 31
-                || enteredDate < 1)) || (enteredMonth === 8 && (enteredDate > 31 || enteredDate < 1))
-            || (enteredMonth === 10 && (enteredDate > 31 || enteredDate < 1)) || (enteredMonth === 12
-                && (enteredDate > 31 || enteredDate < 1)) || (isLeap && enteredMonth === 2
-                && (enteredDate > 29 || enteredDate < 1));
+        const dateChecks = dateCheck(enteredMonth, enteredDate, isLeap);
 
-
-        if (dateCheck) {
+        if (dateChecks) {
             const error = "ERROR: Impossible date entered!";
             dispatch({type: 'INPUT_BUYING_ERROR', error});
 
