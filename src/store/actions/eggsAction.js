@@ -37,7 +37,7 @@ export const inputTray = (eggs) => {
         const total = parseInt(myTotal);
 
         if (prevDate === 0) {
-            prevMonth--;
+            prevMonth = prevMonth - 1;
             if (prevMonth === 1 || prevMonth === 3 || prevMonth === 5 || prevMonth === 7 || prevMonth === 8 || prevMonth === 10 || prevMonth === 12) {
                 prevDate = 31;
             } else if (isLeap && prevMonth === 2) {
@@ -60,7 +60,7 @@ export const inputTray = (eggs) => {
 
             window.alert(error);
             window.location = '/';
-            throw new Error("ERROR: Impossible date entered!");
+            return new Error("ERROR: Impossible date entered!");
         }
 
         firestore.runTransaction(function (transaction) {
@@ -109,6 +109,8 @@ export const inputTray = (eggs) => {
                                                 transaction.update(chickenDocRef, {
                                                     weekPercent: weeklyAllPercent,
                                                     monthPercent: monthAllPercent,
+                                                    weekCagePercent: weeklyCagePercent,
+                                                    weekHousePercent: weeklyHousePercent,
                                                     submittedOn: firestore.FieldValue.serverTimestamp()
                                                 })
 
@@ -137,6 +139,8 @@ export const inputTray = (eggs) => {
 
                                                 transaction.update(chickenDocRef, {
                                                     weekPercent: weeklyAllPercent,
+                                                    weekCagePercent: weeklyCagePercent,
+                                                    weekHousePercent: weeklyHousePercent,
                                                     submittedOn: firestore.FieldValue.serverTimestamp()
                                                 })
 
