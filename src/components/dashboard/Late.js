@@ -4,6 +4,9 @@ import {compose} from 'redux'
 import {Redirect} from 'react-router-dom';
 import {firestoreConnect} from 'react-redux-firebase';
 import LatePaymentList from "../projects/LatePaymentList";
+import {setPerformanceEnd, setPerformanceStart} from "../../store/actions/moneyAction";
+
+setPerformanceStart();
 
 class Late extends Component {
 
@@ -44,6 +47,8 @@ const mapStateToProps = (state) => {
         late: state.firestore.ordered.latePayment
     }
 }
+
+setPerformanceEnd('LATE_LOAD_TIME');
 
 export default compose(
     connect(mapStateToProps),

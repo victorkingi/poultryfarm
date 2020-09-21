@@ -1,13 +1,18 @@
-import {dateCheck, leapYear} from "./salesAction";
+import {dateCheck, isLastDay, leapYear} from "./salesAction";
+import {setPerformanceEnd, setPerformanceStart} from "./moneyAction";
 
 //when user inputs eggs
 export const inputTray = (eggs) => {
     return (dispatch, getState, {getFirebase, getFirestore}) => {
+        setPerformanceStart();
+
         const firestore = getFirestore();
         const profile = getState().firebase.profile;
         const firebase = getFirebase();
         const user = firebase.auth().currentUser;
         const date = new Date();
+        const dayOfTheWeek = date.getDay();
+        const endMonth = isLastDay(date);
         const enteredMonth = parseInt(eggs.month);
         const newMonth = enteredMonth - 1;
         const enteredDate = parseInt(eggs.date);
@@ -58,7 +63,7 @@ export const inputTray = (eggs) => {
             throw new Error("ERROR: Impossible date entered!");
         }
 
-        return firestore.runTransaction(function (transaction) {
+        firestore.runTransaction(function (transaction) {
 
             return transaction.get(eggDocRef).then(function (eggDoc) {
                 return transaction.get(traysDocRef).then(function (trayDoc) {
@@ -92,20 +97,14 @@ export const inputTray = (eggs) => {
                                             let allMonthlyEggs = total + prevAllMonthlyEggs;
                                             let houseMonthlyEggs = house + prevHouseMonthlyEggs;
                                             let cageMonthlyEggs = cageTotal + prevCageMonthlyEggs;
-                                            let numPercent = parseInt(eggPreviousDoc.data().numPercent);
-                                            let numMonthPercent = parseInt(eggPreviousDoc.data().numMonthPercent);
-                                            numPercent = numPercent + 1;
-                                            numMonthPercent = numMonthPercent + 1;
 
-                                            if (numPercent === 8 && numMonthPercent === 31) {
+                                            if (dayOfTheWeek === 0 && endMonth) {
                                                 const weeklyAllPercent = ((prevAllWeeklyEggs / 7) / chickenNo) * 100;
                                                 const weeklyCagePercent = ((prevCageWeeklyEggs / 7) / cageNo) * 100;
                                                 const weeklyHousePercent = ((prevHouseWeeklyEggs / 7) / houseNo) * 100;
                                                 const monthAllPercent = ((prevAllMonthlyEggs / 30) / chickenNo) * 100;
                                                 const monthCagePercent = ((prevCageMonthlyEggs / 30) / cageNo) * 100;
                                                 const monthHousePercent = ((prevHouseMonthlyEggs / 30) / houseNo) * 100;
-                                                numMonthPercent = 1;
-                                                numPercent = 1;
 
                                                 transaction.update(chickenDocRef, {
                                                     weekPercent: weeklyAllPercent,
@@ -115,8 +114,6 @@ export const inputTray = (eggs) => {
 
                                                 transaction.set(eggDocRef, {
                                                     ...eggs,
-                                                    numPercent: numPercent,
-                                                    numMonthPercent: numMonthPercent,
                                                     weeklyAllPercent: weeklyAllPercent,
                                                     weeklyCagePercent: weeklyCagePercent,
                                                     weeklyHousePercent: weeklyHousePercent,
@@ -133,11 +130,10 @@ export const inputTray = (eggs) => {
                                                     submittedBy: profile.firstName + ' ' + profile.lastName,
                                                     submittedOn: firestore.FieldValue.serverTimestamp()
                                                 })
-                                            } else if (numPercent === 8 && numMonthPercent !== 31) {
+                                            } else if (dayOfTheWeek === 0) {
                                                 const weeklyAllPercent = ((prevAllWeeklyEggs / 7) / chickenNo) * 100;
                                                 const weeklyCagePercent = ((prevCageWeeklyEggs / 7) / cageNo) * 100;
                                                 const weeklyHousePercent = ((prevHouseWeeklyEggs / 7) / houseNo) * 100;
-                                                numPercent = 1;
 
                                                 transaction.update(chickenDocRef, {
                                                     weekPercent: weeklyAllPercent,
@@ -146,8 +142,6 @@ export const inputTray = (eggs) => {
 
                                                 transaction.set(eggDocRef, {
                                                     ...eggs,
-                                                    numPercent: numPercent,
-                                                    numMonthPercent: numMonthPercent,
                                                     weeklyAllPercent: weeklyAllPercent,
                                                     weeklyCagePercent: weeklyCagePercent,
                                                     weeklyHousePercent: weeklyHousePercent,
@@ -161,11 +155,10 @@ export const inputTray = (eggs) => {
                                                     submittedBy: profile.firstName + ' ' + profile.lastName,
                                                     submittedOn: firestore.FieldValue.serverTimestamp()
                                                 })
-                                            } else if (numPercent !== 8 && numMonthPercent === 31) {
+                                            } else if (endMonth) {
                                                 const monthAllPercent = ((prevAllMonthlyEggs / 30) / chickenNo) * 100;
                                                 const monthCagePercent = ((prevCageMonthlyEggs / 30) / cageNo) * 100;
                                                 const monthHousePercent = ((prevHouseMonthlyEggs / 30) / houseNo) * 100;
-                                                numMonthPercent = 1;
 
                                                 transaction.update(chickenDocRef, {
                                                     monthPercent: monthAllPercent,
@@ -174,8 +167,6 @@ export const inputTray = (eggs) => {
 
                                                 transaction.set(eggDocRef, {
                                                     ...eggs,
-                                                    numPercent: numPercent,
-                                                    numMonthPercent: numMonthPercent,
                                                     monthAllPercent: monthAllPercent,
                                                     monthCagePercent: monthCagePercent,
                                                     monthHousePercent: monthHousePercent,
@@ -192,8 +183,6 @@ export const inputTray = (eggs) => {
                                             } else {
                                                 transaction.set(eggDocRef, {
                                                     ...eggs,
-                                                    numPercent: numPercent,
-                                                    numMonthPercent: numMonthPercent,
                                                     allWeeklyEggs: allWeeklyEggs,
                                                     cageWeeklyEggs: cageWeeklyEggs,
                                                     houseWeeklyEggs: houseWeeklyEggs,
@@ -250,5 +239,6 @@ export const inputTray = (eggs) => {
             window.location = '/';
         })
 
+        setPerformanceEnd('EGG_TIME');
     }
 };

@@ -99,12 +99,24 @@ function Charts(eggs) {
             eggsDatabroken.push(broken);
             eggDataTotal.push(total);
 
-            eggDataWeeklyAllPercent.push(weeklyAllPercent);
-            eggDataWeeklyCagePercent.push(weeklyCagePercent);
-            eggDataWeeklyHousePercent.push(weeklyHousePercent);
-            eggDataMonthlyAllPercent.push(monthlyAllPercent);
-            eggDataMonthlyCagePercent.push(monthlyCagePercent);
-            eggDataMonthlyHousePercent.push(monthlyHousePercent);
+            if (!isNaN(weeklyAllPercent)) {
+                eggDataWeeklyAllPercent.push(weeklyAllPercent);
+            }
+            if (!isNaN(weeklyCagePercent)) {
+                eggDataWeeklyCagePercent.push(weeklyCagePercent);
+            }
+            if (!isNaN(weeklyHousePercent)) {
+                eggDataWeeklyHousePercent.push(weeklyHousePercent);
+            }
+            if (!isNaN(monthlyAllPercent)) {
+                eggDataMonthlyAllPercent.push(monthlyAllPercent);
+            }
+            if (!isNaN(monthlyCagePercent)) {
+                eggDataMonthlyCagePercent.push(monthlyCagePercent);
+            }
+            if (!isNaN(monthlyHousePercent)) {
+                eggDataMonthlyHousePercent.push(monthlyHousePercent);
+            }
 
         }
 

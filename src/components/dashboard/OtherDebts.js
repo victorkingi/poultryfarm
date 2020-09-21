@@ -4,6 +4,9 @@ import {compose} from 'redux'
 import {Redirect} from 'react-router-dom';
 import {firestoreConnect} from 'react-redux-firebase';
 import OtherDebtList from "../projects/OtherDebtList";
+import {setPerformanceEnd, setPerformanceStart} from "../../store/actions/moneyAction";
+
+setPerformanceStart();
 
 class OtherDebts extends Component {
 
@@ -35,6 +38,8 @@ const mapStateToProps = (state) => {
         otherDebt: state.firestore.ordered.otherDebt
     }
 }
+
+setPerformanceEnd('DEBT_LOAD_TIME');
 
 export default compose(
     connect(mapStateToProps),

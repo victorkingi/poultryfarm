@@ -25,6 +25,9 @@ import SickDead from "./components/dashboard/SickDead";
 import InputDeadSick from "./components/projects/InputDeadSick";
 import SickDeadDetails from "./components/projects/SickDeadDetails";
 import InputNews from "./components/projects/InputNews";
+import {setPerformanceEnd, setPerformanceStart} from "./store/actions/moneyAction";
+
+setPerformanceStart();
 
 class App extends Component {
 
@@ -64,5 +67,7 @@ class App extends Component {
         );
     }
 }
+
+setPerformanceEnd('APP_TIME');
 
 export default App;

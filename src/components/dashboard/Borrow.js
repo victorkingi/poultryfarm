@@ -4,6 +4,9 @@ import {compose} from 'redux'
 import {Redirect} from 'react-router-dom';
 import {firestoreConnect} from 'react-redux-firebase';
 import BorrowList from "../projects/BorrowList";
+import {setPerformanceEnd, setPerformanceStart} from "../../store/actions/moneyAction";
+
+setPerformanceStart();
 
 class Borrow extends Component {
 
@@ -35,6 +38,8 @@ const mapStateToProps = (state) => {
         borrow: state.firestore.ordered.borrow
     }
 }
+
+setPerformanceEnd('BORROW_LOAD_TIME');
 
 
 export default compose(

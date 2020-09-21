@@ -4,6 +4,9 @@ import {compose} from 'redux'
 import {Redirect} from 'react-router-dom';
 import {firestoreConnect} from 'react-redux-firebase';
 import SickDeadList from "../projects/SickDeadList";
+import {setPerformanceEnd, setPerformanceStart} from "../../store/actions/moneyAction";
+
+setPerformanceStart();
 
 class SickDead extends Component {
 
@@ -35,6 +38,8 @@ const mapStateToProps = (state) => {
         deadSick: state.firestore.ordered.deadSick
     }
 }
+
+setPerformanceEnd('DEAD_SICK_LOAD_TIME');
 
 export default compose(
     connect(mapStateToProps),

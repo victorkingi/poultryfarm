@@ -1,6 +1,9 @@
 //update the age of the birds accordingly
+import {setPerformanceEnd, setPerformanceStart} from "./moneyAction";
+
 export const updateChickens = () => {
     return (dispatch, getState, {getFirestore}) => {
+        setPerformanceStart();
         //make async call to database
         const firestore = getFirestore();
         const date = new Date()
@@ -18,11 +21,14 @@ export const updateChickens = () => {
             weekNo: weeks
         })
 
+        setPerformanceEnd('CHICKEN_AGE_UPDATE_TIME');
     }
 }
 
 export const inputNews = (details) => {
     return (dispatch, getState, {getFirestore}) => {
+        setPerformanceStart();
+
         //make async call to database
         const firestore = getFirestore();
 
@@ -55,11 +61,14 @@ export const inputNews = (details) => {
             window.location = '/';
         })
 
+        setPerformanceEnd('NEWS_UPDATE_TIME');
     }
 }
 
 export const sendTokenToServer = (token) => {
     return (dispatch, getState, {getFirestore}) => {
+        setPerformanceStart();
+
         const firestore = getFirestore();
         const profile = getState().firebase.profile;
         const fullName = profile.firstName + ' ' + profile.lastName;
@@ -93,6 +102,8 @@ export const sendTokenToServer = (token) => {
                 })
             }
         }
+
+        setPerformanceEnd('TOKEN_SEND_TIME');
     }
 }
 

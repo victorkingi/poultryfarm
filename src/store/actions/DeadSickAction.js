@@ -1,7 +1,9 @@
 import {dateCheck, leapYear} from "./salesAction";
+import {setPerformanceEnd, setPerformanceStart} from "./moneyAction";
 
 export const inputDeadSick = (deadSick, image) => {
     return (dispatch, getState, {getFirebase, getFirestore}) => {
+        setPerformanceStart();
         //make async call to database
 
         const firestore = getFirestore();
@@ -114,5 +116,6 @@ export const inputDeadSick = (deadSick, image) => {
                     });
                 })
         })
+        setPerformanceEnd('DEAD_SICK_TIME');
     }
 }

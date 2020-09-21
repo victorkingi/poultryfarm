@@ -32,7 +32,6 @@ messaging.setBackgroundMessageHandler(function (payload) {
             return registration.showNotification(payload.data.title, {
                 body: payload.data.body,
                 icon: 'chicken.jpg',
-                sound: "iphone.mp3",
                 requireInteraction: true,
                 silent: false
             });

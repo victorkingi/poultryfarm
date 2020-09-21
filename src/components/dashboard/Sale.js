@@ -4,6 +4,9 @@ import {compose} from 'redux'
 import {Redirect} from 'react-router-dom';
 import {firestoreConnect} from 'react-redux-firebase';
 import SalesList from "../projects/SalesList";
+import {setPerformanceEnd, setPerformanceStart} from "../../store/actions/moneyAction";
+
+setPerformanceStart();
 
 class Sale extends Component {
 
@@ -35,6 +38,8 @@ const mapStateToProps = (state) => {
         sales: state.firestore.ordered.sales
     }
 }
+
+setPerformanceEnd('SALE_LOAD_TIME');
 
 export default compose(
     connect(mapStateToProps),

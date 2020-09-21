@@ -1,8 +1,19 @@
 import {makeid} from "./salesAction";
 
+function setPerformanceStart() {
+    performance.mark('measurementStart');
+}
+
+function setPerformanceEnd(name) {
+    performance.mark('measurementStop');
+    performance.measure(name, 'measurementStart', 'measurementStop');
+}
+
 //sending money from one user to another
 export const sendMoney = (money) => {
     return (dispatch, getState, {getFirebase, getFirestore}) => {
+        setPerformanceStart();
+
         //make async call to database
         const firestore = getFirestore();
         const profile = getState().firebase.profile;
@@ -16,7 +27,7 @@ export const sendMoney = (money) => {
         const userLogRef = firestore.collection("userLogs").doc(user.uid).collection("logs").doc();
 
 
-        return firestore.runTransaction(function (transaction) {
+        firestore.runTransaction(function (transaction) {
             return transaction.get(currentDocRef).then(function (currentDoc) {
                 return transaction.get(receiverDocRef).then(function (receiverDoc) {
                     if (currentDoc.exists) {
@@ -84,12 +95,16 @@ export const sendMoney = (money) => {
 
             window.alert(error);
         })
+
+        setPerformanceEnd('SEND_MONEY_TIME');
     }
 }
 
 //if a customer has taken trays but hasn't paid, hasPaidLate fires
 export const hasPaidLate = (details) => {
     return (dispatch, getState, {getFirebase, getFirestore}) => {
+        setPerformanceStart();
+
         //make async call to database
         const firestore = getFirestore();
         const profile = getState().firebase.profile;
@@ -120,19 +135,22 @@ export const hasPaidLate = (details) => {
 
         batch.delete(latePaymentDocRef);
 
-        return batch.commit().then(function () {
+        batch.commit().then(function () {
             dispatch({type: 'LATE_REPAID'});
         }).catch((err) => {
             dispatch({type: 'LATE_ERROR'});
             window.alert("ERROR: " + err.message);
             window.location = '/';
         });
+        setPerformanceEnd('LATE_PAYMENT_TIME');
     }
 }
 
 //executed if we owe ANYONE money excluding Jeff
 export const weClearedOurDebt = (details) => {
     return (dispatch, getState, {getFirebase, getFirestore}) => {
+        setPerformanceStart();
+
         //make async call to database
         const firestore = getFirestore();
         const profile = getState().firebase.profile;
@@ -149,7 +167,7 @@ export const weClearedOurDebt = (details) => {
         const thikaDebtDocRef = firestore.collection("otherDebt").doc("TotalThikaFarmers");
         const userLogRef = firestore.collection("userLogs").doc(user.uid).collection("logs").doc();
 
-        return firestore.runTransaction(function (transaction) {
+        firestore.runTransaction(function (transaction) {
 
             return transaction.get(currentDocRef).then(function (currentDoc) {
                 return transaction.get(buyDocRef).then(function (buyDoc) {
@@ -263,7 +281,7 @@ export const weClearedOurDebt = (details) => {
             window.alert(error);
             window.location = '/';
         })
-
+        setPerformanceEnd('CLEAR_DEBT_TIME');
     }
 
 }
@@ -271,6 +289,8 @@ export const weClearedOurDebt = (details) => {
 //executed if we want to pay back Jeff
 export const payBackJeff = (details) => {
     return (dispatch, getState, {getFirebase, getFirestore}) => {
+        setPerformanceStart();
+
         //make async call to database
         const firestore = getFirestore();
         const profile = getState().firebase.profile;
@@ -282,7 +302,7 @@ export const payBackJeff = (details) => {
         const bankDocRef = firestore.collection("current").doc("Bank Account");
         const userLogRef = firestore.collection("userLogs").doc(user.uid).collection("logs").doc();
 
-        return firestore.runTransaction(function (transaction) {
+        firestore.runTransaction(function (transaction) {
             return transaction.get(currentDocRef).then(function (currentDoc) {
                 return transaction.get(oweJeffDocRef).then(function (oweJeffDoc) {
                     return transaction.get(bankDocRef).then(function (bankDoc) {
@@ -409,12 +429,16 @@ export const payBackJeff = (details) => {
             window.alert(error);
             window.location = '/';
         })
+
+        setPerformanceEnd('PAY_JEFF_TIME');
     }
 }
 
 //executed if someone randomly borrows chicken money
 export const borrowSomeMoney = (details) => {
     return (dispatch, getState, {getFirebase, getFirestore}) => {
+        setPerformanceStart();
+
         //make async call to database
         const firestore = getFirestore();
         const profile = getState().firebase.profile;
@@ -427,7 +451,7 @@ export const borrowSomeMoney = (details) => {
         const borrowDocRef = firestore.collection("borrow").doc();
         const userLogRef = firestore.collection("userLogs").doc(user.uid).collection("logs").doc();
 
-        return firestore.runTransaction(function (transaction) {
+        firestore.runTransaction(function (transaction) {
 
             return transaction.get(currentDocRef).then(function (currentDoc) {
                 if (currentDoc.exists) {
@@ -477,12 +501,15 @@ export const borrowSomeMoney = (details) => {
             window.alert(error);
             window.location = '/';
         })
+        setPerformanceEnd('BORROW_MONEY_TIME');
     }
 }
 
 //fired if someone who borrowed money, returns it
 export const borrowerReturnsFunds = (details) => {
     return (dispatch, getState, {getFirebase, getFirestore}) => {
+        setPerformanceStart();
+
         //make async call to database
         const firestore = getFirestore();
         const profile = getState().firebase.profile;
@@ -536,5 +563,9 @@ export const borrowerReturnsFunds = (details) => {
                 })
             });
         });
+
+        setPerformanceEnd('RECEIVE_BORROWED_MONEY_TIME');
     }
 }
+
+export {setPerformanceStart, setPerformanceEnd};

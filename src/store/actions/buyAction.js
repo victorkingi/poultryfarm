@@ -1,7 +1,9 @@
 import {dateCheck, isLastDay, leapYear, makeid} from "./salesAction";
+import {setPerformanceEnd, setPerformanceStart} from "./moneyAction";
 
 export const inputPurchase = (buys) => {
     return (dispatch, getState, {getFirebase, getFirestore}) => {
+        setPerformanceStart();
         //make async call to database
         const firestore = getFirestore();
         const profile = getState().firebase.profile;
@@ -51,7 +53,7 @@ export const inputPurchase = (buys) => {
 
                 const newWeeklySpend = total + prevWeeklySpend;
                 const newMonthlySpend = total + prevMonthlySpend;
-                const newMonth = enteredMonth + 1;
+                const newMonth = enteredMonth - 1;
 
                 return firestore.runTransaction(function (transaction) {
 
@@ -227,11 +229,13 @@ export const inputPurchase = (buys) => {
 
             })
         })
+        setPerformanceEnd('PURCHASE_TIME');
     }
 }
 
 export const updateBags = (state) => {
     return (dispatch, getState, {getFirestore}) => {
+        setPerformanceStart();
         //make async call to database
         const firestore = getFirestore();
         const profile = getState().firebase.profile;
@@ -249,6 +253,8 @@ export const updateBags = (state) => {
             submittedOn: firestore.FieldValue.serverTimestamp()
         }).then(() => dispatch({type: 'BAGS_CHANGE'}))
             .catch((err) => console.log(err.message));
+
+        setPerformanceEnd('UPDATE_BAGS_TIME');
     }
 
 };

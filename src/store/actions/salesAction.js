@@ -1,4 +1,5 @@
 import moment from "moment";
+import {setPerformanceEnd, setPerformanceStart} from "./moneyAction";
 
 function makeid(l) {
     let text = "";
@@ -34,6 +35,8 @@ function dateCheck(enteredMonth, enteredDate, isLeap) {
 
 export const inputSell = (sales) => {
     return (dispatch, getState, {getFirebase, getFirestore}) => {
+        setPerformanceStart();
+
         const firestore = getFirestore();
         const profile = getState().firebase.profile;
         const firebase = getFirebase();
@@ -396,6 +399,7 @@ export const inputSell = (sales) => {
                 }
             })
         })
+        setPerformanceEnd('SELL_TIME');
     }
 }
 

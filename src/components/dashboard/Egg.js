@@ -4,6 +4,9 @@ import {compose} from 'redux'
 import {Redirect} from 'react-router-dom';
 import {firestoreConnect} from 'react-redux-firebase';
 import EggsList from "../projects/EggsList";
+import {setPerformanceEnd, setPerformanceStart} from "../../store/actions/moneyAction";
+
+setPerformanceStart();
 
 class Egg extends Component {
 
@@ -35,6 +38,9 @@ const mapStateToProps = (state) => {
         eggs: state.firestore.ordered.eggs,
     }
 }
+
+setPerformanceEnd('EGG_LOAD_TIME');
+
 
 export default compose(
     connect(mapStateToProps),

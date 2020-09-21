@@ -1,5 +1,8 @@
+import {setPerformanceEnd, setPerformanceStart} from "./moneyAction";
+
 export const signIn = (credentials) => {
     return (dispatch, getState, {getFirebase}) => {
+        setPerformanceStart();
         const firebase = getFirebase();
 
         firebase.auth().signInWithEmailAndPassword(
@@ -12,11 +15,13 @@ export const signIn = (credentials) => {
             dispatch({type: 'LOGIN_ERROR', err})
         });
 
+        setPerformanceEnd('LOGIN_TIME');
     }
 }
 
 export const checkClaims = () => {
     return (dispatch, getState, {getFirebase}) => {
+        setPerformanceStart();
         const firebase = getFirebase();
 
         firebase.auth().onAuthStateChanged(user => {
@@ -37,12 +42,15 @@ export const checkClaims = () => {
                 })
             }
         });
+
+        setPerformanceEnd('CHECK_CLAIMS_TIME');
     }
 }
 
 
 export const signOut = () => {
     return (dispatch, getState, { getFirebase}) => {
+        setPerformanceStart();
         const firebase = getFirebase();
 
         firebase.auth().signOut(
@@ -52,11 +60,14 @@ export const signOut = () => {
         }).catch((err) => {
             dispatch({type: 'SIGN_OUT_ERROR', err})
         });
+
+        setPerformanceEnd('LOGOUT_TIME');
     }
 }
 
 export const signUp = (newUser) => {
     return (dispatch, getState, { getFirebase, getFirestore }) => {
+        setPerformanceStart();
         const firebase = getFirebase();
         const firestore = getFirestore();
 
@@ -69,11 +80,13 @@ export const signUp = (newUser) => {
                     email: newUser.email
                 })
             }).then(() => {
-            dispatch({ type: 'SIGNUP_SUCCESS' })
+            dispatch({type: 'SIGNUP_SUCCESS'})
         })
             .catch(err => {
-                dispatch({ type: 'SIGNUP_ERROR', err })
+                dispatch({type: 'SIGNUP_ERROR', err})
             });
+
+        setPerformanceEnd('SIGNUP_TIME');
     }
 }
 

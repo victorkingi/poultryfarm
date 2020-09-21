@@ -17,6 +17,9 @@ import InputNews from "../projects/InputNews";
 import {messaging} from "../../config/fbConfig";
 import {toast, ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import {setPerformanceEnd, setPerformanceStart} from "../../store/actions/moneyAction";
+
+setPerformanceStart();
 
 async function componentDidMount(sendToken) {
 
@@ -244,6 +247,8 @@ const mapDispatchToProps = (dispatch) => {
 
     }
 }
+
+setPerformanceEnd('DASHBOARD_LOAD_TIME');
 
 export default compose(
     connect(mapStateToProps, mapDispatchToProps),
