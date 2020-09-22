@@ -1,5 +1,10 @@
 ## Poultry data keeping web app
 
+Demo version available at [poultry farming website demo](https://poultryfarmdummy.web.app/).
+The demo doesn't have cloud functions since it is hosted on firebase spark plan,
+hence, after doing something, no notification will show and Cloud messaging won't happen.
+
+
 This is a react web app for farmers to keep data about there sales, purchases and much more. I used firebase as the backend and I suggest going to [firebase website](https://firebase.google.com/) so as to create an account and try out the app.
 
 N.B:- Basic knowledge of firebase commands and linking your web app to firestore is needed.

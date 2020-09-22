@@ -225,6 +225,8 @@ export const inputTray = (eggs) => {
                                     } else {
                                         return Promise.reject("ERROR: No tray doc found!");
                                     }
+                                } else {
+                                    return Promise.reject("ERROR: doc not found!");
                                 }
                             }
                         })
