@@ -72,33 +72,41 @@ export const sendTokenToServer = (token) => {
         const firestore = getFirestore();
         const profile = getState().firebase.profile;
         const fullName = profile.firstName + ' ' + profile.lastName;
-        const tokenDocRef = firestore.collection("notifyToken").doc(fullName);
+        const tokenRef = firestore.collection("notifyToken").doc(fullName).collection("tokens").doc(token);
+        const batch = firestore.batch();
 
         if (profile) {
             if (profile.firstName) {
-                return firestore.runTransaction(function (transaction) {
-                    return transaction.get(tokenDocRef).then(function (tokenDoc) {
-                        if (tokenDoc.exists) {
-                            const prevToken = tokenDoc.data().token;
-                            if (token === prevToken) {
-                                return Promise.reject("entered");
-                            } else {
-                                transaction.set(tokenDocRef, {
+                let tokenEntered = false;
+                firestore.collection("notifyToken").doc(fullName).collection("tokens").orderBy("submittedOn", "desc").get().then(
+                    function (query) {
+                        query.forEach(function (doc) {
+                            if (doc.exists) {
+                                const prevToken = doc.data().token;
+                                if (token === prevToken) {
+                                    tokenEntered = true;
+                                }
+                            }
+                        })
+                    }
+                ).catch((error) => {
+                    console.log(error)
+                }).then(() => {
+                    tokenRef.get().then((doc) => {
+                        if (doc.exists) {
+                            return Promise.reject("entered");
+                        } else {
+                            if (!tokenEntered) {
+                                batch.set(tokenRef, {
                                     token: token,
                                     submittedOn: firestore.FieldValue.serverTimestamp()
-                                })
+                                });
+                                batch.commit().then(() => console.log("new token"));
                             }
-                        } else {
-                            transaction.set(tokenDocRef, {
-                                token: token,
-                                submittedOn: firestore.FieldValue.serverTimestamp()
-                            })
                         }
+                    }).catch((error) => {
+                        console.log(error)
                     })
-                }).then(() => {
-                    console.log("token sent");
-                }).catch((err) => {
-                    console.log(err);
                 })
             }
         }
@@ -106,7 +114,3 @@ export const sendTokenToServer = (token) => {
         setPerformanceEnd('TOKEN_SEND_TIME');
     }
 }
-
-/** checks if it is Sunday or the end of the month, if not does nothing, if so
- * creates new document in sales with the week's or month's profit
- **/

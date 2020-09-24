@@ -1,5 +1,11 @@
-import {dateCheck, isLastDay, leapYear} from "./salesAction";
+import {dateCheck, leapYear} from "./salesAction";
 import {setPerformanceEnd, setPerformanceStart} from "./moneyAction";
+
+function isLastDay(dt) {
+    const test = new Date(dt.getTime());
+    test.setDate(test.getDate() + 1);
+    return test.getDate() === 1;
+}
 
 //when user inputs eggs
 export const inputTray = (eggs) => {

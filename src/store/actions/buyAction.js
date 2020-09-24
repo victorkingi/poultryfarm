@@ -1,4 +1,4 @@
-import {dateCheck, isLastDay, leapYear, makeid} from "./salesAction";
+import {dateCheck, leapYear, makeid} from "./salesAction";
 import {setPerformanceEnd, setPerformanceStart} from "./moneyAction";
 
 export const inputPurchase = (buys) => {
@@ -10,8 +10,6 @@ export const inputPurchase = (buys) => {
         const firebase = getFirebase();
         const user = firebase.auth().currentUser;
         const date = new Date();
-        const dayOfTheWeek = date.getDay();
-        const endMonth = isLastDay(date);
         const enteredMonth = parseInt(buys.month);
         const section = buys.section;
         const key = makeid(28);
@@ -75,33 +73,14 @@ export const inputPurchase = (buys) => {
                                     transaction.set(buyDocRef, {
                                         ...buys,
                                         key: key,
-                                        used: false,
+                                        usedWeek: false,
+                                        usedMonth: false,
                                         weeklySpend: newWeeklySpend,
                                         monthlySpend: newMonthlySpend,
                                         date: new Date(year, newMonth, enteredDate),
                                         submittedBy: fullName,
                                         submittedOn: firestore.FieldValue.serverTimestamp()
                                     });
-
-                                    if (dayOfTheWeek === 0 && endMonth) {
-
-                                        transaction.update(buyDocRef, {
-                                            monthlySpend: total,
-                                            weeklySpend: total
-                                        });
-
-                                    } else if (endMonth) {
-
-                                        transaction.update(buyDocRef, {
-                                            monthlySpend: total
-                                        });
-
-                                    } else if (dayOfTheWeek === 0) {
-                                        transaction.update(buyDocRef, {
-                                            weeklySpend: total
-                                        });
-
-                                    }
                                 }
 
                                 if (buyDoc.exists) {
@@ -232,29 +211,3 @@ export const inputPurchase = (buys) => {
         setPerformanceEnd('PURCHASE_TIME');
     }
 }
-
-export const updateBags = (state) => {
-    return (dispatch, getState, {getFirestore}) => {
-        setPerformanceStart();
-        //make async call to database
-        const firestore = getFirestore();
-        const profile = getState().firebase.profile;
-        let myBags = parseInt(state.bagNo);
-        if (myBags < 1) {
-            myBags = 0;
-        }
-
-        const bagRef = firestore.collection("bags").doc("CurrentBags");
-
-        bagRef.update({
-            number: myBags,
-            counter: state.counter,
-            submittedBy: profile.firstName + ' ' + profile.lastName,
-            submittedOn: firestore.FieldValue.serverTimestamp()
-        }).then(() => dispatch({type: 'BAGS_CHANGE'}))
-            .catch((err) => console.log(err.message));
-
-        setPerformanceEnd('UPDATE_BAGS_TIME');
-    }
-
-};

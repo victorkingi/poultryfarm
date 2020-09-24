@@ -12,7 +12,6 @@ import BagsList from "../projects/BagsList";
 import ChickenDetails from "./ChickenDetails";
 import News from "./News";
 import {sendTokenToServer} from "../../store/actions/chickenAction";
-import {updateBags} from "../../store/actions/buyAction";
 import InputNews from "../projects/InputNews";
 import {messaging} from "../../config/fbConfig";
 import {toast, ToastContainer} from 'react-toastify';
@@ -64,7 +63,6 @@ class Dashboard extends Component {
     render() {
         const {news, chicken, balance, bags, trays, debt, auth, admin, moderator, changer, profile, notifications} = this.props;
         this.props.checkClaims();
-        // this.props.sendTokenToServern();
         componentDidMount(this.props.sendTokenToServer).then(() => console.log("success")).catch((err) => console.log("error: ", err));
 
 
@@ -92,38 +90,6 @@ class Dashboard extends Component {
         if (admin) {
             time();
             if (balance && bags && trays && debt && notifications && news) {
-
-                let num = parseInt(bags['0'].number);
-                const time = bags ? bags['0'].counter.toDate() : "No date given";
-                const currentDay = parseInt(new Date().getDate());
-                let counter = parseInt(time.getDate());
-                const month = time.getMonth() + 1;
-                const year = time.getFullYear();
-                try {
-                    const submit = bags['0'].submittedOn.toDate();
-                    const submitDate = submit.getDate();
-
-                    if (counter < currentDay && submitDate !== currentDay) {
-                        counter = currentDay - counter;
-                        num = num - counter;
-                        counter = new Date(year, month, currentDay);
-
-                        if (parseInt(num) < 1) {
-                            num = 0;
-                        }
-
-                        const state = {
-                            bagNo: num,
-                            counter: counter
-                        }
-
-
-                        this.props.updateBags(state)
-                    }
-
-                } catch (error) {
-                    console.log("Waiting for response...", error);
-                }
 
                 return (
                     <div className="dashboard container">
@@ -242,9 +208,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         checkClaims: () => dispatch(checkClaims()),
-        sendTokenToServer: (token) => dispatch(sendTokenToServer(token)),
-        updateBags: (state) => dispatch(updateBags(state))
-
+        sendTokenToServer: (token) => dispatch(sendTokenToServer(token))
     }
 }
 

@@ -1,4 +1,3 @@
-import moment from "moment";
 import {setPerformanceEnd, setPerformanceStart} from "./moneyAction";
 
 function makeid(l) {
@@ -8,12 +7,6 @@ function makeid(l) {
         text += char_list.charAt(Math.floor(Math.random() * char_list.length));
     }
     return text;
-}
-
-function isLastDay(dt) {
-    const test = new Date(dt.getTime());
-    test.setDate(test.getDate() + 1);
-    return test.getDate() === 1;
 }
 
 function leapYear(year) {
@@ -43,16 +36,12 @@ export const inputSell = (sales) => {
         const user = firebase.auth().currentUser;
         const fullName = profile.firstName + ' ' + profile.lastName;
         const date = new Date();
-        const dayOfTheWeek = date.getDay();
-        const endMonth = isLastDay(date);
         const enteredMonth = parseInt(sales.month);
         const newMonth = enteredMonth - 1;
         const section = sales.section;
         const key = makeid(28);
         const enteredDate = parseInt(sales.date);
         const year = date.getFullYear();
-        const keyedDate = new Date(year, enteredMonth, enteredDate);
-        const weekNo = moment(keyedDate).week();
         const isLeap = leapYear(year);
         const status = JSON.parse(sales.status);
         const buyer = sales.buyerName ? sales.buyerName : sales.section;
@@ -60,7 +49,6 @@ export const inputSell = (sales) => {
             + ' ' + section + ': ' + buyer) : firestore.collection("sales").doc('Month ' + enteredMonth
             + ' Date ' + enteredDate + ' ' + section);
         const currentDocRef = firestore.collection("current").doc(fullName);
-        const profitDocRef = firestore.collection("profit").doc('Month ' + enteredMonth + 'Week ' + weekNo);
         const currentJeffRef = firestore.collection("current").doc("Jeff Karue");
         const traysDocRef = firestore.collection("trays").doc("CurrentTrays");
         const userLogRef = firestore.collection("userLogs").doc(user.uid).collection("logs").doc();
@@ -233,73 +221,6 @@ export const inputSell = (sales) => {
                                                         } else {
                                                             return Promise.reject("ERROR: Contact main admin for help!");
                                                         }
-
-                                                        const buyDocRef = firestore.collection("buys").doc(buyDoc.id);
-                                                        const monthlySpend = parseInt(buyDoc.data().monthlySpend);
-                                                        const weeklySpend = parseInt(buyDoc.data().weeklySpend);
-                                                        const used = JSON.parse(buyDoc.data().used);
-
-                                                        if (dayOfTheWeek === 0 && endMonth) {
-                                                            const used = JSON.parse(buyDoc.data().used);
-
-                                                            if (!used) {
-                                                                const monthProfit = prevMonthlyTotal - monthlySpend;
-                                                                const weekProfit = prevWeeklyTotal - weeklySpend;
-
-                                                                transaction.set(profitDocRef, {
-                                                                    monthProfit: monthProfit,
-                                                                    weekProfit: weekProfit,
-                                                                    submittedOn: firestore.FieldValue.serverTimestamp()
-                                                                })
-
-                                                                transaction.update(buyDocRef, {
-                                                                    used: true
-                                                                })
-                                                            }
-
-                                                            transaction.update(salesDocRef, {
-                                                                weeklyTotal: total,
-                                                                monthlyTotal: total
-                                                            });
-
-                                                        } else if (endMonth) {
-
-                                                            if (!used) {
-                                                                const monthProfit = prevMonthlyTotal - monthlySpend;
-
-                                                                transaction.set(profitDocRef, {
-                                                                    monthProfit: monthProfit,
-                                                                    submittedOn: firestore.FieldValue.serverTimestamp()
-                                                                })
-
-                                                                transaction.update(buyDocRef, {
-                                                                    used: true
-                                                                })
-                                                            }
-
-                                                            transaction.update(salesDocRef, {
-                                                                monthlyTotal: total,
-                                                            });
-
-                                                        } else if (dayOfTheWeek === 0) {
-
-                                                            if (!used) {
-                                                                const weekProfit = prevWeeklyTotal - weeklySpend;
-
-                                                                transaction.set(profitDocRef, {
-                                                                    weekProfit: weekProfit,
-                                                                    submittedOn: firestore.FieldValue.serverTimestamp()
-                                                                })
-
-                                                                transaction.update(buyDocRef, {
-                                                                    used: true
-                                                                })
-                                                            }
-
-                                                            transaction.update(salesDocRef, {
-                                                                weeklyTotal: total,
-                                                            });
-                                                        }
                                                     }
                                                 })
                                             })
@@ -403,4 +324,4 @@ export const inputSell = (sales) => {
     }
 }
 
-export {makeid, isLastDay, leapYear, dateCheck};
+export {makeid, leapYear, dateCheck};
