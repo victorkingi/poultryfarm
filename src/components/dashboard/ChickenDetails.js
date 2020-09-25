@@ -1,11 +1,9 @@
 import React from "react";
 import {connect} from "react-redux";
-import {updateChickens} from "../../store/actions/chickenAction";
 
 const ChickenDetails = (props) => {
 
     const {chicken} = props;
-    props.updateChickens();
 
     if (chicken) {
         return (
@@ -16,12 +14,22 @@ const ChickenDetails = (props) => {
                         <ul className="notifications">
                             {chicken && chicken.map(
                                 item => {
-                                    const weekPercent = Math.round((item.weekPercent + Number.EPSILON) * 100) / 100;
-                                    const weekCagePercent = Math.round((item.weekCagePercent + Number.EPSILON) * 100) / 100;
-                                    const weekHousePercent = Math.round((item.weekHousePercent + Number.EPSILON) * 100) / 100;
+                                    const weekPercent = Math
+                                        .round((item.weekPercent + Number.EPSILON) * 100) / 100;
+                                    const weekCagePercent = Math
+                                        .round((item.weekCagePercent + Number.EPSILON) * 100) / 100;
+                                    const weekHousePercent = Math
+                                        .round((item.weekHousePercent + Number.EPSILON) * 100) / 100;
+                                    const weekProfit = item.weekProfit < 0
+                                        ? (<div><span style={{fontSize: "20px"}}>Last Week's Loss</span>
+                                            <p style={{fontSize: "18px"}}>Ksh.{parseInt(item.weekProfit) * -1}</p>
+                                        </div>)
+                                        : (<div><span style={{fontSize: "20px"}}>Last Week's Profit</span>
+                                            <p style={{fontSize: "18px"}}>Ksh.{item.weekProfit}</p></div>);
 
                                     return (
                                         <li key={item.id}>
+                                            {weekProfit}
                                             <span style={{fontSize: "20px"}}>Weekly laying percentage</span>
                                             <p style={{fontSize: "18px"}}>{weekPercent}%</p>
                                             <span style={{fontSize: "20px"}}>Weekly House Laying percentage</span>
@@ -64,10 +72,4 @@ const mapStateToProps = (state) => {
     }
 }
 
-const mapDispatchToProps = (dispatch) => {
-    return {
-        updateChickens: () => dispatch(updateChickens())
-    }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(ChickenDetails);
+export default connect(mapStateToProps)(ChickenDetails);
