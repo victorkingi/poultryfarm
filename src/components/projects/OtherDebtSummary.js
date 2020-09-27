@@ -2,6 +2,7 @@ import React, {useRef} from "react";
 import moment from "moment";
 import {weClearedOurDebt} from "../../store/actions/moneyAction";
 import {connect} from 'react-redux';
+import numeral from "numeral";
 
 const OtherDebtSummary = (otherDebt) => {
     const inputRef = useRef();
@@ -16,16 +17,14 @@ const OtherDebtSummary = (otherDebt) => {
         otherDebt.weClearedOurDebt(otherDebt.item);
     }
 
-    //console.log(otherDebt.item.id === "TotalThikaFarmers")
-
     if (otherDebt.item.id === "TotalThikaFarmers") {
         const time = otherDebt.item.submittedOn.toDate() ? otherDebt.item.submittedOn.toDate() : "No date given";
-
 
         return (
             <div className="card z-depth-0 project-summary">
                 <div className="card-content grey-text text-darken-3">
-                    <span className="card-title">Thika Farmers Total Debt: {otherDebt.item.total}</span>
+                    <span
+                        className="card-title">Thika Farmers Total Debt: {numeral(otherDebt.item.total).format("0,0")}</span>
                     <p className="grey-text">{moment(time).calendar()}</p>
                 </div>
             </div>
@@ -38,7 +37,7 @@ const OtherDebtSummary = (otherDebt) => {
             <div className="card z-depth-0 project-summary">
                 <div className="card-content grey-text text-darken-3">
                     <span className="card-title">Other Debt: {otherDebt.item.debtor}</span>
-                    <p>Amount we owe them is Ksh.{otherDebt.item.balance}</p>
+                    <p>Amount we owe them is Ksh.{numeral(otherDebt.item.balance).format("0,0")}</p>
                     <p className="grey-text">{moment(time).calendar()}</p>
 
                     <div style={{display: 'none'}} id={`load${otherDebt.item.id}`}>

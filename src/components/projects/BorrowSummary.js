@@ -2,6 +2,7 @@ import React, {useRef} from "react";
 import moment from "moment";
 import {borrowerReturnsFunds} from "../../store/actions/moneyAction";
 import {connect} from "react-redux";
+import numeral from "numeral";
 
 const BorrowSummary = (borrow) => {
     const inputRef = useRef();
@@ -23,7 +24,7 @@ const BorrowSummary = (borrow) => {
                 <div className="card-content grey-text text-darken-3">
                     <span className="card-title">Borrow Summary</span>
                     <span style={{fontSize: "30px"}}>{borrow.item.borrower}</span>
-                    <p>Ksh.{borrow.item.borrowAmount}</p>
+                    <p>Ksh.{numeral(borrow.item.borrowAmount).format("0,0")}</p>
                     <p className="grey-text">{moment(time).calendar()}</p>
                 </div>
 

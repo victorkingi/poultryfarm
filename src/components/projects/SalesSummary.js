@@ -1,5 +1,6 @@
 import React from "react";
 import moment from "moment";
+import numeral from "numeral";
 
 const SalesSummary = (sales) => {
 
@@ -13,7 +14,7 @@ const SalesSummary = (sales) => {
             <div className="card z-depth-0 project-summary">
                 <div className="card-content grey-text text-darken-3">
                     <span className="card-title">{sales.item.category}: {buyer}</span>
-                    <p>We earned Ksh.{total}</p>
+                    <p>We earned Ksh.{numeral(total).format("0,0")}</p>
                     <p className="grey-text">{moment(time).calendar()}</p>
                 </div>
             </div>

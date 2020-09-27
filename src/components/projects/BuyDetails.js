@@ -1,14 +1,15 @@
 import React from "react";
-import { connect } from 'react-redux';
-import { firestoreConnect } from "react-redux-firebase";
-import { compose } from "redux";
-import { Redirect } from "react-router-dom";
+import {connect} from 'react-redux';
+import {firestoreConnect} from "react-redux-firebase";
+import {compose} from "redux";
+import {Redirect} from "react-router-dom";
 import moment from "moment";
+import numeral from "numeral";
 
 const BuyDetails = (props) => {
-    const { buy, auth } = props;
+    const {buy, auth} = props;
 
-    if (!auth.uid) return <Redirect to='/signin' />
+    if (!auth.uid) return <Redirect to='/signin'/>
 
     if (buy) {
         const total = buy.objectNo * buy.objectPrice;
@@ -20,8 +21,9 @@ const BuyDetails = (props) => {
                     <div className="card z-depth-0">
                         <div className="card-content">
                             <span className="card-title">{buy.category}: {buy.section}</span>
-                            <p>We bought {buy.objectNo} {buy.itemName} that costed Ksh.{buy.objectPrice} per item,
-                                hence, spent Ksh.{total} in total.</p>
+                            <p>We bought {numeral(buy.objectNo).format("0,0")} {buy.itemName} that costed
+                                Ksh.{numeral(buy.objectPrice).format("0,0")} per item,
+                                hence, spent Ksh.{numeral(total).format("0,0")} in total.</p>
                         </div>
                         <div className="card-action grey lighten-4 grey-text">
                             <div>Posted by {buy.submittedBy}</div>
@@ -36,8 +38,9 @@ const BuyDetails = (props) => {
                     <div className="card z-depth-0">
                         <div className="card-content">
                             <span className="card-title">{buy.category}: {buy.section}</span>
-                            <p>We bought {buy.objectNo} items that costed Ksh.{buy.objectPrice} per item,
-                                hence, spent Ksh.{total} in total.</p>
+                            <p>We bought {numeral(buy.objectNo).format("0,0")} items that costed
+                                Ksh.{numeral(buy.objectPrice).format("0,0")} per item,
+                                hence, spent Ksh.{numeral(total).format("0,0")} in total.</p>
                         </div>
                         <div className="card-action grey lighten-4 grey-text">
                             <div>Posted by {buy.submittedBy}</div>

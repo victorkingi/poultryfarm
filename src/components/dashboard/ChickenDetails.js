@@ -1,5 +1,6 @@
 import React from "react";
 import {connect} from "react-redux";
+import numeral from "numeral";
 
 const ChickenDetails = (props) => {
 
@@ -22,10 +23,11 @@ const ChickenDetails = (props) => {
                                         .round((item.weekHousePercent + Number.EPSILON) * 100) / 100;
                                     const weekProfit = item.weekProfit < 0
                                         ? (<div><span style={{fontSize: "20px"}}>Last Week's Loss</span>
-                                            <p style={{fontSize: "18px"}}>Ksh.{parseInt(item.weekProfit) * -1}</p>
+                                            <p style={{fontSize: "18px"}}>Ksh.{numeral(parseInt(item.weekProfit) * -1).format("0,0")}</p>
                                         </div>)
                                         : (<div><span style={{fontSize: "20px"}}>Last Week's Profit</span>
-                                            <p style={{fontSize: "18px"}}>Ksh.{item.weekProfit}</p></div>);
+                                            <p style={{fontSize: "18px"}}>Ksh.{numeral(item.weekProfit).format("0,0")}</p>
+                                        </div>);
 
                                     return (
                                         <li key={item.id}>

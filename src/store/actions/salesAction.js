@@ -3,7 +3,7 @@ import {setPerformanceEnd, setPerformanceStart} from "./moneyAction";
 function makeid(l) {
     let text = "";
     const char_list = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    for (var i = 0; i < l; i++) {
+    for (let i = 0; i < l; i++) {
         text += char_list.charAt(Math.floor(Math.random() * char_list.length));
     }
     return text;
@@ -55,6 +55,10 @@ export const inputSell = (sales) => {
         const latePaymentDocRef = buyer ? firestore.collection("latePayment").doc('Month ' + enteredMonth
             + ' Date ' + enteredDate + ' ' + section + ': ' + buyer) : firestore.collection("latePayment")
             .doc('Month ' + enteredMonth + ' Date ' + enteredDate + ' ' + section);
+        const aDate = firestore.FieldValue.serverTimestamp();
+        const getHours = aDate.toDate().getHours();
+        const getMinutes = aDate.toDate().getMinutes();
+        const getSeconds = aDate.toDate().getSeconds();
 
 
         let total = sales.trayNo ? parseInt(sales.trayNo) * parseInt(sales.trayPrice)
@@ -129,7 +133,7 @@ export const inputSell = (sales) => {
                                                                         key: key,
                                                                         weeklyTotal: newWeeklyTotal,
                                                                         monthlyTotal: newMonthlyTotal,
-                                                                        date: new Date(year, newMonth, enteredDate),
+                                                                        date: new Date(year, newMonth, enteredDate, getHours, getMinutes, getSeconds),
                                                                         submittedBy: profile.firstName + ' ' + profile.lastName,
                                                                         submittedOn: firestore.FieldValue.serverTimestamp()
                                                                     });
@@ -175,7 +179,7 @@ export const inputSell = (sales) => {
                                                                     trayNo: sales.trayNo,
                                                                     key: key,
                                                                     trayPrice: sales.trayPrice,
-                                                                    date: new Date(year, newMonth, enteredDate),
+                                                                    date: new Date(year, newMonth, enteredDate, getHours, getMinutes, getSeconds),
                                                                     section: sales.section,
                                                                     buyer: buyer,
                                                                     submittedBy: profile.firstName + ' ' + profile.lastName,
@@ -190,7 +194,7 @@ export const inputSell = (sales) => {
                                                                     weeklyTotal: newWeeklyTotal,
                                                                     monthlyTotal: newMonthlyTotal,
                                                                     chickenPrice: sales.chickenPrice,
-                                                                    date: new Date(year, newMonth, enteredDate),
+                                                                    date: new Date(year, newMonth, enteredDate, getHours, getMinutes, getSeconds),
                                                                     section: sales.section,
                                                                     buyer: buyer,
                                                                     submittedBy: profile.firstName + ' ' + profile.lastName,
@@ -205,7 +209,7 @@ export const inputSell = (sales) => {
                                                                 key: key,
                                                                 weeklyTotal: newWeeklyTotal,
                                                                 monthlyTotal: newMonthlyTotal,
-                                                                date: new Date(year, newMonth, enteredDate),
+                                                                date: new Date(year, newMonth, enteredDate, getHours, getMinutes, getSeconds),
                                                                 submittedBy: profile.firstName + ' ' + profile.lastName,
                                                                 submittedOn: firestore.FieldValue.serverTimestamp()
                                                             });

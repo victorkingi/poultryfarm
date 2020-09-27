@@ -4,6 +4,7 @@ import {firestoreConnect} from "react-redux-firebase";
 import {compose} from "redux";
 import {Redirect} from "react-router-dom";
 import moment from "moment";
+import numeral from "numeral";
 
 const SalesDetails = (props) => {
     const {sale, auth} = props;
@@ -31,7 +32,7 @@ const SalesDetails = (props) => {
                                 <span className="card-title">{sale.category}: {sale.section}</span>
                                 <p>We sold {sale.chickenNo} chickens to {sale.buyerName} at a price of
                                     Ksh.{sale.chickenPrice} per
-                                    chicken and earned Ksh.{total} in total.</p>
+                                    chicken and earned Ksh.{numeral(total).format("0,0")} in total.</p>
                             </div>
                             <div className="card-action grey lighten-4 grey-text">
                                 <div>Posted by {sale.submittedBy}</div>
@@ -69,7 +70,7 @@ const SalesDetails = (props) => {
                                 <span className="card-title">{sale.category}: {sale.section}</span>
                                 <p>We sold {sale.trayNo} trays to {sale.buyerName} at a price of
                                     Ksh.{sale.trayPrice} per
-                                    tray and earned Ksh.{total} in total.</p>
+                                    tray and earned Ksh.{numeral(total).format("0,0")} in total.</p>
                             </div>
                             <div className="card-action grey lighten-4 grey-text">
                                 <div>Posted by {sale.submittedBy}</div>
@@ -99,19 +100,7 @@ const SalesDetails = (props) => {
 
         } else {
             return (
-                <div className="container section project-details">
-                    <div className="card z-depth-0">
-                        <div className="card-content">
-                            <span className="card-title">{sale.category}: {sale.section}</span>
-                            <p>We sold {sale.trayNo} trays at a price of Ksh.{sale.trayPrice} per
-                                tray and earned Ksh.{total} in total.</p>
-                        </div>
-                        <div className="card-action grey lighten-4 grey-text">
-                            <div>Posted by {sale.submittedBy}</div>
-                            <div>{moment(time).calendar()}</div>
-                        </div>
-                    </div>
-                </div>
+                <div/>
             )
         }
     } else {

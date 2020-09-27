@@ -3,6 +3,7 @@ import moment from "moment";
 import {Redirect} from "react-router-dom";
 import {connect} from 'react-redux';
 import {checkClaims} from "../../store/actions/authActions";
+import numeral from "numeral";
 
 const Current = (props) => {
     const {balance} = props;
@@ -31,7 +32,7 @@ const Current = (props) => {
                                         <span className="pink-text">
                                             {item.fullName}
                                         </span>
-                                                <span> Ksh.{item.balance}</span>
+                                                <span> Ksh.{numeral(item.balance).format("0,0")}</span>
                                                 <div className="grey-text note-date">
                                                     {item.submittedOn && moment(item.submittedOn.toDate()).fromNow()}
                                                 </div>
@@ -51,7 +52,7 @@ const Current = (props) => {
                                                     <span className="pink-text">
                                                         {item.fullName}
                                                     </span>
-                                                    <span> Ksh.{item.balance}</span>
+                                                    <span> Ksh.{numeral(item.balance).format("0,0")}</span>
                                                     <div className="grey-text note-date">
                                                         {item.submittedOn && moment(item.submittedOn.toDate()).fromNow()}
                                                     </div>

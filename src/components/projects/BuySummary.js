@@ -1,5 +1,6 @@
 import React from "react";
 import moment from "moment";
+import numeral from "numeral";
 
 const BuySummary = ({buy}) => {
 
@@ -11,9 +12,9 @@ const BuySummary = ({buy}) => {
         return (
             <div className="card z-depth-0 project-summary">
                 <div className="card-content grey-text text-darken-3">
-                    <span className="card-title">{buy.category}: { object }</span>
-                    <p>We spent Ksh.{ total }</p>
-                    <p>Posted by { buy.submittedBy }</p>
+                    <span className="card-title">{buy.category}: {object}</span>
+                    <p>We spent Ksh.{numeral(total).format("0,0")}</p>
+                    <p>Posted by {buy.submittedBy}</p>
                     <p className="grey-text">{moment(time).calendar()}</p>
                 </div>
             </div>

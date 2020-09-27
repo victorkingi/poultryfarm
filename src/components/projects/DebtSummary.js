@@ -2,6 +2,7 @@ import React, {useRef} from "react";
 import moment from "moment";
 import {payBackJeff} from "../../store/actions/moneyAction";
 import {connect} from "react-redux";
+import numeral from "numeral";
 
 const DebtSummary = (debt) => {
     const inputRef = useRef();
@@ -23,7 +24,7 @@ const DebtSummary = (debt) => {
             <div className="card z-depth-0 project-summary">
                 <div className="card-content grey-text text-darken-3">
                     <span className="card-title">Debts Owing Jeff</span>
-                    <p>Ksh.{debt.item.balance}</p>
+                    <p>Ksh.{numeral(debt.item.balance).format("0,0")}</p>
                     <p className="grey-text">{moment(time).calendar()}</p>
                 </div>
 

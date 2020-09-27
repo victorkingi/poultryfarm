@@ -2,6 +2,7 @@ import React, {useRef} from "react";
 import moment from "moment";
 import {connect} from "react-redux";
 import {hasPaidLate} from "../../store/actions/moneyAction";
+import numeral from "numeral";
 
 const LatePaymentSummary = (late) => {
     const inputRef = useRef();
@@ -23,7 +24,7 @@ const LatePaymentSummary = (late) => {
                 <div className="card-content grey-text text-darken-3">
                     <span className="card-title">Not yet paid</span>
                     <span style={{fontSize: "30px"}}>{buy}</span>
-                    <p>Amount due: Ksh.{late.item.amountDue}</p>
+                    <p>Amount due: Ksh.{numeral(late.item.amountDue).format("0,0")}</p>
                     <p className="grey-text">{moment(time).calendar()}</p>
 
                     <div style={{display: 'none'}} id={`load${late.item.id}`}>
