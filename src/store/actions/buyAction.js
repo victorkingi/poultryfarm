@@ -10,6 +10,9 @@ export const inputPurchase = (buys) => {
         const firebase = getFirebase();
         const user = firebase.auth().currentUser;
         const date = new Date();
+        const getHours = date.getHours();
+        const getMinutes = date.getMinutes();
+        const getSeconds = date.getSeconds();
         const enteredMonth = parseInt(buys.month);
         const section = buys.section;
         const key = makeid(28);
@@ -27,10 +30,6 @@ export const inputPurchase = (buys) => {
         const otherDebtDocRef = firestore.collection("otherDebt").doc('Month ' + enteredMonth + ' Date ' + enteredDate + ' ' + section + ': ' + item);
         const totalThikaDebtDocRef = firestore.collection("otherDebt").doc("TotalThikaFarmers");
         const total = parseInt(buys.objectNo) * parseInt(buys.objectPrice);
-        const aDate = firestore.FieldValue.serverTimestamp();
-        const getHours = aDate.toDate().getHours();
-        const getMinutes = aDate.toDate().getMinutes();
-        const getSeconds = aDate.toDate().getSeconds();
 
         const dateChecks = dateCheck(enteredMonth, enteredDate, isLeap);
 

@@ -11,6 +11,9 @@ export const inputDeadSick = (deadSick, image) => {
         const firebase = getFirebase();
         const user = firebase.auth().currentUser;
         const date = new Date();
+        const getHours = date.getHours();
+        const getMinutes = date.getMinutes();
+        const getSeconds = date.getSeconds();
         const enteredMonth = parseInt(deadSick.month);
         const newMonth = enteredMonth - 1;
         const section = deadSick.section;
@@ -88,7 +91,7 @@ export const inputDeadSick = (deadSick, image) => {
                                     transaction.set(deadSickDocRef, {
                                         ...deadSick,
                                         photoURL: url,
-                                        date: new Date(year, newMonth, enteredDate),
+                                        date: new Date(year, newMonth, enteredDate, getHours, getMinutes, getSeconds),
                                         submittedBy: profile.firstName + ' ' + profile.lastName,
                                         submittedOn: firestore.FieldValue.serverTimestamp()
 

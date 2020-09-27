@@ -36,6 +36,9 @@ export const inputSell = (sales) => {
         const user = firebase.auth().currentUser;
         const fullName = profile.firstName + ' ' + profile.lastName;
         const date = new Date();
+        const getHours = date.getHours();
+        const getMinutes = date.getMinutes();
+        const getSeconds = date.getSeconds();
         const enteredMonth = parseInt(sales.month);
         const newMonth = enteredMonth - 1;
         const section = sales.section;
@@ -55,10 +58,6 @@ export const inputSell = (sales) => {
         const latePaymentDocRef = buyer ? firestore.collection("latePayment").doc('Month ' + enteredMonth
             + ' Date ' + enteredDate + ' ' + section + ': ' + buyer) : firestore.collection("latePayment")
             .doc('Month ' + enteredMonth + ' Date ' + enteredDate + ' ' + section);
-        const aDate = firestore.FieldValue.serverTimestamp();
-        const getHours = aDate.toDate().getHours();
-        const getMinutes = aDate.toDate().getMinutes();
-        const getSeconds = aDate.toDate().getSeconds();
 
 
         let total = sales.trayNo ? parseInt(sales.trayNo) * parseInt(sales.trayPrice)

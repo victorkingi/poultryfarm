@@ -17,6 +17,9 @@ export const inputTray = (eggs) => {
         const firebase = getFirebase();
         const user = firebase.auth().currentUser;
         const date = new Date();
+        const getHours = date.getHours();
+        const getMinutes = date.getMinutes();
+        const getSeconds = date.getSeconds();
         const dayOfTheWeek = date.getDay();
         const endMonth = isLastDay(date);
         const enteredMonth = parseInt(eggs.month);
@@ -134,7 +137,7 @@ export const inputTray = (eggs) => {
                                                     allMonthlyEggs: total,
                                                     cageMonthlyEggs: cageTotal,
                                                     houseMonthlyEggs: house,
-                                                    date: new Date(year, newMonth, enteredDate),
+                                                    date: new Date(year, newMonth, enteredDate, getHours, getMinutes, getSeconds),
                                                     submittedBy: profile.firstName + ' ' + profile.lastName,
                                                     submittedOn: firestore.FieldValue.serverTimestamp()
                                                 })
@@ -161,7 +164,7 @@ export const inputTray = (eggs) => {
                                                     allMonthlyEggs: allMonthlyEggs,
                                                     cageMonthlyEggs: cageMonthlyEggs,
                                                     houseMonthlyEggs: houseMonthlyEggs,
-                                                    date: new Date(year, newMonth, enteredDate),
+                                                    date: new Date(year, newMonth, enteredDate, getHours, getMinutes, getSeconds),
                                                     submittedBy: profile.firstName + ' ' + profile.lastName,
                                                     submittedOn: firestore.FieldValue.serverTimestamp()
                                                 })
@@ -186,7 +189,7 @@ export const inputTray = (eggs) => {
                                                     allMonthlyEggs: total,
                                                     cageMonthlyEggs: cageTotal,
                                                     houseMonthlyEggs: house,
-                                                    date: new Date(year, newMonth, enteredDate),
+                                                    date: new Date(year, newMonth, enteredDate, getHours, getMinutes, getSeconds),
                                                     submittedBy: profile.firstName + ' ' + profile.lastName,
                                                     submittedOn: firestore.FieldValue.serverTimestamp()
                                                 })
@@ -199,7 +202,7 @@ export const inputTray = (eggs) => {
                                                     allMonthlyEggs: allMonthlyEggs,
                                                     cageMonthlyEggs: cageMonthlyEggs,
                                                     houseMonthlyEggs: houseMonthlyEggs,
-                                                    date: new Date(year, newMonth, enteredDate),
+                                                    date: new Date(year, newMonth, enteredDate, getHours, getMinutes, getSeconds),
                                                     submittedBy: profile.firstName + ' ' + profile.lastName,
                                                     submittedOn: firestore.FieldValue.serverTimestamp()
                                                 })
