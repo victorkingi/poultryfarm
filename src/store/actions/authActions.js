@@ -8,9 +8,9 @@ export const signIn = (credentials) => {
         firebase.auth().signInWithEmailAndPassword(
             credentials.email,
             credentials.password
-        ).then(() => {
-
-            dispatch({type: 'LOGIN_SUCCESS'})
+        ).then((user) => {
+            const _user = user.user.email;
+            dispatch({type: 'LOGIN_SUCCESS', _user})
         }).catch((err) => {
             dispatch({type: 'LOGIN_ERROR', err})
         });
@@ -53,11 +53,10 @@ export const signOut = () => {
         setPerformanceStart();
         const firebase = getFirebase();
 
-        firebase.auth().signOut(
-
-        ).then(() => {
-            dispatch({type: 'SIGN_OUT_SUCCESS'})
-        }).catch((err) => {
+        firebase.auth().signOut()
+            .then(() => {
+                dispatch({type: 'SIGN_OUT_SUCCESS'})
+            }).catch((err) => {
             dispatch({type: 'SIGN_OUT_ERROR', err})
         });
 

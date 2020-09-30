@@ -1,16 +1,18 @@
-import React, {Component} from "react";
+import React, {useEffect, useMemo, useState} from "react";
 import {connect} from 'react-redux';
 import {inputTray} from "../../store/actions/eggsAction";
 import M from 'materialize-css';
 import {Redirect} from "react-router-dom";
 
-class Inputeggs extends Component {
-    state = {
-        category: 'eggs',
-    }
+function Inputeggs(props) {
+    const [state, setState] = useState({category: 'eggs'});
 
+    useEffect(() => {
+        M.AutoInit();
 
-    handleChange = (e) => {
+    }, []);
+
+    const handleChange = (e) => {
         const date = document.getElementById("date").value;
         const month = document.getElementById("month").value;
         const a1 = parseInt(document.getElementById("A 1").value);
@@ -107,7 +109,8 @@ class Inputeggs extends Component {
         } else {
             document.getElementById("error-text").innerHTML = "";
 
-            this.setState({
+            setState({
+                ...state,
                 [e.target.id]: myInt
             });
         }
@@ -115,110 +118,105 @@ class Inputeggs extends Component {
     }
 
 
-    handleSubmit = (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
-        const load = document.getElementById("loading");
+        const load = document.getElementById("loading-eggs");
         const submit = document.getElementById("egg7");
-
         submit.style.display = 'none';
         load.style.display = 'block';
-
-        this.props.inputTray(this.state);
+        props.inputTray(state);
     }
 
-    componentDidMount = () => {
-        M.AutoInit();
+    const user = useMemo(() => {
+        const __user = localStorage.getItem('user') || null;
 
+        return {__user};
+    }, []);
+
+    if (!user) {
+        return (
+            <Redirect to="/signin"/>
+        )
     }
 
-    render() {
+    return (
+        <div className="container">
+            <form id="eggs-form" onSubmit={handleSubmit} className="white">
+                <h5 className="grey-text text-darken-3">Input Eggs</h5>
+                <br/>
+                <div className="input-field">
+                    <label htmlFor="date">Select Date (range: 1 - 31)</label>
+                    <input type="number" id="date" onChange={handleChange} required/>
+                </div>
+                <br/>
+                <div className="input-field">
+                    <label htmlFor="month">Select Month (range: 1 - 12)</label>
+                    <input type="number" id="month" onChange={handleChange} required/>
+                </div>
 
-        const { auth } = this.props;
+                <div className="input-field" style={{display: 'none'}} id="egg0">
+                    <label htmlFor="A 1">A 1 Eggs</label>
+                    <input type="number" id="A 1" onChange={handleChange} required/>
 
-        if(!auth.uid) {
-            return (
-                <Redirect to="/signin" />
-            )
-        }
-
-            return (
-                <div className="container">
-                    <form onSubmit={this.handleSubmit} className="white">
-                        <h5 className="grey-text text-darken-3">Input Eggs</h5>
-                        <br/>
+                    <div style={{display: 'none'}} id="egg">
                         <div className="input-field">
-                            <label htmlFor="date">Select Date (range: 1 - 31)</label>
-                            <input type="number" id="date" onChange={this.handleChange} required/>
-                        </div>
-                        <br/>
-                        <div className="input-field">
-                            <label htmlFor="month">Select Month (range: 1 - 12)</label>
-                            <input type="number" id="month" onChange={this.handleChange} required/>
-                        </div>
-
-                        <div className="input-field" style={{display: 'none'}} id="egg0">
-                            <label htmlFor="A 1">A 1 Eggs</label>
-                            <input type="number" id="A 1" onChange={this.handleChange} required/>
-
-                            <div style={{display: 'none'}} id="egg">
-                                <div className="input-field">
-                                    <label htmlFor="B 1">B 1 Eggs</label>
-                                    <input type="number" id="B 1" onChange={this.handleChange} required/>
+                            <label htmlFor="B 1">B 1 Eggs</label>
+                            <input type="number" id="B 1" onChange={handleChange} required/>
                                 </div>
                             </div>
                             <div style={{display: 'none'}} id="egg1">
                                 <div className="input-field">
                                     <label htmlFor="C 1">C 1 Eggs</label>
-                                    <input type="number" id="C 1" onChange={this.handleChange} required/>
+                                    <input type="number" id="C 1" onChange={handleChange} required/>
                                 </div>
                             </div>
 
                             <div style={{display: 'none' }} id="egg2" >
                                 <div className="input-field">
                                     <label htmlFor="A 2">A 2 Eggs</label>
-                                    <input type="number" id="A 2" onChange={this.handleChange} required/>
+                                    <input type="number" id="A 2" onChange={handleChange} required/>
                                 </div>
                             </div>
 
                             <div style={{display: 'none' }} id="egg3" >
                                 <div className="input-field">
                                     <label htmlFor="B 2">B 2 Eggs</label>
-                                    <input type="number" id="B 2" onChange={this.handleChange} required/>
+                                    <input type="number" id="B 2" onChange={handleChange} required/>
                                 </div>
                             </div>
 
                             <div style={{display: 'none'}} id="egg4">
                                 <div className="input-field">
                                     <label htmlFor="C 2">C 2 Eggs</label>
-                                    <input type="number" id="C 2" onChange={this.handleChange} required/>
+                                    <input type="number" id="C 2" onChange={handleChange} required/>
                                 </div>
                             </div>
 
                             <div style={{display: 'none'}} id="egg5">
                                 <div className="input-field">
                                     <label htmlFor="house">House Eggs</label>
-                                    <input type="number" id="house" onChange={this.handleChange} required/>
+                                    <input type="number" id="house" onChange={handleChange} required/>
                                 </div>
                             </div>
 
                             <div style={{display: 'none'}} id="egg6">
                                 <div className="input-field">
                                     <label htmlFor="broken">Eggs broken</label>
-                                    <input type="number" id="broken" onChange={this.handleChange} required/>
+                                    <input type="number" id="broken" onChange={handleChange} required/>
                                 </div>
                             </div>
 
-                            <div style={{display: 'none'}} id="loading">
-                                <div className="preloader-wrapper small active">
-                                    <div className="spinner-layer spinner-blue">
-                                        <div className="circle-clipper left">
-                                            <div className="circle"/>
-                                        </div>
-                                        <div className="gap-patch">
-                                            <div className="circle"/>
-                                        </div>
-                                        <div className="circle-clipper right">
-                                            <div className="circle"/>
+                    <div style={{display: 'none'}} id="loading-eggs">
+                        <div className="preloader-wrapper small active">
+                            <div className="spinner-layer spinner-blue">
+                                <div className="circle-clipper left">
+                                    <div className="circle"/>
+                                </div>
+                                <div className="gap-patch">
+                                    <div className="circle"/>
+                                </div>
+                                <div className="circle-clipper right">
+                                    <div className="circle"/>
                                         </div>
                                     </div>
 
@@ -272,13 +270,6 @@ class Inputeggs extends Component {
                     </form>
                 </div>
             );
-    }
-}
-
-const mapStateToProps = (state) => {
-    return {
-        auth: state.firebase.auth
-    }
 }
 
 const mapDispatchToProps = (dispatch) => {
@@ -287,4 +278,4 @@ const mapDispatchToProps = (dispatch) => {
     }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Inputeggs);
+export default connect(null, mapDispatchToProps)(Inputeggs);

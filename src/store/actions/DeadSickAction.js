@@ -1,5 +1,6 @@
 import {dateCheck, leapYear} from "./salesAction";
 import {setPerformanceEnd, setPerformanceStart} from "./moneyAction";
+import {clearForm} from "../../components/projects/Inputsell";
 
 export const inputDeadSick = (deadSick, image) => {
     return (dispatch, getState, {getFirebase, getFirestore}) => {
@@ -24,6 +25,7 @@ export const inputDeadSick = (deadSick, image) => {
         const deadSickDocRef = firestore.collection("deadSick").doc('Month ' + enteredMonth + ' Date ' + enteredDate + ' ' + section);
         const userLogRef = firestore.collection("userLogs").doc(user.uid).collection("logs").doc();
         const chickenDocRef = firestore.collection("chickenDetails").doc("2020");
+        const load = document.getElementById("loading-dead-sick");
 
         const dateChecks = dateCheck(enteredMonth, enteredDate, isLeap);
 
@@ -32,8 +34,7 @@ export const inputDeadSick = (deadSick, image) => {
             dispatch({type: 'INPUT_BUYING_ERROR', error});
 
             window.alert(error);
-            window.location = '/';
-            throw new Error("ERROR: Impossible date entered!");
+            return new Error("ERROR: Impossible date entered!");
         }
 
         const storageRef = firebase.storage().ref();
@@ -78,7 +79,7 @@ export const inputDeadSick = (deadSick, image) => {
                                         const final = data - 1;
 
                                         if (final < 0) {
-                                            throw new Error("ERROR: No more chickens left!");
+                                            return new Error("ERROR: No more chickens left!");
                                         } else {
                                             transaction.update(chickenDocRef, {
                                                 total: final,
@@ -108,14 +109,18 @@ export const inputDeadSick = (deadSick, image) => {
                     }).then(() => {
                         dispatch({type: 'UPLOAD_DONE'});
                         window.alert("Data submitted");
-                        window.location = '/';
+                        load.style.display = 'none';
+                        clearForm('dead-sick-form');
 
                     }).catch((err) => {
                         const error = err.message || err;
                         dispatch({type: 'INPUT_SALES_ERROR', error});
 
                         window.alert(error);
+                        load.style.display = 'none';
                         window.location = '/';
+                        clearForm('dead-sick-form');
+
                     });
                 })
         })

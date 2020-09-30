@@ -1,4 +1,4 @@
-import React, {Component} from "react";
+import React, {useMemo} from "react";
 import {connect} from 'react-redux';
 import {compose} from 'redux'
 import {Redirect} from 'react-router-dom';
@@ -8,38 +8,39 @@ import {setPerformanceEnd, setPerformanceStart} from "../../store/actions/moneyA
 
 setPerformanceStart();
 
-class LineChart extends Component {
+function LineChart(props) {
+    const {eggs, profit} = props;
+    const user = useMemo(() => {
+        const __user = localStorage.getItem('user') || null;
 
-    render() {
-        const {eggs, profit, auth} = this.props;
+        return {__user};
+    }, []);
 
-        if (!auth.uid) {
-            return (
-                <Redirect to="/signin"/>
-            )
-        }
-        if (eggs && profit) {
+    if (!user) {
+        return (
+            <Redirect to="/signin"/>
+        )
+    }
+    if (eggs && profit) {
 
-            return (
-                <div className="app">
-                    <div className="chart">
-                        <Charts eggs={eggs} profit={profit}/>
-                    </div>
+        return (
+            <div className="app">
+                <div className="chart">
+                    <Charts eggs={eggs} profit={profit}/>
                 </div>
-            );
-        } else {
-            return (
+            </div>
+        );
+    } else {
+        return (
                 <div className="progress">
                     <div className="indeterminate"/>
                 </div>
             );
         }
-    }
 }
 
 const mapStateToProps = (state) => {
     return {
-        auth: state.firebase.auth,
         eggs: state.firestore.ordered.eggs,
         profit: state.firestore.ordered.profit
     }

@@ -4,8 +4,10 @@ import {connect} from 'react-redux';
 import {checkClaims, signOut} from "../../store/actions/authActions";
 
 const SignedInLinks = (props) => {
-    const {admin} = props;
+    const {admin, changer, auth} = props;
     props.checkClaims();
+    const lastIndex = auth?.displayName.lastIndexOf(" ");
+    const initials = `${auth?.displayName.substring(0, 1)}${auth?.displayName.substring(lastIndex + 1, lastIndex + 2)}`
 
     if (admin) {
         return (
@@ -77,7 +79,7 @@ const SignedInLinks = (props) => {
                 </ul>
             </div>
         );
-    } else {
+    } else if (changer) {
         return (
             <div className="container">
                 <ul>
@@ -96,6 +98,7 @@ const SignedInLinks = (props) => {
                     <li><NavLink to='/sales'>Input Sales</NavLink></li>
                     <li><NavLink to='/eggs'>Input Eggs</NavLink></li>
                     <li><NavLink to='/buy'>Input Purchases</NavLink></li>
+                    <li><NavLink to='/ib'>Input Borrowing</NavLink></li>
 
                     <li>
                         <div className="divider"/>
@@ -129,12 +132,34 @@ const SignedInLinks = (props) => {
                 </ul>
             </div>
         );
+    } else {
+        return (
+            <div className="container">
+                <ul>
+                    <li><NavLink to='/' className="btn btn-floating pink lighten-1">
+                        {props.profile.initials || initials}
+                    </NavLink></li>
+
+                    <li>
+                        <div className="divider"/>
+                    </li>
+
+                    <li>
+                        <span className="subheader">Exit</span>
+                    </li>
+
+                    <li><NavLink to='/signin' onClick={props.signOut}>Log Out</NavLink></li>
+                </ul>
+            </div>
+        );
     }
 }
 
 const mapStateToProps = (state) => {
     return {
-        admin: state.auth.admin
+        admin: state.auth.admin,
+        changer: state.auth.changer,
+        auth: state.firebase.auth
     }
 }
 

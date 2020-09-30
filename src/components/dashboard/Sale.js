@@ -1,4 +1,4 @@
-import React, {Component} from "react";
+import React, {useMemo} from "react";
 import {connect} from 'react-redux';
 import {compose} from 'redux'
 import {Redirect} from 'react-router-dom';
@@ -8,33 +8,34 @@ import {setPerformanceEnd, setPerformanceStart} from "../../store/actions/moneyA
 
 setPerformanceStart();
 
-class Sale extends Component {
+function Sale(props) {
+    const {sales} = props;
+    const user = useMemo(() => {
+        const __user = localStorage.getItem('user') || null;
 
-    render() {
-        const {sales, auth} = this.props;
+        return {__user};
+    }, []);
 
-        if (!auth.uid) {
-            return (
-                <Redirect to="/signin"/>
-            )
-        }
+    if (!user) {
         return (
-            <div className="dashboard container">
-                <div className="row">
-
-                    <div className="col s12 m6">
-                        <SalesList sales={sales}/>
-                    </div>
-
-                </div>
-            </div>
-        );
+            <Redirect to="/signin"/>
+        )
     }
+    return (
+        <div className="dashboard container">
+            <div className="row">
+
+                <div className="col s12 m6">
+                    <SalesList sales={sales}/>
+                </div>
+
+            </div>
+        </div>
+    );
 }
 
 const mapStateToProps = (state) => {
     return {
-        auth: state.firebase.auth,
         sales: state.firestore.ordered.sales
     }
 }

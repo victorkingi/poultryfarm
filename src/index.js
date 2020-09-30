@@ -12,7 +12,6 @@ import {getFirebase, ReactReduxFirebaseProvider} from 'react-redux-firebase';
 import firebase from 'firebase/app';
 import {myFirebase} from "./config/fbConfig";
 
-
 if ("serviceWorker" in navigator) {
     navigator.serviceWorker
         .register("./firebase-messaging-sw.js")
@@ -24,14 +23,12 @@ if ("serviceWorker" in navigator) {
         });
 }
 
-
 const store = createStore(rootReducer,
     compose(
         applyMiddleware(thunk.withExtraArgument({getFirebase, getFirestore})),
         reduxFirestore(myFirebase)
     )
 );
-
 
 const rrfConfig = {
     userProfile: 'users',
@@ -45,11 +42,10 @@ const rrfProps = {
 
 }
 
-
 ReactDOM.render(
     <Provider store={store}>
         <ReactReduxFirebaseProvider {...rrfProps}>
-            <App />
+            <App/>
         </ReactReduxFirebaseProvider>
     </Provider>,
     document.getElementById('root'));

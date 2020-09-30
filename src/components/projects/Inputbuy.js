@@ -1,17 +1,22 @@
-import React, {Component} from "react";
+import React, {useEffect, useMemo, useState} from "react";
 import {connect} from 'react-redux';
 import {inputPurchase} from "../../store/actions/buyAction";
 import M from 'materialize-css';
 import {Redirect} from "react-router-dom";
 
 
-class Inputbuy extends Component {
-    state = {
-        category: 'buys',
-        section: '',
-    }
+function Inputbuy(props) {
 
-    handleChange = (e) => {
+    const [state, setState] = useState({
+        category: 'buys'
+    });
+
+    useEffect(() => {
+        M.AutoInit();
+
+    }, []);
+
+    const handleChange = (e) => {
         const selectBox = document.getElementById("section");
         const selectedValue = selectBox.options[selectBox.selectedIndex].value;
         const date = document.getElementById('date').value;
@@ -70,7 +75,8 @@ class Inputbuy extends Component {
         }
 
         if (e.target.id === "status") {
-            this.setState({
+            setState({
+                ...state,
                 [e.target.id]: JSON.parse(e.target.value)
             });
         } else if (e.target.id === "date" || e.target.id === "objectNo" || e.target.id === "objectPrice" || e.target.id === "month") {
@@ -80,19 +86,21 @@ class Inputbuy extends Component {
             } else {
                 document.getElementById("error-text").innerHTML = "";
 
-                this.setState({
+                setState({
+                    ...state,
                     [e.target.id]: parseInt(e.target.value)
                 });
             }
         } else {
-            this.setState({
+            setState({
+                ...state,
                 [e.target.id]: e.target.value
             });
         }
 
 
     }
-    handleSubmit = (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
         const selectBox = document.getElementById("section");
         const selectedValue = selectBox.options[selectBox.selectedIndex].value;
@@ -100,18 +108,17 @@ class Inputbuy extends Component {
         const vaccine = document.getElementById("vaccineName");
         const drug = document.getElementById("drugName");
         const other = document.getElementById("itemName");
-        const load = document.getElementById("loading");
-        const submit = document.getElementById("submit-btn");
-
-        submit.style.display = 'none';
-        load.style.display = 'block';
+        const load = document.getElementById("loading-buys");
+        const submit = document.getElementById("submit-btn-buys");
 
         if (selectedValue === "Other" || selectedValue === "Feeds") {
 
             if (other.value === "" || drug.value !== "" || vaccine.value !== "" || status.value === "") {
                 document.getElementById("error-text").innerHTML = "Error! Try again"
             } else {
-                this.props.inputPurchase(this.state);
+                submit.style.display = 'none';
+                load.style.display = 'block';
+                props.inputPurchase(state);
             }
         }
         if (selectedValue === "Drug") {
@@ -119,7 +126,9 @@ class Inputbuy extends Component {
             if (drug.value === "" || other.value !== "" || vaccine.value !== "" || status.value === "") {
                 document.getElementById("error-text").innerHTML = "Error! Try again"
             } else {
-                this.props.inputPurchase(this.state);
+                submit.style.display = 'none';
+                load.style.display = 'block';
+                props.inputPurchase(state);
             }
         }
         if (selectedValue === "Vaccines") {
@@ -127,7 +136,9 @@ class Inputbuy extends Component {
             if (vaccine.value === "" || other.value !== "" || drug.value !== "" || status.value === "") {
                 document.getElementById("error-text").innerHTML = "Error! Try again"
             } else {
-                this.props.inputPurchase(this.state);
+                submit.style.display = 'none';
+                load.style.display = 'block';
+                props.inputPurchase(state);
             }
         }
         if (selectedValue !== "Vaccine" && selectedValue !== "Drug" && selectedValue !== "Other" && selectedValue !== "Feeds") {
@@ -135,58 +146,59 @@ class Inputbuy extends Component {
             if (other.value === "" || vaccine.value !== "" || drug.value !== "" || status.value === "") {
                 document.getElementById("error-text").innerHTML = "Error! Try again"
             } else {
-                this.props.inputPurchase(this.state);
+                submit.style.display = 'none';
+                load.style.display = 'block';
+                props.inputPurchase(state);
             }
         }
 
     }
 
-    componentDidMount = () => {
-        M.AutoInit();
+    const user = useMemo(() => {
+        const __user = localStorage.getItem('user') || null;
+
+        return {__user};
+    }, []);
+
+    if (!user) {
+        return (
+            <Redirect to="/signin"/>
+        )
     }
 
-    render() {
-        const { auth } = this.props;
+    return (
+        <div className="container">
+            <form id="buys-form" onSubmit={handleSubmit} className="white">
+                <h5 className="grey-text text-darken-3">Input Purchases</h5>
+                <br/>
+                <div className="input-field">
+                    <label htmlFor="date">Select Date (range: 1 - 31)</label>
+                    <input type="number" id="date" onChange={handleChange} required/>
+                </div>
+                <br/>
+                <div className="input-field">
+                    <label htmlFor="month">Select Month (range: 1 - 12)</label>
+                    <input type="number" id="month" onChange={handleChange} required/>
+                </div>
 
-        if(!auth.uid) {
-            return (
-                <Redirect to="/signin" />
-            )
-        }
-
-            return (
-                <div className="container">
-                    <form onSubmit={this.handleSubmit} className="white">
-                        <h5 className="grey-text text-darken-3">Input Purchases</h5>
-                        <br/>
-                        <div className="input-field">
-                            <label htmlFor="date">Select Date (range: 1 - 31)</label>
-                            <input type="number" id="date" onChange={this.handleChange} required/>
-                        </div>
-                        <br/>
-                        <div className="input-field">
-                            <label htmlFor="month">Select Month (range: 1 - 12)</label>
-                            <input type="number" id="month" onChange={this.handleChange} required/>
-                        </div>
-
-                        <div style={{display: 'none'}} id="mySection">
-                            <select style={{display: 'none'}} id="section" onChange={this.handleChange}
-                                    className="white" defaultValue="0">
-                                <option value="0" disabled="disabled">Choose Section</option>
-                                <option value="Feeds">Feeds</option>
-                                <option value="Vaccines">Vaccines</option>
-                                <option value="Drug">Drug</option>
-                                <option value="Equipment">Equipment</option>
-                                <option value="Other">Other</option>
-                                <option value="Labour Payment">Labour Payment</option>
-                            </select>
+                <div style={{display: 'none'}} id="mySection">
+                    <select style={{display: 'none'}} id="section" onChange={handleChange}
+                            className="white" defaultValue="0">
+                        <option value="0" disabled="disabled">Choose Section</option>
+                        <option value="Feeds">Feeds</option>
+                        <option value="Vaccines">Vaccines</option>
+                        <option value="Drug">Drug</option>
+                        <option value="Equipment">Equipment</option>
+                        <option value="Other">Other</option>
+                        <option value="Labour Payment">Labour Payment</option>
+                    </select>
                         </div>
 
                         <div style={{display: 'none'}} id="other">
                             <br/>
                             <div className="input-field">
                                 <label htmlFor="itemName">Name of Item Purchased</label>
-                                <input type="text" id="itemName" onChange={this.handleChange}/>
+                                <input type="text" id="itemName" onChange={handleChange}/>
                             </div>
                         </div>
 
@@ -194,7 +206,7 @@ class Inputbuy extends Component {
                             <br/>
                             <div className="input-field">
                                 <label htmlFor="labourName">Name of Person Paid</label>
-                                <input type="text" id="labourName" onChange={this.handleChange}/>
+                                <input type="text" id="labourName" onChange={handleChange}/>
                             </div>
                         </div>
 
@@ -202,7 +214,7 @@ class Inputbuy extends Component {
                             <br/>
                             <div className="input-field">
                                 <label htmlFor="vaccineName">Name of Vaccine Purchased</label>
-                                <input type="text" id="vaccineName" onChange={this.handleChange}/>
+                                <input type="text" id="vaccineName" onChange={handleChange}/>
                             </div>
                         </div>
 
@@ -210,7 +222,7 @@ class Inputbuy extends Component {
                             <br/>
                             <div className="input-field">
                                 <label htmlFor="drugName">Name of Drug</label>
-                                <input type="text" id="drugName" onChange={this.handleChange}/>
+                                <input type="text" id="drugName" onChange={handleChange}/>
                             </div>
                         </div>
 
@@ -218,21 +230,21 @@ class Inputbuy extends Component {
                             <br/>
                             <div className="input-field">
                                 <label htmlFor="objectNo">Number of Objects</label>
-                                <input type="number" id="objectNo" onChange={this.handleChange} required/>
+                                <input type="number" id="objectNo" onChange={handleChange} required/>
                             </div>
                             <br/>
                             <div className="input-field">
                                 <label htmlFor="objectPrice">Price per Object</label>
-                                <input type="number" id="objectPrice" onChange={this.handleChange} required/>
+                                <input type="number" id="objectPrice" onChange={handleChange} required/>
                             </div>
 
-                            <select id="status" onChange={this.handleChange} className="white" defaultValue="0">
+                            <select id="status" onChange={handleChange} className="white" defaultValue="0">
                                 <option value="0" disabled="disabled">Status</option>
                                 <option value={true}>Paid</option>
                                 <option value={false}>Not paid</option>
                             </select>
 
-                            <div style={{display: 'none'}} id="loading">
+                            <div style={{display: 'none'}} id="loading-buys">
                                 <div className="preloader-wrapper small active">
                                     <div className="spinner-layer spinner-blue">
                                         <div className="circle-clipper left">
@@ -285,7 +297,8 @@ class Inputbuy extends Component {
                             </div>
 
                             <div className="input-field">
-                                <button type="Submit" id="submit-btn" className="btn pink lighten-1 z-depth-0">Submit
+                                <button type="Submit" id="submit-btn-buys"
+                                        className="btn pink lighten-1 z-depth-0">Submit
                                 </button>
                             </div>
                         </div>
@@ -295,13 +308,6 @@ class Inputbuy extends Component {
                     </form>
                 </div>
             );
-    }
-}
-
-const mapStateToProps = (state) => {
-    return {
-        auth: state.firebase.auth
-    }
 }
 
 const mapDispatchToProps = (dispatch) => {
@@ -310,4 +316,4 @@ const mapDispatchToProps = (dispatch) => {
     }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Inputbuy);
+export default connect(null, mapDispatchToProps)(Inputbuy);

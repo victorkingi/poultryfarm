@@ -1,93 +1,96 @@
-import React, {Component} from "react";
+import React, {useEffect, useMemo, useState} from "react";
 import {connect} from 'react-redux';
 import {inputNews} from "../../store/actions/chickenAction";
 import M from 'materialize-css';
 import {Redirect} from "react-router-dom";
 
-class InputNews extends Component {
-    state = {}
+function InputNews(props) {
+    const [state, setState] = useState({});
 
-    handleChange = (e) => {
-        this.setState({
+    useEffect(() => {
+        M.AutoInit();
+
+    }, []);
+
+    const handleChange = (e) => {
+        setState({
             [e.target.id]: e.target.value
         });
     }
 
-    handleSubmit = (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
-        const load = document.getElementById("loading");
-        const submit = document.getElementById("submit-btn");
+        const load = document.getElementById("loading-news");
+        const submit = document.getElementById("submit-btn-news");
 
         submit.style.display = 'none';
         load.style.display = 'block';
 
-        this.props.inputNews(this.state);
-
+        props.inputNews(state);
     }
 
-    componentDidMount = () => {
-        M.AutoInit();
-    }
+    const user = useMemo(() => {
+        const __user = localStorage.getItem('user') || null;
 
-    render() {
-        const {auth} = this.props;
+        return {__user};
+    }, []);
 
-        if (!auth.uid) {
-            return (
-                <Redirect to="/signin"/>
-            )
-        }
-
+    if (!user) {
         return (
-            <div className="container">
-                <form onSubmit={this.handleSubmit} className="white">
-                    <h5 className="grey-text text-darken-3">What's happening bro!</h5>
+            <Redirect to="/signin"/>
+        )
+    }
 
+    return (
+        <div className="container">
+            <form id="news-form" onSubmit={handleSubmit} className="white">
+                <h5 className="grey-text text-darken-3">What's happening bro!</h5>
+
+                <br/>
+                <div>
+                    <div className="input-field">
+                        <label htmlFor="title">Title</label>
+                        <input type="text" id="title" onChange={handleChange} required/>
+                    </div>
                     <br/>
-                    <div>
-                        <div className="input-field">
-                            <label htmlFor="title">Title</label>
-                            <input type="text" id="title" onChange={this.handleChange} required/>
-                        </div>
-                        <br/>
-                        <div className="input-field">
-                            <label htmlFor="content">Content</label>
-                            <input type="text" id="content" onChange={this.handleChange} required/>
-                        </div>
-                        <br/>
-                        <div className="input-field">
-                            <label htmlFor="link">Link</label>
-                            <input type="text" id="link" onChange={this.handleChange} required/>
-                        </div>
-                        <br/>
-                        <div className="input-field">
-                            <label htmlFor="provider">Provider</label>
-                            <input type="text" id="provider" onChange={this.handleChange} required/>
-                        </div>
-
+                    <div className="input-field">
+                        <label htmlFor="content">Content</label>
+                        <input type="text" id="content" onChange={handleChange} required/>
+                    </div>
+                    <br/>
+                    <div className="input-field">
+                        <label htmlFor="link">Link</label>
+                        <input type="text" id="link" onChange={handleChange} required/>
+                    </div>
+                    <br/>
+                    <div className="input-field">
+                        <label htmlFor="provider">Provider</label>
+                        <input type="text" id="provider" onChange={handleChange} required/>
                     </div>
 
-                    <div style={{display: 'none'}} id="loading">
-                        <div className="preloader-wrapper small active">
-                            <div className="spinner-layer spinner-blue">
-                                <div className="circle-clipper left">
-                                    <div className="circle"/>
-                                </div>
-                                <div className="gap-patch">
-                                    <div className="circle"/>
-                                </div>
-                                <div className="circle-clipper right">
-                                    <div className="circle"/>
-                                </div>
-                            </div>
+                </div>
 
-                            <div className="spinner-layer spinner-red">
-                                <div className="circle-clipper left">
-                                    <div className="circle"/>
-                                </div>
-                                <div className="gap-patch">
-                                    <div className="circle"/>
-                                </div>
+                <div style={{display: 'none'}} id="loading-news">
+                    <div className="preloader-wrapper small active">
+                        <div className="spinner-layer spinner-blue">
+                            <div className="circle-clipper left">
+                                <div className="circle"/>
+                            </div>
+                            <div className="gap-patch">
+                                <div className="circle"/>
+                            </div>
+                            <div className="circle-clipper right">
+                                <div className="circle"/>
+                            </div>
+                        </div>
+
+                        <div className="spinner-layer spinner-red">
+                            <div className="circle-clipper left">
+                                <div className="circle"/>
+                            </div>
+                            <div className="gap-patch">
+                                <div className="circle"/>
+                            </div>
                                 <div className="circle-clipper right">
                                     <div className="circle"/>
                                 </div>
@@ -116,19 +119,18 @@ class InputNews extends Component {
                                     <div className="circle"/>
                                 </div>
                             </div>
-                        </div>
                     </div>
+                </div>
 
-                    <div style={{display: 'block'}} id="submit-btn">
-                        <div className="input-field">
-                            <button type="Submit" className="btn pink lighten-1 z-depth-0">Submit</button>
-                        </div>
+                <div style={{display: 'block'}} id="submit-btn-news">
+                    <div className="input-field">
+                        <button type="Submit" className="btn pink lighten-1 z-depth-0">Submit</button>
                     </div>
-                    <div className="red-text center" id="error-text"/>
-                </form>
+                </div>
+                <div className="red-text center" id="error-text"/>
+            </form>
             </div>
         );
-    }
 }
 
 const mapStateToProps = (state) => {

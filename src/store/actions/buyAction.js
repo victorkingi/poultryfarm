@@ -1,5 +1,6 @@
 import {dateCheck, leapYear, makeid} from "./salesAction";
 import {setPerformanceEnd, setPerformanceStart} from "./moneyAction";
+import {clearForm} from "../../components/projects/Inputsell";
 
 export const inputPurchase = (buys) => {
     return (dispatch, getState, {getFirebase, getFirestore}) => {
@@ -30,6 +31,7 @@ export const inputPurchase = (buys) => {
         const otherDebtDocRef = firestore.collection("otherDebt").doc('Month ' + enteredMonth + ' Date ' + enteredDate + ' ' + section + ': ' + item);
         const totalThikaDebtDocRef = firestore.collection("otherDebt").doc("TotalThikaFarmers");
         const total = parseInt(buys.objectNo) * parseInt(buys.objectPrice);
+        const load = document.getElementById("loading-buys");
 
         const dateChecks = dateCheck(enteredMonth, enteredDate, isLeap);
 
@@ -39,19 +41,17 @@ export const inputPurchase = (buys) => {
             dispatch({type: 'INPUT_BUYING_ERROR', error});
 
             window.alert(error);
-            window.location = '/';
-            throw new Error("ERROR: Impossible date entered!");
+            return new Error("ERROR: Impossible date entered!");
         }
 
         firestore.collection('buys').orderBy("date", "desc").limit(1).get().then(function (snapshot) {
             if (snapshot.size === 0) {
-                throw new Error("ERROR: Contact admin for help!");
+                return new Error("ERROR: Contact admin for help!");
             }
 
             snapshot.docs.forEach(function (doc) {
                 const prevWeeklySpend = parseInt(doc.data().weeklySpend);
                 const prevMonthlySpend = parseInt(doc.data().monthlySpend);
-
                 const newWeeklySpend = total + prevWeeklySpend;
                 const newMonthlySpend = total + prevMonthlySpend;
                 const newMonth = enteredMonth - 1;
@@ -153,7 +153,7 @@ export const inputPurchase = (buys) => {
 
                                             }
                                         } else {
-                                            throw new Error("Doc doesn't exist");
+                                            return new Error("Doc doesn't exist");
                                         }
                                     } else if (user.uid && !status) {
                                         transaction.set(otherDebtDocRef, {
@@ -198,14 +198,17 @@ export const inputPurchase = (buys) => {
                 }).then(() => {
                     dispatch({type: 'INPUT_BUYING', buys});
                     window.alert("Data Submitted");
-                    window.location = '/';
+                    load.style.display = 'none';
+                    clearForm('buys-form');
 
                 }).catch(function (err) {
                     const error = err.message || err;
 
                     dispatch({type: 'INPUT_BUYING_ERROR', error});
                     window.alert(error);
+                    load.style.display = 'none';
                     window.location = '/';
+                    clearForm('buys-form');
 
                 });
 

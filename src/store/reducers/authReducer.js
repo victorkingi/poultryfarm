@@ -1,14 +1,20 @@
-const initState = {
+export const initState = {
     authError: null,
     admin: false,
     moderator: false,
-    changer: false
+    changer: false,
+    loggedIn: false
 }
 
 
 
 const authReducer = (state = initState, action) => {
     switch (action.type) {
+        case 'LOGGED_IN':
+            return {
+                ...state,
+                loggedIn: true
+            }
         case 'LOGIN_ERROR':
             console.log('login error')
             return {
@@ -17,6 +23,11 @@ const authReducer = (state = initState, action) => {
             }
         case 'LOGIN_SUCCESS':
             console.log('login success');
+            try {
+                localStorage.setItem('user', action._user);
+            } catch (e) {
+                console.log(e)
+            }
             return {
                 ...state,
                 authError: null
@@ -59,8 +70,12 @@ const authReducer = (state = initState, action) => {
 
         case 'SIGN_OUT_SUCCESS':
             console.log('signed out');
+            localStorage.clear();
             window.location = '/signin';
-            return state;
+            return {
+                ...state,
+                loggedIn: false
+            };
 
         case 'SIGNUP_SUCCESS':
             console.log('signup success');
@@ -71,23 +86,6 @@ const authReducer = (state = initState, action) => {
             return {
                 ...state,
                 authError: action.err.message,
-            }
-        case 'MY_ERROR':
-            console.log('list not loaded', action.err.message);
-            return {
-                ...state,
-                authError: action.err.message,
-            }
-        case 'LIST_ERROR':
-            console.log('list error', action.all);
-            return {
-                ...state,
-                authError: action.err.message,
-            }
-        case 'LIST_ACCESS':
-            return {
-                ...state,
-                users: action.data,
             }
 
         default:

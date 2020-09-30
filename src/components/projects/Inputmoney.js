@@ -1,18 +1,23 @@
-import React, {Component} from "react";
+import React, {useEffect, useMemo, useState} from "react";
 import {connect} from 'react-redux';
 import {sendMoney} from "../../store/actions/moneyAction";
 import M from 'materialize-css';
 import {Redirect} from "react-router-dom";
 import * as firebase from "firebase";
 
-class Inputmoney extends Component {
-    state = {}
+function Inputmoney(props) {
+    const [state, setState] = useState({});
 
-    handleChange = (e) => {
+    useEffect(() => {
+        M.AutoInit();
+
+    }, []);
+
+    const handleChange = (e) => {
         const selectBox = document.getElementById("receiver");
         const selectedValue = selectBox.options[selectBox.selectedIndex].value;
         const money = document.getElementById('money');
-        const submit = document.getElementById('submit-btn');
+        const submit = document.getElementById('submit-btn-send-money');
         const amount = document.getElementById('amount').value;
 
         if (selectedValue !== "" || selectedValue !== firebase.auth().currentUser.email) {
@@ -29,85 +34,83 @@ class Inputmoney extends Component {
             submit.style.display = 'block';
         }
 
-        this.setState({
+        setState({
+            ...state,
             [e.target.id]: e.target.value
         });
     }
 
-    handleSubmit = (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
         const selectBox = document.getElementById("receiver");
         const selectedValue = selectBox.options[selectBox.selectedIndex].value;
-        const load = document.getElementById("loading");
-        const submit = document.getElementById("submit-btn");
-
-        submit.style.display = 'none';
-        load.style.display = 'block';
+        const load = document.getElementById("loading-send-money");
+        const submit = document.getElementById("submit-btn-send-money");
 
         if (selectedValue === "0") {
             document.getElementById("error-text").innerHTML = "Error with selection";
         } else {
             document.getElementById("error-text").innerHTML = "";
-            this.props.sendMoney(this.state);
+            submit.style.display = 'none';
+            load.style.display = 'block';
+            props.sendMoney(state);
         }
-
     }
 
-    componentDidMount = () => {
-        M.AutoInit();
-    }
+    const user = useMemo(() => {
+        const __user = localStorage.getItem('user') || null;
 
-    render() {
-        const {auth, admin} = this.props;
-        const links = admin ? <option value="Bank Account">Bank</option> : null;
-        if (!auth.uid) {
-            return (
-                <Redirect to="/signin"/>
-            )
-        }
+        return {__user};
+    }, []);
 
+    if (!user) {
         return (
-            <div className="container">
-                <form onSubmit={this.handleSubmit} className="white">
-                    <h5 className="grey-text text-darken-3">Send Money To</h5>
+            <Redirect to="/signin"/>
+        )
+    }
 
-                    <select id="receiver" onChange={this.handleChange} className="white" defaultValue="0">
-                        <option value="0" disabled="disabled">Choose User</option>
-                        <option value="Victor Kingi">Victor</option>
-                        <option value="Purity Mukomaua">Purity</option>
-                        <option value="Jeff Karue">Jeff</option>
-                        <option value="Anne Kingi">Anne</option>
-                        {links}
-                    </select>
+    return (
+        <div className="container">
+            <form id="send-money-form" onSubmit={handleSubmit} className="white">
+                <h5 className="grey-text text-darken-3">Send Money To</h5>
 
-                    <div style={{display: 'none'}} id="money">
-                        <div className="input-field">
-                            <label htmlFor="amount">Enter amount</label>
-                            <input type="number" id="amount" onChange={this.handleChange} required/>
-                        </div>
+                <select id="receiver" onChange={handleChange} className="white" defaultValue="0">
+                    <option value="0" disabled="disabled">Choose User</option>
+                    <option value="Victor Kingi">Victor</option>
+                    <option value="Purity Mukomaua">Purity</option>
+                    <option value="Jeff Karue">Jeff</option>
+                    <option value="Anne Kingi">Anne</option>
+                    <option value="Bank Account">Bank</option>
+                </select>
+
+                <div style={{display: 'none'}} id="money">
+                    <div className="input-field">
+                        <label htmlFor="amount">Enter amount</label>
+                        <input type="number" id="amount" onChange={handleChange} required/>
                     </div>
+                </div>
 
-                    <div style={{display: 'none'}} id="loading">
-                        <div className="preloader-wrapper small active">
-                            <div className="spinner-layer spinner-blue">
-                                <div className="circle-clipper left">
-                                    <div className="circle"/>
-                                </div>
-                                <div className="gap-patch">
-                                    <div className="circle"/>
-                                </div>
-                                <div className="circle-clipper right">
-                                    <div className="circle"/>
-                                </div>
+                <div style={{display: 'none'}} id="loading-send-money">
+                    <div className="preloader-wrapper small active">
+                        <div className="spinner-layer spinner-blue">
+                            <div className="circle-clipper left">
+                                <div className="circle"/>
                             </div>
+                            <div className="gap-patch">
+                                <div className="circle"/>
+                            </div>
+                            <div className="circle-clipper right">
+                                <div className="circle"/>
+                            </div>
+                        </div>
 
-                            <div className="spinner-layer spinner-red">
-                                <div className="circle-clipper left">
-                                    <div className="circle"/>
-                                </div>
-                                <div className="gap-patch">
-                                    <div className="circle"/>
-                                </div>
+                        <div className="spinner-layer spinner-red">
+                            <div className="circle-clipper left">
+                                <div className="circle"/>
+                            </div>
+                            <div className="gap-patch">
+                                <div className="circle"/>
+                            </div>
                                 <div className="circle-clipper right">
                                     <div className="circle"/>
                                 </div>
@@ -136,30 +139,20 @@ class Inputmoney extends Component {
                                     <div className="circle"/>
                                 </div>
                             </div>
-                        </div>
                     </div>
+                </div>
 
-
-                    <div style={{display: 'none'}} id="submit-btn">
-                        <div className="input-field">
-                            <button type="Submit" className="btn pink lighten-1 z-depth-0">Submit</button>
-                        </div>
+                <div style={{display: 'none'}} id="submit-btn-send-money">
+                    <div className="input-field">
+                        <button type="Submit" className="btn pink lighten-1 z-depth-0">Submit</button>
                     </div>
+                </div>
 
-                    <div className="red-text center" id="error-text"/>
+                <div className="red-text center" id="error-text"/>
 
-                </form>
+            </form>
             </div>
         );
-    }
-}
-
-const mapStateToProps = (state) => {
-
-    return {
-        auth: state.firebase.auth,
-        admin: state.auth.admin
-    }
 }
 
 const mapDispatchToProps = (dispatch) => {
@@ -168,4 +161,4 @@ const mapDispatchToProps = (dispatch) => {
     }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Inputmoney)
+export default connect(null, mapDispatchToProps)(Inputmoney)

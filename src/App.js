@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React from 'react';
 import {BrowserRouter, Route, Switch} from 'react-router-dom'
 
 import Dashboard from "./components/dashboard/Dashboard";
@@ -29,43 +29,39 @@ import {setPerformanceEnd, setPerformanceStart} from "./store/actions/moneyActio
 
 setPerformanceStart();
 
-class App extends Component {
-
-    render() {
-
-        return (
-            <BrowserRouter>
-                <div className="App">
-                    <Navbar/>
-                    <Sidebar/>
-                    <Switch>
-                        <Route exact path='/' component={Dashboard}/>
-                        <Route path='/s/:id' component={SalesDetails}/>
-                        <Route path='/sd/:id' component={SickDeadDetails}/>
-                        <Route path='/e/:id' component={EggsDetails}/>
-                        <Route path='/b/:id' component={BuyDetails}/>
-                        <Route path='/signin' component={SignIn}/>
-                        <Route path='/signup' component={SignUp}/>
-                        <Route path='/sales' component={Inputsell}/>
-                        <Route path='/news' component={InputNews}/>
-                        <Route path='/buy' component={Inputbuy}/>
-                        <Route path='/eggs' component={Inputeggs}/>
-                        <Route path='/send' component={Inputmoney}/>
-                        <Route path='/d' component={InputDeadSick}/>
-                        <Route path='/l' component={Late}/>
-                        <Route path='/o' component={OtherDebts}/>
-                        <Route path='/s' component={Sale}/>
-                        <Route path='/sd' component={SickDead}/>
-                        <Route path='/b' component={Buy}/>
-                        <Route path='/e' component={Egg}/>
-                        <Route path='/chart' component={LineChart}/>
-                        <Route path='/rb' component={Borrow}/>
-                        <Route path='/ib' component={InputBorrow}/>
-                    </Switch>
-                </div>
-            </BrowserRouter>
-        );
-    }
+const App = () => {
+    return (
+        <BrowserRouter>
+            <div className="App">
+                <Navbar/>
+                <Sidebar/>
+                <Switch>
+                    <Route exact path='/' component={Dashboard}/>
+                    <Route path='/s/:id' component={SalesDetails}/>
+                    <Route path='/sd/:id' component={SickDeadDetails}/>
+                    <Route path='/e/:id' component={EggsDetails}/>
+                    <Route path='/b/:id' component={BuyDetails}/>
+                    <Route path='/signin' component={SignIn}/>
+                    <Route path='/signup' component={SignUp}/>
+                    <Route path='/sales' component={Inputsell}/>
+                    <Route path='/news' component={InputNews}/>
+                    <Route path='/buy' component={Inputbuy}/>
+                    <Route path='/eggs' component={Inputeggs}/>
+                    <Route path='/send' component={Inputmoney}/>
+                    <Route path='/d' component={InputDeadSick}/>
+                    <Route path='/l' component={Late}/>
+                    <Route path='/o' component={OtherDebts}/>
+                    <Route path='/s' component={Sale}/>
+                    <Route path='/sd' component={SickDead}/>
+                    <Route path='/b' component={Buy}/>
+                    <Route path='/e' component={Egg}/>
+                    <Route path='/chart' component={LineChart}/>
+                    <Route path='/rb' component={Borrow}/>
+                    <Route path='/ib' component={InputBorrow}/>
+                </Switch>
+            </div>
+        </BrowserRouter>
+    );
 }
 
 setPerformanceEnd('APP_TIME');

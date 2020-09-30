@@ -1,4 +1,4 @@
-import React, {Component} from "react";
+import React, {useMemo} from "react";
 import {connect} from 'react-redux';
 import {compose} from 'redux'
 import {Redirect} from 'react-router-dom';
@@ -8,33 +8,34 @@ import {setPerformanceEnd, setPerformanceStart} from "../../store/actions/moneyA
 
 setPerformanceStart();
 
-class OtherDebts extends Component {
+function OtherDebts(props) {
+    const {otherDebt} = props;
+    const user = useMemo(() => {
+        const __user = localStorage.getItem('user') || null;
 
-    render() {
-        const {otherDebt, auth} = this.props;
+        return {__user};
+    }, []);
 
-        if (!auth.uid) {
-            return (
-                <Redirect to="/signin"/>
-            )
-        }
+    if (!user) {
         return (
-            <div className="dashboard container">
-                <div className="row">
-
-                    <div className="col s12 m6">
-                        <OtherDebtList otherDebt={otherDebt}/>
-                    </div>
-
-                </div>
-            </div>
-        );
+            <Redirect to="/signin"/>
+        )
     }
+    return (
+        <div className="dashboard container">
+            <div className="row">
+
+                <div className="col s12 m6">
+                    <OtherDebtList otherDebt={otherDebt}/>
+                </div>
+
+            </div>
+        </div>
+    );
 }
 
 const mapStateToProps = (state) => {
     return {
-        auth: state.firebase.auth,
         otherDebt: state.firestore.ordered.otherDebt
     }
 }

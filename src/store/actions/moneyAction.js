@@ -1,4 +1,5 @@
 import {makeid} from "./salesAction";
+import {clearForm} from "../../components/projects/Inputsell";
 
 function setPerformanceStart() {
     performance.mark('measurementStart');
@@ -25,7 +26,26 @@ export const sendMoney = (money) => {
         const currentDocRef = firestore.collection("current").doc(fullName);
         const receiverDocRef = firestore.collection("current").doc(receiver);
         const userLogRef = firestore.collection("userLogs").doc(user.uid).collection("logs").doc();
+        const load = document.getElementById("loading-send-money");
+        const submit = document.getElementById("submit-btn-send-money");
 
+        if (money.receiver === "Bank Account") {
+            return firebase.auth().onAuthStateChanged(user => {
+                if (user) {
+                    return user.getIdTokenResult().then(idToken => {
+                        if (!idToken.claims.admin) {
+                            return Promise.reject("ERROR: You are not an admin!");
+                        }
+                    }).catch((err) => {
+                        console.error(err);
+                        alert(err);
+                        submit.style.display = 'block';
+                        load.style.display = 'none';
+                        window.location = '/';
+                    })
+                }
+            });
+        }
 
         firestore.runTransaction(function (transaction) {
             return transaction.get(currentDocRef).then(function (currentDoc) {
@@ -35,24 +55,14 @@ export const sendMoney = (money) => {
                             const name = receiverDoc.data().fullName;
 
                             if (name === currentDoc.data().fullName || amount < 1) {
-                                const load = document.getElementById("loading");
-                                const submit = document.getElementById("submit-btn");
-
-                                submit.style.display = 'block';
-                                load.style.display = 'none';
-
                                 return Promise.reject("ERROR: Recheck data entered!");
 
                             } else {
                                 const senderNewBalance = currentDoc.data().balance - amount;
 
                                 if (senderNewBalance < 0) {
-                                    const load = document.getElementById("loading");
-                                    const submit = document.getElementById("submit-btn");
-
-                                    submit.style.display = 'block';
-                                    load.style.display = 'none';
                                     return Promise.reject("ERROR: Insufficient funds to complete transfer");
+
                                 } else {
                                     transaction.update(currentDocRef, {
                                         balance: senderNewBalance,
@@ -87,13 +97,17 @@ export const sendMoney = (money) => {
         }).then(() => {
             dispatch({type: 'MONEY_SENT', money});
             window.alert("Data submitted");
-            window.location = '/';
+            load.style.display = 'none';
+            clearForm('send-money-form');
 
         }).catch((err) => {
             const error = err.message || err;
             dispatch({type: 'MONEY_ERROR', error});
 
             window.alert(error);
+            load.style.display = 'none';
+            window.location = '/';
+            clearForm('send-money-form');
         })
 
         setPerformanceEnd('SEND_MONEY_TIME');
@@ -140,7 +154,6 @@ export const hasPaidLate = (details) => {
         }).catch((err) => {
             dispatch({type: 'LATE_ERROR'});
             window.alert("ERROR: " + err.message);
-            window.location = '/';
         });
         setPerformanceEnd('LATE_PAYMENT_TIME');
     }
@@ -450,6 +463,7 @@ export const borrowSomeMoney = (details) => {
         const currentDocRef = firestore.collection("current").doc(fullName);
         const borrowDocRef = firestore.collection("borrow").doc();
         const userLogRef = firestore.collection("userLogs").doc(user.uid).collection("logs").doc();
+        const load = document.getElementById("loading-borrow");
 
         firestore.runTransaction(function (transaction) {
 
@@ -493,13 +507,17 @@ export const borrowSomeMoney = (details) => {
         }).then(() => {
             dispatch({type: 'BORROW_SUCCESS'});
             window.alert("Money successfully borrowed");
-            window.location = '/';
+            load.style.display = 'none';
+            clearForm('borrow-form');
+
         }).catch((err) => {
             const error = err.message || err;
             dispatch({type: 'BORROW_FAILED', error});
 
             window.alert(error);
+            load.style.display = 'none';
             window.location = '/';
+            clearForm('borrow-form');
         })
         setPerformanceEnd('BORROW_MONEY_TIME');
     }

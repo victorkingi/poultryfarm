@@ -39,7 +39,6 @@ class SignIn extends Component {
             load.style.display = 'none';
         }
 
-
         return (
             <div className="container">
                 <form onSubmit={this.handleSubmit} className="white">

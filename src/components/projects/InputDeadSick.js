@@ -1,17 +1,22 @@
-import React, {Component} from "react";
+import React, {useEffect, useMemo, useState} from "react";
 import {connect} from 'react-redux';
 import {inputDeadSick} from "../../store/actions/DeadSickAction";
 import M from "materialize-css";
 import {Redirect} from "react-router-dom";
 
-class InputDeadSick extends Component {
+function InputDeadSick(props) {
 
-    state = {
+    const [state, setState] = useState({
         category: 'deadSick'
-    }
-    image = null;
+    });
+    const [image, setImage] = useState(null);
 
-    handleChange = (e) => {
+    useEffect(() => {
+        M.AutoInit();
+
+    }, []);
+
+    const handleChange = (e) => {
         const selectBox = document.getElementById("section");
         const selectedValue = selectBox.options[selectBox.selectedIndex].value;
         const date = document.getElementById('date').value;
@@ -20,7 +25,7 @@ class InputDeadSick extends Component {
         const reason = document.getElementById('reason');
         const total = document.getElementById('total');
         const sick = document.getElementById('sick');
-        const submit = document.getElementById('submit-btn');
+        const submit = document.getElementById('submit-btn-dead-sick');
         const upload = document.getElementById('upload');
         const chickenNo = document.getElementById('chickenNo').value;
         const checks = parseInt(date) > 0 && parseInt(date) < 32 && date !== "" && parseInt(month) > 0 && parseInt(month) < 13;
@@ -61,7 +66,7 @@ class InputDeadSick extends Component {
 
         if (e.target.files) {
             if (e.target.files[0]) {
-                this.image = e.target.files[0];
+                setImage(e.target.files[0]);
             }
         }
 
@@ -70,73 +75,71 @@ class InputDeadSick extends Component {
                 document.getElementById("error-text").innerHTML = "Error! Input needs to be a number";
             } else {
                 document.getElementById("error-text").innerHTML = "";
-                this.setState({
+                setState({
+                    ...state,
                     [e.target.id]: parseInt(e.target.value)
                 });
             }
         } else {
-            this.setState({
+            setState({
+                ...state,
                 [e.target.id]: e.target.value
             });
         }
     }
 
-    handleSubmit = (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
-        const load = document.getElementById("loading");
-        const submit = document.getElementById("submit-btn");
-
+        const load = document.getElementById("loading-dead-sick");
+        const submit = document.getElementById("submit-btn-dead-sick");
         submit.style.display = 'none';
         load.style.display = 'block';
-
-        this.props.inputDeadSick(this.state, this.image);
+        props.inputDeadSick(state, image);
 
     }
 
-    componentDidMount = () => {
-        M.AutoInit();
-    }
+    const user = useMemo(() => {
+        const __user = localStorage.getItem('user') || null;
 
-    render() {
-        const {auth} = this.props;
-        const link = this.image ? 'Image added: ' + this.image.name : 'No image added';
+        return {__user};
+    }, []);
 
-
-        if (!auth.uid) {
-            return (
-                <Redirect to="/signin"/>
-            )
-        }
-
+    if (!user) {
         return (
-            <div>
+            <Redirect to="/signin"/>
+        )
+    }
+    const link = image ? 'Image added: ' + image.name : 'No image added';
 
-                <div className="container">
-                    <form onSubmit={this.handleSubmit} className="white">
-                        <h5 className="grey-text text-darken-3">Input Dead / Sick</h5>
-                        <br/>
-                        <div className="input-field">
-                            <label htmlFor="date">Select Date (range: 1 - 31)</label>
-                            <input type="number" id="date" onChange={this.handleChange} required/>
-                        </div>
-                        <br/>
-                        <div className="input-field">
-                            <label htmlFor="month">Select Month (range: 1 - 12)</label>
-                            <input type="number" id="month" onChange={this.handleChange} required/>
-                        </div>
+    return (
+        <div>
 
-                        <div style={{display: 'none'}} id="mySection">
-                            <select id="section" onChange={this.handleChange} className="white" defaultValue="0">
-                                <option value="0" disabled="disabled">Choose Section</option>
-                                <option value="Dead">Dead</option>
-                                <option value="Sick">Sick</option>
-                            </select>
-                            <br/>
-                            <select id="place" onChange={this.handleChange} className="white" defaultValue="0">
-                                <option value="0" disabled="disabled">Choose Location</option>
-                                <option value="Cage">Cage</option>
-                                <option value="House">House</option>
-                            </select>
+            <div className="container">
+                <form id="dead-sick-form" onSubmit={handleSubmit} className="white">
+                    <h5 className="grey-text text-darken-3">Input Dead / Sick</h5>
+                    <br/>
+                    <div className="input-field">
+                        <label htmlFor="date">Select Date (range: 1 - 31)</label>
+                        <input type="number" id="date" onChange={handleChange} required/>
+                    </div>
+                    <br/>
+                    <div className="input-field">
+                        <label htmlFor="month">Select Month (range: 1 - 12)</label>
+                        <input type="number" id="month" onChange={handleChange} required/>
+                    </div>
+
+                    <div style={{display: 'none'}} id="mySection">
+                        <select id="section" onChange={handleChange} className="white" defaultValue="0">
+                            <option value="0" disabled="disabled">Choose Section</option>
+                            <option value="Dead">Dead</option>
+                            <option value="Sick">Sick</option>
+                        </select>
+                        <br/>
+                        <select id="place" onChange={handleChange} className="white" defaultValue="0">
+                            <option value="0" disabled="disabled">Choose Location</option>
+                            <option value="Cage">Cage</option>
+                            <option value="House">House</option>
+                        </select>
 
                         </div>
 
@@ -144,7 +147,7 @@ class InputDeadSick extends Component {
                             <br/>
                             <div className="input-field">
                                 <label htmlFor="reason">Reason</label>
-                                <input type="text" id="reason" onChange={this.handleChange} required/>
+                                <input type="text" id="reason" onChange={handleChange} required/>
                             </div>
                         </div>
 
@@ -152,7 +155,7 @@ class InputDeadSick extends Component {
                             <br/>
                             <div className="input-field">
                                 <label htmlFor="treatment">Treatment Given</label>
-                                <input type="text" id="treatment" onChange={this.handleChange}/>
+                                <input type="text" id="treatment" onChange={handleChange}/>
                             </div>
                         </div>
 
@@ -161,40 +164,40 @@ class InputDeadSick extends Component {
                             <br/>
                             <div className="input-field">
                                 <label htmlFor="chickenNo">Number of chickens</label>
-                                <input type="number" id="chickenNo" onChange={this.handleChange} required/>
+                                <input type="number" id="chickenNo" onChange={handleChange} required/>
                             </div>
                         </div>
 
-                        <div style={{display: 'none'}} id="upload">
+                    <div style={{display: 'none'}} id="upload">
                             <span className="btn btn-file pink lighten-1 z-depth-0">
                                 <i className="material-icons left">cloud_upload</i>
                                 Browse Photo
-                                <input type="file" id="photo" onChange={this.handleChange}/>
+                                <input type="file" id="photo" onChange={handleChange}/>
                            </span>
-                            <p>{link}</p>
-                        </div>
+                        <p>{link}</p>
+                    </div>
 
-                        <div style={{display: 'none'}} id="loading">
-                            <div className="preloader-wrapper small active">
-                                <div className="spinner-layer spinner-blue">
-                                    <div className="circle-clipper left">
-                                        <div className="circle"/>
-                                    </div>
-                                    <div className="gap-patch">
-                                        <div className="circle"/>
-                                    </div>
-                                    <div className="circle-clipper right">
-                                        <div className="circle"/>
-                                    </div>
+                    <div style={{display: 'none'}} id="loading-dead-sick">
+                        <div className="preloader-wrapper small active">
+                            <div className="spinner-layer spinner-blue">
+                                <div className="circle-clipper left">
+                                    <div className="circle"/>
                                 </div>
+                                <div className="gap-patch">
+                                    <div className="circle"/>
+                                </div>
+                                <div className="circle-clipper right">
+                                    <div className="circle"/>
+                                </div>
+                            </div>
 
-                                <div className="spinner-layer spinner-red">
-                                    <div className="circle-clipper left">
-                                        <div className="circle"/>
-                                    </div>
-                                    <div className="gap-patch">
-                                        <div className="circle"/>
-                                    </div>
+                            <div className="spinner-layer spinner-red">
+                                <div className="circle-clipper left">
+                                    <div className="circle"/>
+                                </div>
+                                <div className="gap-patch">
+                                    <div className="circle"/>
+                                </div>
                                     <div className="circle-clipper right">
                                         <div className="circle"/>
                                     </div>
@@ -223,29 +226,20 @@ class InputDeadSick extends Component {
                                         <div className="circle"/>
                                     </div>
                                 </div>
-                            </div>
                         </div>
+                    </div>
 
-                        <div style={{display: 'none'}} id="submit-btn">
-                            <div className="input-field">
-                                <button type="Submit" className="btn pink lighten-1 z-depth-0">Submit</button>
-                            </div>
+                    <div style={{display: 'none'}} id="submit-btn-dead-sick">
+                        <div className="input-field">
+                            <button type="Submit" className="btn pink lighten-1 z-depth-0">Submit</button>
                         </div>
-                        <div className="red-text center" id="error-text"/>
-                    </form>
+                    </div>
+                    <div className="red-text center" id="error-text"/>
+                </form>
                 </div>
-
-
             </div>
         );
-    }
 
-}
-
-const mapStateToProps = (state) => {
-    return {
-        auth: state.firebase.auth
-    }
 }
 
 const mapDispatchToProps = (dispatch) => {
@@ -254,4 +248,4 @@ const mapDispatchToProps = (dispatch) => {
     }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(InputDeadSick);
+export default connect(null, mapDispatchToProps)(InputDeadSick);

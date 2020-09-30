@@ -1,5 +1,6 @@
 import {dateCheck, leapYear} from "./salesAction";
 import {setPerformanceEnd, setPerformanceStart} from "./moneyAction";
+import {clearForm} from "../../components/projects/Inputsell";
 
 function isLastDay(dt) {
     const test = new Date(dt.getTime());
@@ -20,14 +21,15 @@ export const inputTray = (eggs) => {
         const getHours = date.getHours();
         const getMinutes = date.getMinutes();
         const getSeconds = date.getSeconds();
-        const dayOfTheWeek = date.getDay();
-        const endMonth = isLastDay(date);
         const enteredMonth = parseInt(eggs.month);
+        const year = date.getFullYear();
         const newMonth = enteredMonth - 1;
         const enteredDate = parseInt(eggs.date);
+        const oldDate = new Date(year, newMonth, enteredDate);
+        const dayOfTheWeek = oldDate.getDay();
+        const endMonth = isLastDay(oldDate);
         let prevDate = enteredDate - 1;
         let prevMonth = enteredMonth;
-        const year = date.getFullYear();
         const isLeap = leapYear(year);
         const eggDocRef = firestore.collection("eggs").doc('Month ' + enteredMonth + ' Date ' + enteredDate);
         const traysDocRef = firestore.collection("trays").doc("CurrentTrays");
@@ -44,6 +46,8 @@ export const inputTray = (eggs) => {
         const cagedTotal = a1 + a2 + b1 + b2 + c1 + c2;
         const cageTotal = parseInt(cagedTotal);
         const total = parseInt(myTotal);
+        const load = document.getElementById("loading-eggs");
+        const submit = document.getElementById("egg7");
 
         if (prevDate === 0) {
             prevMonth = prevMonth - 1;
@@ -68,7 +72,7 @@ export const inputTray = (eggs) => {
             dispatch({type: 'INPUT_BUYING_ERROR', error});
 
             window.alert(error);
-            window.location = '/';
+            submit.style.display = 'block';
             return new Error("ERROR: Impossible date entered!");
         }
 
@@ -245,13 +249,17 @@ export const inputTray = (eggs) => {
         }).then(() => {
             dispatch({type: 'INPUT_EGGS', eggs});
             window.alert("Data submitted");
-            window.location = '/';
+            load.style.display = 'none';
+            clearForm('eggs-form');
+            submit.style.display = 'block';
         }).catch((err) => {
             const error = err.message || err;
             dispatch({type: 'INPUT_EGGS_ERROR', error});
 
             window.alert(err);
+            load.style.display = 'none';
             window.location = '/';
+            clearForm('eggs-form');
         })
 
         setPerformanceEnd('EGG_TIME');

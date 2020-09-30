@@ -1,4 +1,4 @@
-import React, {Component} from "react";
+import React, {useEffect, useMemo} from "react";
 import Notifications from "./Notifications";
 import {connect} from 'react-redux';
 import {compose} from 'redux'
@@ -11,33 +11,31 @@ import TrayList from "../projects/TrayList";
 import BagsList from "../projects/BagsList";
 import ChickenDetails from "./ChickenDetails";
 import News from "./News";
-import {sendTokenToServer} from "../../store/actions/chickenAction";
 import InputNews from "../projects/InputNews";
-import {messaging} from "../../config/fbConfig";
 import {toast, ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {setPerformanceEnd, setPerformanceStart} from "../../store/actions/moneyAction";
+import {sendTokenToServer} from "../../store/actions/chickenAction";
+import {messaging} from "../../config/fbConfig";
+
 
 setPerformanceStart();
 
-async function componentDidMount(sendToken) {
+let checkHour = new Date();
+checkHour = checkHour.getHours();
+let period = "";
 
-    messaging.requestPermission()
-        .then(async function () {
-            const token = await messaging.getToken();
-            sendToken(token);
-        })
-        .catch(function (err) {
-            console.log("Unable to get permission to notify.", err);
-        });
-    messaging.onTokenRefresh(() => {
-        messaging.getToken().then((refreshedToken) => {
-            console.log('Token refreshed.');
-            sendToken(refreshedToken);
-        }).catch((err) => {
-            console.log('Unable to retrieve refreshed token ', err);
-        });
-    });
+function time() {
+    if ((checkHour >= 0) && (checkHour <= 12)) {
+        period = "Good Morning";
+    } else if ((checkHour >= 12) && (checkHour <= 18)) {
+        period = "Afternoon";
+    } else {
+        period = "Good Evening";
+    }
+}
+
+function componentDidMount() {
     navigator.serviceWorker.addEventListener("message", (message) => {
         const customId = "myToast";
         if (message.data) {
@@ -57,109 +55,73 @@ async function componentDidMount(sendToken) {
     });
 }
 
+const handleToken = (sendTokenToServer_) => {
 
-class Dashboard extends Component {
+    messaging.requestPermission()
+        .then(async function () {
+            const token = await messaging.getToken();
+            sendTokenToServer_(token);
+        })
+        .catch(function (err) {
+            console.log("Unable to get permission to notify.", err);
+        });
+    messaging.onTokenRefresh(() => {
+        messaging.getToken().then((refreshedToken) => {
+            console.log('Token refreshed.');
+            sendTokenToServer_(refreshedToken);
+        }).catch((err) => {
+            console.log('Unable to retrieve refreshed token ', err);
+        });
+    });
+}
 
-    render() {
-        const {news, chicken, balance, bags, trays, debt, auth, admin, moderator, changer, profile, notifications} = this.props;
-        this.props.checkClaims();
-        componentDidMount(this.props.sendTokenToServer).then(() => console.log("success")).catch((err) => console.log("error: ", err));
+function Dashboard(props) {
+    const {auth, admin, moderator, changer, balance, notifications} = props;
+    const firstName = auth?.displayName?.substring(0, auth?.displayName?.lastIndexOf(' '));
+    handleToken(props.sendTokenToServer)
 
+    const user = useMemo(() => {
+        const __user = localStorage.getItem('user') || null;
 
-        if (!auth.uid) {
+        return {__user};
+    }, []);
+
+    useEffect(() => {
+        time();
+        props.checkClaims();
+        componentDidMount();
+
+    }, [props]);
+
+    if (!user) {
+        return (
+            <Redirect to="/signin"/>
+        )
+    }
+
+    if (admin) {
+        const {
+            news, chicken, bags,
+            trays, debt
+        } = props;
+
+        if (bags && trays && debt && news) {
             return (
-                <Redirect to="/signin"/>
-            )
-        }
-
-
-        let checkHour = new Date();
-        checkHour = checkHour.getHours();
-        let period = "";
-
-        function time() {
-            if ((checkHour >= 0) && (checkHour <= 12)) {
-                period = "Good Morning";
-            } else if ((checkHour >= 12) && (checkHour <= 18)) {
-                period = "Afternoon";
-            } else {
-                period = "Good Evening";
-            }
-        }
-
-        if (admin) {
-            time();
-            if (balance && bags && trays && debt && notifications && news) {
-
-                return (
-                    <div className="dashboard container">
-                        <div className="row">
-                            <ToastContainer
-                                position="top-right"
-                                autoClose={5000}
-                                hideProgressBar={false}
-                                newestOnTop={false}
-                                closeOnClick
-                                rtl={false}
-                                pauseOnFocusLoss
-                                draggable
-                                pauseOnHover
-                            />
-                            <div className="center-align">
-                                <h3 className="spinner-blue" id="details"> {period} {profile.firstName}</h3>
-                            </div>
-
-                            <div className="col s12 m5 offset-m1">
-                                <Notifications notifications={notifications}/>
-                            </div>
-
-                            <div className="col s12 m5 offset-m1">
-                                <News news={news}/>
-                            </div>
-
-                            <div className="col s12 m5 offset-m1">
-                                <ChickenDetails chicken={chicken}/>
-                            </div>
-
-                            <div className="col s12 m5 offset-m1">
-                                <Current balance={balance}/>
-                            </div>
-
-                            <div className="col s12 m5 offset-m1">
-                                <TrayList trays={trays}/>
-                            </div>
-
-                            <div className="col s12 m5 offset-m1">
-                                <BagsList bags={bags}/>
-                            </div>
-
-                            <div className="col s12 m5 offset-m1">
-                                <DebtList debt={debt}/>
-                            </div>
-
-                        </div>
-                    </div>
-                )
-            } else {
-                return (
-                    <div className="progress">
-                        <div className="indeterminate"/>
-                    </div>
-                );
-            }
-        } else if (moderator) {
-            return (
-                <InputNews/>
-            )
-        } else if (changer) {
-            time();
-
-            if (profile.firstName) {
-                return (
-                    <div className="dashboard container">
-
+                <div className="dashboard container">
+                    <div className="row">
+                        <ToastContainer
+                            position="top-right"
+                            autoClose={5000}
+                            hideProgressBar={false}
+                            newestOnTop={false}
+                            closeOnClick
+                            rtl={false}
+                            pauseOnFocusLoss
+                            draggable
+                            pauseOnHover
+                        />
                         <div className="center-align">
-                            <h3 className="spinner-blue"> {period} {profile.firstName}</h3>
+                            <h3 className="spinner-blue" id="details"> {period} {firstName}</h3>
                         </div>
 
                         <div className="col s12 m5 offset-m1">
@@ -167,25 +129,76 @@ class Dashboard extends Component {
                         </div>
 
                         <div className="col s12 m5 offset-m1">
+                            <News news={news}/>
+                        </div>
+
+                        <div className="col s12 m5 offset-m1">
+                            <ChickenDetails chicken={chicken}/>
+                        </div>
+
+                        <div className="col s12 m5 offset-m1">
                             <Current balance={balance}/>
                         </div>
 
+                        <div className="col s12 m5 offset-m1">
+                            <TrayList trays={trays}/>
+                        </div>
+
+                        <div className="col s12 m5 offset-m1">
+                            <BagsList bags={bags}/>
+                        </div>
+
+                        <div className="col s12 m5 offset-m1">
+                            <DebtList debt={debt}/>
+                        </div>
+
                     </div>
-                )
-            } else {
-                return (
-                    <div className="progress">
-                        <div className="indeterminate"/>
-                    </div>
-                );
-            }
+                </div>
+            )
         } else {
             return (
-                <div/>
+                <div className="progress">
+                    <div className="indeterminate"/>
+                </div>
+            );
+        }
+    } else if (moderator) {
+        return (
+            <InputNews/>
+        )
+    } else if (changer) {
+        if (notifications && balance) {
+            return (
+                <div className="dashboard container">
+
+                    <div className="center-align">
+                        <h3 className="spinner-blue"> {period} {firstName}</h3>
+                    </div>
+
+                    <div className="col s12 m5 offset-m1">
+                        <Notifications notifications={notifications}/>
+                    </div>
+
+                    <div className="col s12 m5 offset-m1">
+                        <Current balance={balance}/>
+                    </div>
+
+                </div>
+            )
+        } else {
+            return (
+                <div className="progress">
+                    <div className="indeterminate"/>
+                </div>
             )
         }
-
+    } else {
+        return (
+            <div/>
+        )
     }
+
+
 }
 
 const mapStateToProps = (state) => {
@@ -195,9 +208,9 @@ const mapStateToProps = (state) => {
         balance: state.firestore.ordered.current,
         auth: state.firebase.auth,
         admin: state.auth.admin,
+        loggedIn: state.auth.loggedIn,
         moderator: state.auth.moderator,
         changer: state.auth.changer,
-        profile: state.firebase.profile,
         notifications: state.firestore.ordered.notifications,
         trays: state.firestore.ordered.trays,
         bags: state.firestore.ordered.bags,

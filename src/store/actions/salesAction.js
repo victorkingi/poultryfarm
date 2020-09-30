@@ -1,4 +1,5 @@
 import {setPerformanceEnd, setPerformanceStart} from "./moneyAction";
+import {clearForm} from "../../components/projects/Inputsell";
 
 function makeid(l) {
     let text = "";
@@ -58,26 +59,22 @@ export const inputSell = (sales) => {
         const latePaymentDocRef = buyer ? firestore.collection("latePayment").doc('Month ' + enteredMonth
             + ' Date ' + enteredDate + ' ' + section + ': ' + buyer) : firestore.collection("latePayment")
             .doc('Month ' + enteredMonth + ' Date ' + enteredDate + ' ' + section);
-
-
+        const load = document.getElementById("loading-sales");
         let total = sales.trayNo ? parseInt(sales.trayNo) * parseInt(sales.trayPrice)
             : parseInt(sales.chickenNo) * parseInt(sales.chickenPrice);
-
         const dateChecks = dateCheck(enteredMonth, enteredDate, isLeap);
-
 
         if (dateChecks) {
             const error = "ERROR: Impossible date entered!";
             dispatch({type: 'INPUT_BUYING_ERROR', error});
 
             window.alert(error);
-            window.location = '/';
-            throw new Error("ERROR: Impossible date entered!");
+            return new Error("ERROR: Impossible date entered!");
         }
 
         firestore.collection("sales").orderBy("date", "desc").limit(1).get().then(function (snapshot) {
             if (snapshot.size === 0) {
-                throw new Error("ERROR: Contact admin for help!");
+                return new Error("ERROR: Contact admin for help!");
             }
             snapshot.docs.forEach(function (doc) {
                 if (doc.exists) {
@@ -266,12 +263,8 @@ export const inputSell = (sales) => {
                                                         batch.delete(otherDebtDocRef);
                                                         total = final;
                                                     }
-
-
                                                 }
-
                                             }
-
                                             const newTotal = total * -1;
 
                                             batch.update(allThikaDocRef, {
@@ -284,25 +277,27 @@ export const inputSell = (sales) => {
                                                 submittedOn: firestore.FieldValue.serverTimestamp()
                                             })
 
-
                                             batch.commit().then(() => console.log("debt updated"));
 
                                         }).catch((err) => {
                                             console.log("error, ", err.message);
                                         })
-
                                     }
 
                                     dispatch({type: 'INPUT_SALES', sales});
                                     window.alert("Data Submitted");
-                                    window.location = '/';
+                                    load.style.display = 'none';
+                                    clearForm('sales-form');
 
                                 }).catch((err) => {
                                     const error = err.message || err;
                                     dispatch({type: 'INPUT_SALES_ERROR', error});
 
                                     window.alert(error);
+                                    load.style.display = 'none';
                                     window.location = '/';
+                                    clearForm('sales-form');
+
                                 });
 
                             } else {
@@ -310,7 +305,9 @@ export const inputSell = (sales) => {
                                 dispatch({type: 'INPUT_SALES_ERROR', error});
 
                                 window.alert("ERROR: ", error);
+                                load.style.display = 'none';
                                 window.location = '/';
+                                clearForm('sales-form');
                             }
                         })
                     })
@@ -319,7 +316,8 @@ export const inputSell = (sales) => {
                     dispatch({type: 'INPUT_SALES_ERROR', error});
 
                     window.alert("ERROR: ", error);
-                    window.location = '/';
+                    load.style.display = 'none';
+                    clearForm('sales-form');
                 }
             })
         })

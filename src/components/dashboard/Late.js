@@ -1,4 +1,4 @@
-import React, {Component} from "react";
+import React, {useMemo} from "react";
 import {connect} from 'react-redux';
 import {compose} from 'redux'
 import {Redirect} from 'react-router-dom';
@@ -8,42 +8,43 @@ import {setPerformanceEnd, setPerformanceStart} from "../../store/actions/moneyA
 
 setPerformanceStart();
 
-class Late extends Component {
+function Late(props) {
+    const {late} = props;
+    const user = useMemo(() => {
+        const __user = localStorage.getItem('user') || null;
 
-    render() {
-        const {late, auth} = this.props;
+        return {__user};
+    }, []);
 
-        if (!auth.uid) {
-            return (
-                <Redirect to="/signin"/>
-            );
-        }
+    if (!user) {
+        return (
+            <Redirect to="/signin"/>
+        );
+    }
 
-        if (late) {
-            return (
-                <div className="dashboard container">
-                    <div className="row">
+    if (late) {
+        return (
+            <div className="dashboard container">
+                <div className="row">
 
-                        <div className="col s12 m6">
-                            <LatePaymentList late={late}/>
-                        </div>
-
+                    <div className="col s12 m6">
+                        <LatePaymentList late={late}/>
                     </div>
+
                 </div>
-            );
-        } else {
-            return (
+            </div>
+        );
+    } else {
+        return (
                 <div className="progress">
                     <div className="indeterminate"/>
                 </div>
             );
         }
-    }
 }
 
 const mapStateToProps = (state) => {
     return {
-        auth: state.firebase.auth,
         late: state.firestore.ordered.latePayment
     }
 }
