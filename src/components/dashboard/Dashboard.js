@@ -17,6 +17,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import {setPerformanceEnd, setPerformanceStart} from "../../store/actions/moneyAction";
 import {sendTokenToServer} from "../../store/actions/chickenAction";
 import {messaging} from "../../config/fbConfig";
+import "../../App.css";
 
 
 setPerformanceStart();
@@ -128,7 +129,7 @@ function Dashboard(props) {
                             <Notifications notifications={notifications}/>
                         </div>
 
-                        <div className="col s12 m5 offset-m1">
+                        <div className="col s12 m5 offset-m1 pointer">
                             <News news={news}/>
                         </div>
 
