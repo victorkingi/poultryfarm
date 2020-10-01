@@ -39,18 +39,35 @@ function time() {
 function componentDidMount() {
     navigator.serviceWorker.addEventListener("message", (message) => {
         const customId = "myToast";
-        if (message.data) {
+        if (message?.data) {
+            const _data = `${message.data['firebase-messaging-msg-data'].data?.title}`;
+            const _notification = `${message.data['firebase-messaging-msg-data']
+                .notification?.title}: ${message.data['firebase-messaging-msg-data']
+                .notification?.body}`;
 
-            toast.info(`${message.data['firebase-messaging-msg-data'].data.title}`, {
-                toastId: customId,
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-            });
+            if (_data === 'undefined') {
+                toast.info(_notification, {
+                    toastId: customId,
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+            } else {
+                toast.info(_data, {
+                    toastId: customId,
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+            }
         }
 
     });

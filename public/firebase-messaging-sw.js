@@ -29,8 +29,11 @@ messaging.setBackgroundMessageHandler(function (payload) {
             }
         })
         .then(() => {
-            return registration.showNotification(payload.data.title, {
-                body: payload.data.body,
+            const _data_title = payload.data?.title || payload.notification?.title;
+            const _data_body = payload.data?.body || payload.notification?.body;
+
+            return registration.showNotification(_data_title, {
+                body: _data_body,
                 icon: 'chicken.jpg',
                 requireInteraction: true,
                 silent: false

@@ -28,10 +28,29 @@ const ChickenDetails = (props) => {
                                         : (<div><span style={{fontSize: "20px"}}>Last Week's Profit</span>
                                             <p style={{fontSize: "18px"}}>Ksh.{numeral(item.weekProfit).format("0,0")}</p>
                                         </div>);
+                                    const monthProfit = item.monthProfit < 0
+                                        ? (<div><span style={{fontSize: "20px"}}>Last Month's Loss</span>
+                                            <p style={{fontSize: "18px"}}>Ksh.{numeral(parseInt(item.monthProfit) * -1).format("0,0")}</p>
+                                        </div>)
+                                        : (<div><span style={{fontSize: "20px"}}>Last Month's Profit</span>
+                                            <p style={{fontSize: "18px"}}>Ksh.{numeral(item.monthProfit).format("0,0")}</p>
+                                        </div>);
+                                    const string_w = weekProfit?.props?.children[0].props?.children;
+                                    const status_w = string_w.substr(string_w.lastIndexOf(" ") + 1);
+                                    const string_m = monthProfit?.props?.children[0].props?.children;
+                                    const status_m = string_m.substr(string_m.lastIndexOf(" ") + 1);
+                                    let links;
+                                    if (status_w === 'Loss' || status_m === 'Loss') {
+                                        if (status_w === 'Loss') {
+                                            links = <div>{weekProfit}{monthProfit}</div>;
+                                        } else if (status_m === 'Loss') {
+                                            links = <div>{monthProfit}{weekProfit}</div>;
+                                        }
+                                    }
 
                                     return (
                                         <li key={item.id}>
-                                            {weekProfit}
+                                            {links}
                                             <span style={{fontSize: "20px"}}>Weekly laying percentage</span>
                                             <p style={{fontSize: "18px"}}>{weekPercent}%</p>
                                             <span style={{fontSize: "20px"}}>Weekly House Laying percentage</span>

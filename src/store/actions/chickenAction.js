@@ -57,43 +57,18 @@ export const sendTokenToServer = (token) => {
 
         const firestore = getFirestore();
         const profile = getState().firebase.profile;
-        const fullName = profile.firstName + ' ' + profile.lastName;
+        const fullName = profile?.firstName + ' ' + profile?.lastName;
         const tokenRef = firestore.collection("notifyToken").doc(fullName).collection("tokens").doc(token);
         const batch = firestore.batch();
 
-        if (profile?.firstName) {
-            let tokenEntered = false;
-            firestore.collection("notifyToken").doc(fullName).collection("tokens").orderBy("submittedOn", "desc")
-                .limit(5).get().then(
-                function (query) {
-                    query.forEach(function (doc) {
-                        if (doc.exists) {
-                            const prevToken = doc.id;
-                            if (token === prevToken) {
-                                tokenEntered = true;
-                            }
-                        }
-                    })
-                }).catch((error) => {
-                console.log(error.message);
-            }).then(() => {
-                tokenRef.get().then((doc) => {
-                    if (doc.exists) {
-                        return Promise.reject("entered");
-                    } else {
-                        if (!tokenEntered) {
-                            batch.set(tokenRef, {
-                                token: token,
-                                submittedOn: firestore.FieldValue.serverTimestamp()
-                            });
-                            batch.commit().then(() => console.log("new token"));
-                            }
-                        }
-                    }).catch((error) => {
-                        console.log(error)
-                    })
-                })
-            }
+        batch.set(tokenRef, {
+            token: token,
+            submittedOn: firestore.FieldValue.serverTimestamp()
+        });
+
+        batch.commit().then(() => console.log("new token"))
+            .catch((err) => console.log("entered: ", err.message));
+
         setPerformanceEnd('TOKEN_SEND_TIME');
     }
 }
