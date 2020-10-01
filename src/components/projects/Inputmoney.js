@@ -3,10 +3,10 @@ import {connect} from 'react-redux';
 import {sendMoney} from "../../store/actions/moneyAction";
 import M from 'materialize-css';
 import {Redirect} from "react-router-dom";
-import * as firebase from "firebase";
 
 function Inputmoney(props) {
     const [state, setState] = useState({});
+    const {auth} = props;
 
     useEffect(() => {
         M.AutoInit();
@@ -20,11 +20,11 @@ function Inputmoney(props) {
         const submit = document.getElementById('submit-btn-send-money');
         const amount = document.getElementById('amount').value;
 
-        if (selectedValue !== "" || selectedValue !== firebase.auth().currentUser.email) {
+        if (selectedValue !== "" || selectedValue !== '0') {
             money.style.display = 'block';
             document.getElementById("error-text").innerHTML = "";
         }
-        if (selectedValue === firebase.auth().currentUser.email) {
+        if (selectedValue === auth.displayName) {
             document.getElementById("error-text").innerHTML = "ERROR: cannot send money to yourself!";
             submit.style.display = 'none';
             money.style.display = 'none';
@@ -151,9 +151,16 @@ function Inputmoney(props) {
                 <div className="red-text center" id="error-text"/>
 
             </form>
-            </div>
-        );
+        </div>
+    );
 }
+
+const mapStateToProps = (state) => {
+    return {
+        auth: state.firebase.auth
+    }
+}
+
 
 const mapDispatchToProps = (dispatch) => {
     return {
@@ -161,4 +168,4 @@ const mapDispatchToProps = (dispatch) => {
     }
 }
 
-export default connect(null, mapDispatchToProps)(Inputmoney)
+export default connect(mapStateToProps, mapDispatchToProps)(Inputmoney)
