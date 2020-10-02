@@ -1,21 +1,13 @@
 import {setPerformanceEnd, setPerformanceStart} from "./moneyAction";
 
-export const signIn = (credentials) => {
-    return (dispatch, getState, {getFirebase}) => {
-        setPerformanceStart();
-        const firebase = getFirebase();
-
-        firebase.auth().signInWithEmailAndPassword(
-            credentials.email,
-            credentials.password
-        ).then((user) => {
-            const _user = user.user.email;
-            dispatch({type: 'LOGIN_SUCCESS', _user})
-        }).catch((err) => {
+export const signIn = (user, err) => {
+    return (dispatch) => {
+        if (user === null) {
             dispatch({type: 'LOGIN_ERROR', err})
-        });
-
-        setPerformanceEnd('LOGIN_TIME');
+        } else {
+            const _user = user?.user?.email;
+            dispatch({type: 'LOGIN_SUCCESS', _user})
+        }
     }
 }
 
@@ -26,6 +18,7 @@ export const checkClaims = () => {
 
         firebase.auth().onAuthStateChanged(user => {
             if (user) {
+
                 user.getIdTokenResult().then(idToken => {
 
                     if (idToken.claims.admin) {
@@ -72,14 +65,25 @@ export const signUp = (newUser) => {
 
         firebase.auth().createUserWithEmailAndPassword(newUser.email, newUser.password)
             .then((resp) => {
+                firebase.auth().onAuthStateChanged(user => {
+                    if (user) {
+                        if (!user.displayName) {
+                            user.updateProfile({
+                                displayName: `${newUser.firstName} ${newUser.lastName}`
+                            });
+                        }
+                    }
+                });
+
                 return firestore.collection('users').doc(resp.user.uid).set({
                     firstName: newUser.firstName,
                     lastName: newUser.lastName,
                     initials: newUser.firstName[0] + newUser.lastName[0],
                     email: newUser.email
                 })
-            }).then(() => {
-            dispatch({type: 'SIGNUP_SUCCESS'})
+            }).then((user) => {
+            const _user = user.user.email;
+            dispatch({type: 'SIGNUP_SUCCESS', _user})
         })
             .catch(err => {
                 dispatch({type: 'SIGNUP_ERROR', err})

@@ -30,12 +30,12 @@ function InputNews(props) {
     }
 
     const user = useMemo(() => {
-        const __user = localStorage.getItem('user') || null;
+        const __user = localStorage.getItem('user') || false;
 
         return {__user};
     }, []);
 
-    if (!user) {
+    if (!user.__user) {
         return (
             <Redirect to="/signin"/>
         )

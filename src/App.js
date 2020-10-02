@@ -26,6 +26,7 @@ import InputDeadSick from "./components/projects/InputDeadSick";
 import SickDeadDetails from "./components/projects/SickDeadDetails";
 import InputNews from "./components/projects/InputNews";
 import {setPerformanceEnd, setPerformanceStart} from "./store/actions/moneyAction";
+import NotFound from "./NotFound";
 
 setPerformanceStart();
 
@@ -36,7 +37,6 @@ const App = () => {
                 <Navbar/>
                 <Sidebar/>
                 <Switch>
-                    <Route exact path='/' component={Dashboard}/>
                     <Route path='/s/:id' component={SalesDetails}/>
                     <Route path='/sd/:id' component={SickDeadDetails}/>
                     <Route path='/e/:id' component={EggsDetails}/>
@@ -58,6 +58,8 @@ const App = () => {
                     <Route path='/chart' component={LineChart}/>
                     <Route path='/rb' component={Borrow}/>
                     <Route path='/ib' component={InputBorrow}/>
+                    <Route exact path='/' component={Dashboard}/>
+                    <Route path="*" component={NotFound} status={404}/>
                 </Switch>
             </div>
         </BrowserRouter>

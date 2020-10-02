@@ -2,19 +2,13 @@ export const initState = {
     authError: null,
     admin: false,
     moderator: false,
-    changer: false,
-    loggedIn: false
+    changer: false
 }
 
 
 
 const authReducer = (state = initState, action) => {
     switch (action.type) {
-        case 'LOGGED_IN':
-            return {
-                ...state,
-                loggedIn: true
-            }
         case 'LOGIN_ERROR':
             console.log('login error')
             return {
@@ -71,15 +65,20 @@ const authReducer = (state = initState, action) => {
         case 'SIGN_OUT_SUCCESS':
             console.log('signed out');
             localStorage.clear();
-            window.location = '/signin';
-            return {
-                ...state,
-                loggedIn: false
-            };
+            window.location.reload();
+            return state;
 
         case 'SIGNUP_SUCCESS':
             console.log('signup success');
-            return state;
+            try {
+                localStorage.setItem('user', action._user);
+            } catch (e) {
+                console.log(e)
+            }
+            return {
+                ...state,
+                authError: null
+            };
 
         case 'SIGNUP_ERROR':
             console.log('signup error', action.err.message);

@@ -52,22 +52,27 @@ export const inputNews = (details) => {
 }
 
 export const sendTokenToServer = (token) => {
-    return (dispatch, getState, {getFirestore}) => {
+    return (dispatch, getState, {getFirestore, getFirebase}) => {
         setPerformanceStart();
 
         const firestore = getFirestore();
-        const profile = getState().firebase.profile;
-        const fullName = profile?.firstName + ' ' + profile?.lastName;
-        const tokenRef = firestore.collection("notifyToken").doc(fullName).collection("tokens").doc(token);
+        const firebase = getFirebase();
         const batch = firestore.batch();
+        const name = firebase.auth().currentUser.displayName;
 
-        batch.set(tokenRef, {
-            token: token,
-            submittedOn: firestore.FieldValue.serverTimestamp()
-        });
+        if (name) {
+            const tokenRef = firestore.collection("notifyToken").doc(name).collection("tokens").doc(token);
 
-        batch.commit().then(() => console.log("new token"))
-            .catch((err) => console.log("entered: ", err.message));
+            batch.set(tokenRef, {
+                token: token,
+                submittedOn: firestore.FieldValue.serverTimestamp()
+            });
+
+            batch.commit().then(() => {
+                console.log("new token")
+                window.location.reload();
+            }).catch((err) => console.log("entered: ", err.message));
+        }
 
         setPerformanceEnd('TOKEN_SEND_TIME');
     }

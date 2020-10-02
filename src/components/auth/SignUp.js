@@ -1,55 +1,60 @@
-import React, {Component} from "react";
+import React, {useMemo, useState} from "react";
 import {Redirect} from "react-router-dom";
 import {connect} from "react-redux";
 import {signUp} from "../../store/actions/authActions";
 
 
-class SignUp extends Component {
-    state = {
-        email: '',
-        password: '',
-        firstName: '',
-        lastName: ''
-    }
+function SignUp(props) {
+    const [state, setState] = useState({});
 
-    handleChange = (e) => {
-        this.setState({
+    const handleChange = (e) => {
+        setState({
+            ...state,
             [e.target.id]: e.target.value
         })
     }
-    handleSubmit = (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
-        // this.props.signUp(this.state);
+        // props.signUp(state);
         window.alert("PERMISSION DENIED!");
     }
 
-    render() {
-        const { auth, authError } = this.props;
-        if (auth.uid) return <Redirect to='/' />
+    const {authError} = props;
+    const user = useMemo(() => {
+        const __user = localStorage.getItem('user') || false;
 
+        return {__user};
+    }, []);
+
+    if (user.__user) {
         return (
-            <div className="container">
-                <form onSubmit={this.handleSubmit} className="white">
-                    <h5 className="grey-text text-darken-3">Sign Up</h5>
+            <Redirect to="/"/>
+        )
+    }
 
-                    <div className="input-field">
-                        <label htmlFor="firstName">First Name</label>
-                        <input type="text" id="firstName" onChange={this.handleChange} />
-                    </div>
+    return (
+        <div className="container">
+            <form onSubmit={handleSubmit} className="white">
+                <h5 className="grey-text text-darken-3">Sign Up</h5>
 
-                    <div className="input-field">
-                        <label htmlFor="lastName">Last Name</label>
-                        <input type="text" id="lastName" onChange={this.handleChange} />
-                    </div>
+                <div className="input-field">
+                    <label htmlFor="firstName">First Name</label>
+                    <input type="text" id="firstName" onChange={handleChange}/>
+                </div>
 
-                    <div className="input-field">
-                        <label htmlFor="email">Email</label>
-                        <input type="email" id="email" onChange={this.handleChange} />
-                    </div>
+                <div className="input-field">
+                    <label htmlFor="lastName">Last Name</label>
+                    <input type="text" id="lastName" onChange={handleChange}/>
+                </div>
 
-                    <div className="input-field">
-                        <label htmlFor="password">Password</label>
-                        <input type="password" id="password" onChange={this.handleChange} />
+                <div className="input-field">
+                    <label htmlFor="email">Email</label>
+                    <input type="email" id="email" onChange={handleChange}/>
+                </div>
+
+                <div className="input-field">
+                    <label htmlFor="password">Password</label>
+                    <input type="password" id="password" onChange={handleChange}/>
                     </div>
                     <div className="input-field">
                         <button className="btn pink lighten-1 z-depth-0">Sign Up</button>
@@ -60,12 +65,10 @@ class SignUp extends Component {
                 </form>
             </div>
         )
-    }
 }
 
 const mapStateToProps = (state) => {
     return {
-        auth: state.firebase.auth,
         authError: state.auth.authError
     }
 }

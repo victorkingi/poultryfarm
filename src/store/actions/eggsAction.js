@@ -31,7 +31,8 @@ export const inputTray = (eggs) => {
         let prevDate = enteredDate - 1;
         let prevMonth = enteredMonth;
         const isLeap = leapYear(year);
-        const eggDocRef = firestore.collection("eggs").doc('Month ' + enteredMonth + ' Date ' + enteredDate);
+        const controlledDate = enteredDate < 10 ? `0${enteredDate}` : enteredDate;
+        const eggDocRef = firestore.collection("eggs").doc('Month ' + enteredMonth + ' Date ' + controlledDate);
         const traysDocRef = firestore.collection("trays").doc("CurrentTrays");
         const chickenDocRef = firestore.collection("chickenDetails").doc("2020");
         const userLogRef = firestore.collection("userLogs").doc(user.uid).collection("logs").doc();
@@ -61,7 +62,7 @@ export const inputTray = (eggs) => {
                 prevDate = 30
             }
         }
-
+        //const controlledPrevDate = prevDate < 10 ? `0${prevDate}` : prevDate;
         const eggPreviousDocRef = firestore.collection("eggs").doc('Month ' + prevMonth + ' Date ' + prevDate);
 
         const dateChecks = dateCheck(enteredMonth, enteredDate, isLeap)
@@ -141,7 +142,7 @@ export const inputTray = (eggs) => {
                                                     allMonthlyEggs: total,
                                                     cageMonthlyEggs: cageTotal,
                                                     houseMonthlyEggs: house,
-                                                    date: new Date(year, newMonth, enteredDate, getHours, getMinutes, getSeconds),
+                                                    date: new Date(year, newMonth, enteredDate, getHours, getMinutes, getSeconds).toString(),
                                                     submittedBy: profile.firstName + ' ' + profile.lastName,
                                                     submittedOn: firestore.FieldValue.serverTimestamp()
                                                 })
@@ -168,7 +169,7 @@ export const inputTray = (eggs) => {
                                                     allMonthlyEggs: allMonthlyEggs,
                                                     cageMonthlyEggs: cageMonthlyEggs,
                                                     houseMonthlyEggs: houseMonthlyEggs,
-                                                    date: new Date(year, newMonth, enteredDate, getHours, getMinutes, getSeconds),
+                                                    date: new Date(year, newMonth, enteredDate, getHours, getMinutes, getSeconds).toString(),
                                                     submittedBy: profile.firstName + ' ' + profile.lastName,
                                                     submittedOn: firestore.FieldValue.serverTimestamp()
                                                 })
@@ -193,11 +194,12 @@ export const inputTray = (eggs) => {
                                                     allMonthlyEggs: total,
                                                     cageMonthlyEggs: cageTotal,
                                                     houseMonthlyEggs: house,
-                                                    date: new Date(year, newMonth, enteredDate, getHours, getMinutes, getSeconds),
+                                                    date: new Date(year, newMonth, enteredDate, getHours, getMinutes, getSeconds).toString(),
                                                     submittedBy: profile.firstName + ' ' + profile.lastName,
                                                     submittedOn: firestore.FieldValue.serverTimestamp()
                                                 })
                                             } else {
+                                                const myDate = new Date(year, newMonth, enteredDate, getHours, getMinutes, getSeconds).toString();
                                                 transaction.set(eggDocRef, {
                                                     ...eggs,
                                                     allWeeklyEggs: allWeeklyEggs,
@@ -206,7 +208,7 @@ export const inputTray = (eggs) => {
                                                     allMonthlyEggs: allMonthlyEggs,
                                                     cageMonthlyEggs: cageMonthlyEggs,
                                                     houseMonthlyEggs: houseMonthlyEggs,
-                                                    date: new Date(year, newMonth, enteredDate, getHours, getMinutes, getSeconds),
+                                                    date: myDate,
                                                     submittedBy: profile.firstName + ' ' + profile.lastName,
                                                     submittedOn: firestore.FieldValue.serverTimestamp()
                                                 })
