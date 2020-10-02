@@ -6,7 +6,7 @@ import {connect} from "react-redux";
 const Navbar = ({hide}) => {
 
     return (
-        <nav className={`nav-wrapper grey darken-3 ${hide && 'my-navbar'}`}>
+        <nav className={`nav-wrapper grey darken-3 my-navbar ${hide && 'my-navbar-hide'}`}>
             <div className="container">
                 <Link to='/' className="brand-logo left">Poultry101</Link>
             </div>

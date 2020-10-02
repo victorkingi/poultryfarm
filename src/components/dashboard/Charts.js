@@ -241,8 +241,8 @@ function Charts({profit, eggs}) {
                     {
                         ticks: {
                             min: 0,
-                            max: totalMax,
-                            stepSize: 100
+                            max: percentMax,
+                            stepSize: 20
                         }
                     },
                 ]

@@ -27,13 +27,14 @@ import SickDeadDetails from "./components/projects/SickDeadDetails";
 import InputNews from "./components/projects/InputNews";
 import {setPerformanceEnd, setPerformanceStart} from "./store/actions/moneyAction";
 import NotFound from "./NotFound";
+import "./App.css";
 
 setPerformanceStart();
 
 const App = () => {
     return (
         <BrowserRouter>
-            <div className="App">
+            <div>
                 <Navbar/>
                 <Sidebar/>
                 <Switch>

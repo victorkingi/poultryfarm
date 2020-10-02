@@ -26,12 +26,12 @@ const Sidebar = (props) => {
     const links = auth.uid ? <SignedInLinks profile={profile} /> : <SignedOutLinks />;
 
         return (
-            <div className={`${hide && 'my-sidebar'}`}>
+            <div className={`my-sidebar ${hide && 'my-sidebar-hide'}`}>
                 <ul id="slide-out" className="sidenav">
                     {auth.isLoaded && links}
                 </ul>
                 <a href='/' data-target="slide-out" className="sidenav-trigger">
-                    <i className="material-icons">menu</i>
+                    <i className="material-icons icon-black">menu</i>
                 </a>
             </div>
         );
