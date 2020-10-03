@@ -62,9 +62,8 @@ function Charts({profit, eggs}) {
 
             if (percentMax < weeklyAllPercent) {
                 percentMax = weeklyAllPercent;
-            }
 
-            if (percentMax < monthlyAllPercent) {
+            } else if (percentMax < monthlyAllPercent) {
                 percentMax = monthlyAllPercent;
             }
 
