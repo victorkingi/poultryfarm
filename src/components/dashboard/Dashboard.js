@@ -82,7 +82,12 @@ export const handleToken = (sendTokenToServer_, renderCount) => {
             })
             .catch(function (err) {
                 console.log("Unable to get permission to notify.", err);
-                window.location.reload();
+                alert("ERROR: You selected to receive notifications but this browser has blocked notifications. Try changing in settings or just not ticking the checkbox");
+                const load = document.getElementById("loading");
+                const submit = document.getElementById("login");
+
+                load.style.display = 'none';
+                submit.style.display = 'block';
             });
         messaging.onTokenRefresh(() => {
             messaging.getToken().then((refreshedToken) => {

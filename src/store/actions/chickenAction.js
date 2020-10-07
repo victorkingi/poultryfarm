@@ -71,7 +71,14 @@ export const sendTokenToServer = (token) => {
             batch.commit().then(() => {
                 console.log("new token")
                 window.location.reload();
-            }).catch((err) => console.log("entered: ", err.message));
+            }).catch((err) => {
+                console.log("entered: ", err.message);
+                window.alert(`ERROR: ${err.message} If you are already subscribed to notifications, please uncheck box and click submit to proceed. If after doing this you are still seeing this error, contact admin for help`);
+                const load = document.getElementById("loading");
+                const submit = document.getElementById("login");
+                load.style.display = 'none';
+                submit.style.display = 'block';
+            });
         }
 
         setPerformanceEnd('TOKEN_SEND_TIME');

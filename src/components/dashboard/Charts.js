@@ -46,9 +46,9 @@ function Charts({profit, eggs}) {
             const weeklyAllPercent = parseInt(eggs[i.toString()]["weeklyAllPercent"]);
             const weeklyCagePercent = parseInt(eggs[i.toString()]["weeklyCagePercent"]);
             const weeklyHousePercent = parseInt(eggs[i.toString()]["weeklyHousePercent"]);
-            const monthlyAllPercent = parseInt(eggs[i.toString()]["monthlyAllPercent"]);
-            const monthlyCagePercent = parseInt(eggs[i.toString()]["monthlyCagePercent"]);
-            const monthlyHousePercent = parseInt(eggs[i.toString()]["monthlyHousePercent"]);
+            const monthlyAllPercent = parseInt(eggs[i.toString()]["monthAllPercent"]);
+            const monthlyCagePercent = parseInt(eggs[i.toString()]["monthCagePercent"]);
+            const monthlyHousePercent = parseInt(eggs[i.toString()]["monthHousePercent"]);
 
             if (!isNaN(weeklyAllPercent)) {
                 const myDate = eggs[i.toString()].date.toDate().toLocaleDateString();
@@ -62,8 +62,17 @@ function Charts({profit, eggs}) {
 
             if (percentMax < weeklyAllPercent) {
                 percentMax = weeklyAllPercent;
-
-            } else if (percentMax < monthlyAllPercent) {
+            }
+            if (percentMax < weeklyCagePercent) {
+                percentMax = weeklyCagePercent;
+            }
+            if (percentMax < monthlyCagePercent) {
+                percentMax = monthlyCagePercent;
+            }
+            if (percentMax < monthlyHousePercent) {
+                percentMax = monthlyHousePercent;
+            }
+            if (percentMax < monthlyAllPercent) {
                 percentMax = monthlyAllPercent;
             }
 
@@ -427,9 +436,9 @@ function Charts({profit, eggs}) {
                 {
                     label: 'All Monthly Percentage',
                     data: eggDataMonthlyAllPercentn,
-                    borderColor: ['rgba(255, 0, 0, 0.2)'],
-                    backgroundColor: ['rgba(255, 0, 0, 0.2)'],
-                    pointBackgroundColor: 'rgba(255, 0, 0, 0.2)'
+                    borderColor: ['rgba(0, 255, 0, 0.2)'],
+                    backgroundColor: ['rgba(0, 255, 0, 0.2)'],
+                    pointBackgroundColor: 'rgba(0, 255, 0, 0.2)'
                 },
                 {
                     label: 'Caged Monthly percentage',

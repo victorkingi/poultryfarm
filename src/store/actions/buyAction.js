@@ -66,7 +66,7 @@ export const inputPurchase = (buys) => {
                                         transaction.set(bagsDocRef, {
                                             number: parseInt(buys.objectNo),
                                             key: key,
-                                            counter: new Date(year, newMonth, enteredDate),
+                                            counter: new Date(year, newMonth, enteredDate, getHours, getMinutes, getSeconds),
                                             date: new Date(year, newMonth, enteredDate, getHours, getMinutes, getSeconds),
                                             submittedBy: fullName,
                                             submittedOn: firestore.FieldValue.serverTimestamp()
