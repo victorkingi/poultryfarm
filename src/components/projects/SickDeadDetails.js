@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useMemo} from "react";
 import {connect} from 'react-redux';
 import {firestoreConnect} from "react-redux-firebase";
 import {compose} from "redux";
@@ -6,8 +6,14 @@ import {Redirect} from "react-router-dom";
 import moment from "moment";
 
 const SickDeadDetails = (props) => {
-    const {ds, auth} = props;
-    if (!auth.uid) {
+    const {ds} = props;
+    const user = useMemo(() => {
+        const __user = localStorage.getItem('user') || false;
+
+        return {__user};
+    }, []);
+
+    if (!user.__user) {
         return (
             <Redirect to="/signin"/>
         )
@@ -119,8 +125,7 @@ const mapStateToProps = (state, ownProps) => {
     const ds = deadSick ? deadSick[id] : null;
 
     return {
-        ds: ds,
-        auth: state.firebase.auth
+        ds: ds
     }
 }
 

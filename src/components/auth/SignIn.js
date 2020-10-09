@@ -6,11 +6,22 @@ import M from "materialize-css";
 import {handleToken} from "../dashboard/Dashboard";
 import {sendTokenToServer} from "../../store/actions/chickenAction";
 import {myFirebase} from "../../config/fbConfig";
+import "./SignIn.css";
 
 let renderCount = 0;
 
+function ValidateEmail(mail) {
+    if (/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(mail)) {
+        return true
+    }
+    alert("Please enter user email to send reset prompt to");
+    return false
+}
+
 function SignIn(props) {
     const [state, setState] = useState({});
+    const load = document.getElementById("loading");
+    const submit = document.getElementById("login");
 
     useEffect(() => {
         M.AutoInit();
@@ -26,10 +37,27 @@ function SignIn(props) {
             [e.target.id]: e.target.value
         });
     }
+
+    const handleForgotPass = (e) => {
+        e.preventDefault();
+        const auth = myFirebase.auth();
+        if (ValidateEmail(state.email)) {
+            submit.style.display = 'none';
+            load.style.display = 'block';
+            auth.sendPasswordResetEmail(state.email).then(function () {
+                alert("Reset email Sent, check your email.");
+                submit.style.display = 'block';
+                load.style.display = 'none';
+            }).catch(function (error) {
+                submit.style.display = 'block';
+                load.style.display = 'none';
+                alert("ERROR: ", error);
+            });
+        }
+    }
+
     const handleSubmit = (e) => {
         e.preventDefault();
-        const load = document.getElementById("loading");
-        const submit = document.getElementById("login");
 
         if (state.email && state.password) {
             submit.style.display = 'none';
@@ -43,13 +71,13 @@ function SignIn(props) {
 
             }).catch((err) => {
                 props.signIn(null, err);
+                submit.style.display = 'block';
+                load.style.display = 'none';
             });
         }
 
     }
     const {authError} = props;
-    const load = document.getElementById("loading");
-    const submit = document.getElementById("login");
 
     const user = useMemo(() => {
         const __user = localStorage.getItem('user') || false;
@@ -88,6 +116,7 @@ function SignIn(props) {
                         <span>I want to receive notifications</span>
                     </label>
                 </p>
+                <a href='/' className="forgot-tag" onClick={handleForgotPass}>Forgot Password?</a>
 
                 <div style={{display: 'none'}} id="loading">
                     <div className="preloader-wrapper small active">

@@ -45,6 +45,6 @@ setPerformanceEnd('SALE_LOAD_TIME');
 export default compose(
     connect(mapStateToProps),
     firestoreConnect([
-        {collection: 'sales', limit: 1000, orderBy: ['date', 'desc']}
+        {collection: 'sales', limit: 10, orderBy: ['date', 'desc']}
     ])
 )(Sale)

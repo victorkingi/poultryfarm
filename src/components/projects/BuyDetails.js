@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useMemo} from "react";
 import {connect} from 'react-redux';
 import {firestoreConnect} from "react-redux-firebase";
 import {compose} from "redux";
@@ -7,15 +7,24 @@ import moment from "moment";
 import numeral from "numeral";
 
 const BuyDetails = (props) => {
-    const {buy, auth} = props;
+    const {buy} = props;
+    const user = useMemo(() => {
+        const __user = localStorage.getItem('user') || false;
 
-    if (!auth.uid) return <Redirect to='/signin'/>
+        return {__user};
+    }, []);
+
+    if (!user.__user) {
+        return (
+            <Redirect to='/signin'/>
+        );
+    }
 
     if (buy) {
         const total = buy.objectNo * buy.objectPrice;
         const time = buy.submittedOn.toDate() ? buy.submittedOn.toDate() : "No date given";
 
-        if(buy.itemName) {
+        if (buy.itemName) {
             return (
                 <div className="container section project-details">
                     <div className="card z-depth-0">
@@ -66,8 +75,7 @@ const mapStateToProps = (state, ownProps) => {
     const buy = buys ? buys[id] : null;
 
     return {
-        buy: buy,
-        auth: state.firebase.auth
+        buy: buy
     }
 }
 

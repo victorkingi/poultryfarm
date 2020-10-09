@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useMemo} from "react";
 import {connect} from 'react-redux';
 import {firestoreConnect} from "react-redux-firebase";
 import {compose} from "redux";
@@ -6,8 +6,14 @@ import {Redirect} from "react-router-dom";
 import moment from "moment";
 
 const EggsDetails = (props) => {
-    const {egg, auth} = props;
-    if (!auth.uid) {
+    const {egg} = props;
+    const user = useMemo(() => {
+        const __user = localStorage.getItem('user') || false;
+
+        return {__user};
+    }, []);
+
+    if (!user.__user) {
         return <Redirect to='/signin'/>
     }
 
@@ -16,7 +22,7 @@ const EggsDetails = (props) => {
             a2 = parseInt(egg['A 2']), b1 = parseInt(egg['B 1']), b2 = parseInt(egg['B 2']), c1 = parseInt(egg['C 1']),
             c2 = parseInt(egg['C 2']), house = parseInt(egg['house']), total = a1 + a2 + b1 + b2 + c1 + c2 + house;
 
-        return(
+        return (
             <div className="container section project-details">
                 <div className="card z-depth-0">
                     <div className="card-content">
@@ -53,8 +59,7 @@ const mapStateToProps = (state, ownProps) => {
     const egg = eggs ? eggs[id] : null;
 
     return {
-        egg: egg,
-        auth: state.firebase.auth
+        egg: egg
     }
 }
 

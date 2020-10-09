@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useMemo} from "react";
 import {connect} from 'react-redux';
 import {firestoreConnect} from "react-redux-firebase";
 import {compose} from "redux";
@@ -7,8 +7,15 @@ import moment from "moment";
 import numeral from "numeral";
 
 const SalesDetails = (props) => {
-    const {sale, auth} = props;
-    if (!auth.uid) {
+    const {sale} = props;
+
+    const user = useMemo(() => {
+        const __user = localStorage.getItem('user') || false;
+
+        return {__user};
+    }, []);
+
+    if (!user.__user) {
         return (
             <Redirect to="/signin"/>
         )
@@ -16,12 +23,7 @@ const SalesDetails = (props) => {
 
     if (sale) {
         const total = sale.chickenNo ? (sale.chickenNo * sale.chickenPrice) : (sale.trayNo * sale.trayPrice);
-        const time = sale.date ? sale.date.toDate() : "No date given";
-
-        if (parseInt(sale.chickenNo) === 1) {
-
-        }
-
+        const time = sale?.date?.toDate();
 
         if (sale.buyerName) {
             if (sale.chickenNo && parseInt(sale.chickenNo) > 1) {
@@ -120,8 +122,7 @@ const mapStateToProps = (state, ownProps) => {
     const sale = sales ? sales[id] : null;
 
     return {
-        sale: sale,
-        auth: state.firebase.auth
+        sale: sale
     }
 }
 
