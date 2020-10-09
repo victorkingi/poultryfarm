@@ -44,7 +44,7 @@ export const inputPurchase = (buys) => {
             return new Error("ERROR: Impossible date entered!");
         }
 
-        firestore.collection('buys').orderBy("date", "desc").limit(1).get().then(function (snapshot) {
+        firestore.collection('buys').orderBy("submittedOn", "desc").limit(1).get().then(function (snapshot) {
             if (snapshot.size === 0) {
                 return new Error("ERROR: Contact admin for help!");
             }
@@ -200,6 +200,7 @@ export const inputPurchase = (buys) => {
                     window.alert("Data Submitted");
                     load.style.display = 'none';
                     clearForm('buys-form');
+                    setPerformanceEnd('PURCHASE_TIME');
 
                 }).catch(function (err) {
                     const error = err.message || err;
@@ -209,11 +210,11 @@ export const inputPurchase = (buys) => {
                     load.style.display = 'none';
                     window.location = '/';
                     clearForm('buys-form');
+                    setPerformanceEnd('PURCHASE_TIME');
 
                 });
 
             })
         })
-        setPerformanceEnd('PURCHASE_TIME');
     }
 }

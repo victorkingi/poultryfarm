@@ -13,23 +13,10 @@ function InputBorrow(props) {
     }, []);
 
     const handleChange = (e) => {
-        const selectBox = document.getElementById("borrower");
-        const selectedValue = selectBox.options[selectBox.selectedIndex].value;
-        const borrow = document.getElementById('borrow');
-        const borrow2 = document.getElementById('borrowAmount').value;
-        const submit = document.getElementById('submit-btn-borrow');
-
-        if (selectedValue !== "") {
-            borrow.style.display = 'block';
-        }
-
-        if (parseInt(borrow2) > 0 && parseInt(borrow2) < Number.MAX_SAFE_INTEGER) {
-            submit.style.display = 'block';
-            document.getElementById('error-text').innerHTML = "";
-        } else {
-            submit.style.display = 'none';
-            document.getElementById('error-text').innerHTML = "ERROR: Must be a number above 0";
-        }
+        const load = document.getElementById("loading-borrow");
+        const submit = document.getElementById("submit-btn-borrow");
+        submit.style.display = 'block';
+        load.style.display = 'none';
 
         const myInt = parseInt(e.target.value);
 
@@ -48,14 +35,19 @@ function InputBorrow(props) {
     }
 
     const handleSubmit = (e) => {
-        e.preventDefault();
+        const borrow = document.getElementById('borrowAmount').value;
         const load = document.getElementById("loading-borrow");
         const submit = document.getElementById("submit-btn-borrow");
+        e.preventDefault();
 
-        submit.style.display = 'none';
-        load.style.display = 'block';
-
-        props.borrowSomeMoney(state);
+        if (parseInt(borrow) > 0 && parseInt(borrow) < Number.MAX_SAFE_INTEGER) {
+            document.getElementById('error-text').innerHTML = "";
+            submit.style.display = 'none';
+            load.style.display = 'block';
+            props.borrowSomeMoney(state);
+        } else {
+            document.getElementById('error-text').innerHTML = "ERROR: Must be a number above 0";
+        }
 
     }
 
@@ -82,17 +74,14 @@ function InputBorrow(props) {
                     <option value="Anne">Anne</option>
                 </select>
                 <br/>
-                <div style={{display: 'none'}} id="borrow">
-                    <div className="input-field">
-                        <label htmlFor="borrowAmount">Amount</label>
-                        <input type="number" id="borrowAmount" onChange={handleChange}/>
-                    </div>
-                    <br/>
-                    <div className="input-field">
-                        <label htmlFor="purpose">Purpose</label>
-                        <input type="text" id="purpose" onChange={handleChange} required/>
-                    </div>
-
+                <div className="input-field">
+                    <label htmlFor="borrowAmount">Amount</label>
+                    <input type="number" id="borrowAmount" onChange={handleChange}/>
+                </div>
+                <br/>
+                <div className="input-field">
+                    <label htmlFor="purpose">Purpose</label>
+                    <input type="text" id="purpose" onChange={handleChange} required/>
                 </div>
 
                 <div style={{display: 'none'}} id="loading-borrow">
@@ -147,7 +136,7 @@ function InputBorrow(props) {
                     </div>
                 </div>
 
-                <div style={{display: 'none'}} id="submit-btn-borrow">
+                <div id="submit-btn-borrow">
                     <div className="input-field">
                         <button type="Submit" className="btn pink lighten-1 z-depth-0">Submit</button>
                     </div>

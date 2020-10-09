@@ -128,15 +128,23 @@ export const hasPaidLate = (details) => {
         const amountDue = parseInt(details.amountDue);
         const salesDocRef = firestore.collection("sales").doc(details.id);
         const currentDocRef = firestore.collection("current").doc(fullName);
+        const currentJeffDocRef = firestore.collection("current").doc("Jeff Karue");
         const latePaymentDocRef = firestore.collection("latePayment").doc(details.id);
         const userLogRef = firestore.collection("userLogs").doc(user.uid).collection("logs").doc();
 
         const batch = firestore.batch();
 
-        batch.update(currentDocRef, {
-            balance: firestore.FieldValue.increment(amountDue),
-            submittedOn: firestore.FieldValue.serverTimestamp()
-        });
+        if (details.section === "Simbi") {
+            batch.update(currentJeffDocRef, {
+                balance: firestore.FieldValue.increment(amountDue),
+                submittedOn: firestore.FieldValue.serverTimestamp()
+            });
+        } else {
+            batch.update(currentDocRef, {
+                balance: firestore.FieldValue.increment(amountDue),
+                submittedOn: firestore.FieldValue.serverTimestamp()
+            });
+        }
 
         batch.update(salesDocRef, {status: true});
 

@@ -6,6 +6,8 @@ import {Redirect} from "react-router-dom";
 
 function Inputmoney(props) {
     const [state, setState] = useState({});
+    const load = document.getElementById("loading-send-money");
+    const submit = document.getElementById("submit-btn-send-money");
     const {auth} = props;
 
     useEffect(() => {
@@ -14,26 +16,8 @@ function Inputmoney(props) {
     }, []);
 
     const handleChange = (e) => {
-        const selectBox = document.getElementById("receiver");
-        const selectedValue = selectBox.options[selectBox.selectedIndex].value;
-        const money = document.getElementById('money');
-        const submit = document.getElementById('submit-btn-send-money');
-        const amount = document.getElementById('amount').value;
-
-        if (selectedValue !== "" || selectedValue !== '0') {
-            money.style.display = 'block';
-            document.getElementById("error-text").innerHTML = "";
-        }
-        if (selectedValue === auth.displayName) {
-            document.getElementById("error-text").innerHTML = "ERROR: cannot send money to yourself!";
-            submit.style.display = 'none';
-            money.style.display = 'none';
-        }
-
-        if (amount !== "") {
-            submit.style.display = 'block';
-        }
-
+        submit.style.display = 'block';
+        load.style.display = 'none';
         setState({
             ...state,
             [e.target.id]: e.target.value
@@ -44,11 +28,11 @@ function Inputmoney(props) {
         e.preventDefault();
         const selectBox = document.getElementById("receiver");
         const selectedValue = selectBox.options[selectBox.selectedIndex].value;
-        const load = document.getElementById("loading-send-money");
-        const submit = document.getElementById("submit-btn-send-money");
 
-        if (selectedValue === "0") {
+        if (selectedValue === "0" || selectedValue === auth.displayName) {
             document.getElementById("error-text").innerHTML = "Error with selection";
+            submit.style.display = 'block';
+            load.style.display = 'none';
         } else {
             document.getElementById("error-text").innerHTML = "";
             submit.style.display = 'none';
@@ -83,11 +67,9 @@ function Inputmoney(props) {
                     <option value="Bank Account">Bank</option>
                 </select>
 
-                <div style={{display: 'none'}} id="money">
-                    <div className="input-field">
-                        <label htmlFor="amount">Enter amount</label>
-                        <input type="number" id="amount" onChange={handleChange} required/>
-                    </div>
+                <div className="input-field">
+                    <label htmlFor="amount">Enter amount</label>
+                    <input type="number" id="amount" onChange={handleChange} required/>
                 </div>
 
                 <div style={{display: 'none'}} id="loading-send-money">
@@ -142,7 +124,7 @@ function Inputmoney(props) {
                     </div>
                 </div>
 
-                <div style={{display: 'none'}} id="submit-btn-send-money">
+                <div id="submit-btn-send-money">
                     <div className="input-field">
                         <button type="Submit" className="btn pink lighten-1 z-depth-0">Submit</button>
                     </div>

@@ -62,8 +62,8 @@ export const inputTray = (eggs) => {
                 prevDate = 30
             }
         }
-        //const controlledPrevDate = prevDate < 10 ? `0${prevDate}` : prevDate;
-        const eggPreviousDocRef = firestore.collection("eggs").doc('Month ' + prevMonth + ' Date ' + prevDate);
+        const controlledPrevDate = prevDate < 10 ? `0${prevDate}` : prevDate;
+        const eggPreviousDocRef = firestore.collection("eggs").doc('Month ' + prevMonth + ' Date ' + controlledPrevDate);
 
         const dateChecks = dateCheck(enteredMonth, enteredDate, isLeap)
 
