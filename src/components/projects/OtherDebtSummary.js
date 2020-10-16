@@ -20,28 +20,15 @@ const OtherDebtSummary = (otherDebt) => {
     if (otherDebt.item.id === "TotalThikaFarmers") {
         const time = otherDebt.item.submittedOn.toDate() ? otherDebt.item.submittedOn.toDate() : "No date given";
 
-        if (parseInt(otherDebt.item.total) >= 0) {
-            return (
-                <div className="card z-depth-0 project-summary">
-                    <div className="card-content grey-text text-darken-3">
+        return (
+            <div className="card z-depth-0 project-summary">
+                <div className="card-content grey-text text-darken-3">
                     <span
-                        className="card-title">Thika Farmers Total Debt: Ksh.{numeral(otherDebt.item.total).format("0,0")}</span>
-                        <p className="grey-text">{moment(time).calendar()}</p>
-                    </div>
+                        className="card-title">Thika Farmers Total Debt: {numeral(otherDebt.item.total).format("0,0")}</span>
+                    <p className="grey-text">{moment(time).calendar()}</p>
                 </div>
-            )
-        } else {
-            const owe = parseInt(otherDebt.item.total) * -1;
-            return (
-                <div className="card z-depth-0 project-summary">
-                    <div className="card-content grey-text text-darken-3">
-                    <span
-                        className="card-title">Thika Farmers Owe us Ksh.{numeral(owe).format("0,0")}</span>
-                        <p className="grey-text">{moment(time).calendar()}</p>
-                    </div>
-                </div>
-            )
-        }
+            </div>
+        )
     } else if (otherDebt.item.balance) {
         const time = otherDebt.item.submittedOn.toDate() ? otherDebt.item.submittedOn.toDate() : "No date given";
 

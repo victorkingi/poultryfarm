@@ -60,7 +60,7 @@ export const inputSell = (sales) => {
             + ' Date ' + enteredDate + ' ' + section + ': ' + buyer) : firestore.collection("latePayment")
             .doc('Month ' + enteredMonth + ' Date ' + enteredDate + ' ' + section);
         const load = document.getElementById("loading-sales");
-        const total = sales.trayNo ? parseInt(sales.trayNo) * parseInt(sales.trayPrice)
+        let total = sales.trayNo ? parseInt(sales.trayNo) * parseInt(sales.trayPrice)
             : parseInt(sales.chickenNo) * parseInt(sales.chickenPrice);
         const dateChecks = dateCheck(enteredMonth, enteredDate, isLeap);
 
@@ -118,7 +118,6 @@ export const inputSell = (sales) => {
                                                     if (transMade) {
                                                         transaction.set(salesDocRef, {
                                                             ...sales,
-                                                            buyerName: buyer,
                                                             key: key,
                                                             weeklyTotal: newWeeklyTotal,
                                                             monthlyTotal: newMonthlyTotal,
@@ -191,7 +190,6 @@ export const inputSell = (sales) => {
                                                 }
                                                 transaction.set(salesDocRef, {
                                                     ...sales,
-                                                    buyerName: buyer,
                                                     key: key,
                                                     weeklyTotal: newWeeklyTotal,
                                                     monthlyTotal: newMonthlyTotal,
@@ -216,69 +214,44 @@ export const inputSell = (sales) => {
                         })
                     }).then(() => {
                         const batch = firestore.batch();
-                        const thikaDocRef = firestore.collection("otherDebt").doc("TotalThikaFarmers");
+                        const allThikaDocRef = firestore.collection("otherDebt").doc("TotalThikaFarmers");
                         if (sales.section === "Thika Farmers") {
-
                             firestore.collection("otherDebt").orderBy("date", "desc").get().then(function (snapshot) {
                                 if (snapshot.size === 0) {
                                     return null;
                                 }
-
-                                let _total = total;
                                 for (let i = 0; i < snapshot.size; i++) {
                                     const balance = parseInt(snapshot.docs[i].data().balance);
-                                    const final = _total - balance;
+                                    if (profile.firstName === "Jeff") {
+                                        const final = total - balance;
+                                        const otherDebtDocRef = firestore.collection("otherDebt").doc(snapshot.docs[i].id);
+                                        if (final < 0) {
+                                            const newFinal = final * -1;
+                                            batch.update(otherDebtDocRef, {
+                                                balance: newFinal,
+                                                submittedOn: firestore.FieldValue.serverTimestamp()
+                                            })
 
-                                    firestore.collection('buys').where("key", "==", `${snapshot.docs[i].data().key}`)
-                                        .get().then((buyQuery) => {
-                                        buyQuery.forEach((buyDoc) => {
-                                            if (buyDoc.exists) {
+                                            break;
+                                        } else if (final === 0) {
+                                            batch.delete(otherDebtDocRef);
+                                            break;
 
-                                                if (profile.firstName === "Jeff") {
-                                                    const otherDebtDocRef = firestore.collection("otherDebt").doc(snapshot.docs[i].id);
-                                                    if (final < 0) {
-                                                        const newFinal = final * -1;
-                                                        batch.update(otherDebtDocRef, {
-                                                            balance: newFinal,
-                                                            submittedOn: firestore.FieldValue.serverTimestamp()
-                                                        });
-
-                                                    } else if (final === 0) {
-                                                        batch.delete(otherDebtDocRef);
-                                                        buyDoc.ref.update({
-                                                            status: true
-                                                        });
-
-                                                    } else if (final > 0) {
-                                                        batch.delete(otherDebtDocRef);
-                                                        buyDoc.ref.update({
-                                                            status: true
-                                                        });
-                                                    }
-                                                }
-                                            } else {
-                                                return Promise.reject("ERROR: The respective buy doc doesn't exist");
-                                            }
-                                        });
-                                    });
-                                    if (final === 0 || final < 0) {
-                                        break;
-                                    }
-                                    if (final > 0) {
-                                        const _t = final * -1;
-                                        thikaDocRef.update(thikaDocRef, {
-                                            total: _t,
-                                            submittedOn: firestore.FieldValue.serverTimestamp()
-                                        });
-                                        _total = final;
+                                        } else if (final > 0) {
+                                            batch.delete(otherDebtDocRef);
+                                            total = final;
+                                        }
                                     }
                                 }
                                 const newTotal = total * -1;
-
+                                batch.update(allThikaDocRef, {
+                                    total: firestore.FieldValue.increment(newTotal),
+                                    submittedOn: firestore.FieldValue.serverTimestamp()
+                                })
                                 batch.update(currentDocRef, {
                                     balance: firestore.FieldValue.increment(newTotal),
                                     submittedOn: firestore.FieldValue.serverTimestamp()
-                                });
+                                })
 
                                 batch.commit().then(() => console.log("debt updated"));
                             }).catch((err) => {
