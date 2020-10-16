@@ -29,6 +29,7 @@ export const inputPurchase = (buys) => {
         const userLogRef = firestore.collection("userLogs").doc(user.uid).collection("logs").doc();
         const oweJeffDocRef = firestore.collection("oweJeff").doc('Month ' + enteredMonth);
         const otherDebtDocRef = firestore.collection("otherDebt").doc('Month ' + enteredMonth + ' Date ' + enteredDate + ' ' + section + ': ' + item);
+        const totalThikaDebtDocRef = firestore.collection("otherDebt").doc("TotalThikaFarmers");
         const total = parseInt(buys.objectNo) * parseInt(buys.objectPrice);
         const load = document.getElementById("loading-buys");
 
@@ -59,6 +60,7 @@ export const inputPurchase = (buys) => {
 
                     return transaction.get(buyDocRef).then(function (buyDoc) {
                         return transaction.get(currentDocRef).then(function (currentDoc) {
+                            return transaction.get(totalThikaDebtDocRef).then(function (thikaDoc) {
                                 function commonTransactions() {
                                     if (section === "Feeds") {
                                         transaction.set(bagsDocRef, {
@@ -164,6 +166,18 @@ export const inputPurchase = (buys) => {
                                             submittedOn: firestore.FieldValue.serverTimestamp()
                                         });
 
+                                        if (thikaDoc.exists) {
+                                            transaction.update(totalThikaDebtDocRef, {
+                                                total: firestore.FieldValue.increment(total),
+                                                submittedOn: firestore.FieldValue.serverTimestamp()
+                                            })
+                                        } else {
+                                            transaction.set(totalThikaDebtDocRef, {
+                                                total: total,
+                                                submittedOn: firestore.FieldValue.serverTimestamp()
+                                            })
+                                        }
+
                                         commonTransactions();
 
                                         transaction.set(userLogRef, {
@@ -177,6 +191,7 @@ export const inputPurchase = (buys) => {
                                         return Promise.reject("ERROR: Contact main admin for help!");
                                     }
                                 }
+                            })
                         })
                     })
 
