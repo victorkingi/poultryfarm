@@ -16,8 +16,6 @@ function Inputmoney(props) {
     }, []);
 
     const handleChange = (e) => {
-        submit.style.display = 'block';
-        load.style.display = 'none';
         setState({
             ...state,
             [e.target.id]: e.target.value
@@ -124,7 +122,7 @@ function Inputmoney(props) {
                     </div>
                 </div>
 
-                <div id="submit-btn-send-money">
+                <div style={{display: 'block'}} id="submit-btn-send-money">
                     <div className="input-field">
                         <button type="Submit" className="btn pink lighten-1 z-depth-0">Submit</button>
                     </div>

@@ -29,12 +29,80 @@ export const sendMoney = (money) => {
         const load = document.getElementById("loading-send-money");
         const submit = document.getElementById("submit-btn-send-money");
 
+        function sendTheFunds() {
+            firestore.runTransaction(function (transaction) {
+                return transaction.get(currentDocRef).then(function (currentDoc) {
+                    return transaction.get(receiverDocRef).then(function (receiverDoc) {
+                        if (currentDoc.exists) {
+                            if (receiverDoc.exists) {
+                                const name = receiverDoc.data().fullName;
+
+                                if (name === currentDoc.data().fullName || amount < 1) {
+                                    return Promise.reject("ERROR: Recheck data entered!");
+
+                                } else {
+                                    const senderNewBalance = currentDoc.data().balance - amount;
+
+                                    if (senderNewBalance < 0) {
+                                        return Promise.reject("ERROR: Insufficient funds to complete transfer");
+
+                                    } else {
+                                        transaction.update(currentDocRef, {
+                                            balance: senderNewBalance,
+                                            submittedBy: fullName,
+                                            submittedOn: firestore.FieldValue.serverTimestamp()
+                                        });
+
+                                        transaction.update(receiverDocRef, {
+                                            balance: firestore.FieldValue.increment(amount),
+                                            submittedBy: fullName,
+                                            submittedOn: firestore.FieldValue.serverTimestamp()
+                                        });
+
+                                        transaction.set(userLogRef, {
+                                            event: 'sent money to ' + name,
+                                            receiver: name,
+                                            amount: amount,
+                                            submittedBy: fullName,
+                                            submittedOn: firestore.FieldValue.serverTimestamp()
+                                        });
+                                    }
+                                }
+                            } else {
+                                return Promise.reject("ERROR: Doc doesn't exist!");
+                            }
+
+                        } else {
+                            return Promise.reject("ERROR: Doc doesn't exist!");
+                        }
+                    })
+                })
+            })
+                .then(() => {
+                    dispatch({type: 'MONEY_SENT', money});
+                    window.alert("Data submitted");
+                    load.style.display = 'none';
+                    clearForm('send-money-form');
+
+                }).catch((err) => {
+                const error = err.message || err;
+                dispatch({type: 'MONEY_ERROR', error});
+
+                window.alert(error);
+                load.style.display = 'none';
+                window.location = '/';
+                clearForm('send-money-form');
+            })
+        }
+
         if (money.receiver === "Bank Account") {
             return firebase.auth().onAuthStateChanged(user => {
                 if (user) {
                     return user.getIdTokenResult().then(idToken => {
                         if (!idToken.claims.admin) {
                             return Promise.reject("ERROR: You are not an admin!");
+                        } else {
+                            sendTheFunds();
                         }
                     }).catch((err) => {
                         console.error(err);
@@ -45,70 +113,9 @@ export const sendMoney = (money) => {
                     })
                 }
             });
+        } else {
+            sendTheFunds();
         }
-
-        firestore.runTransaction(function (transaction) {
-            return transaction.get(currentDocRef).then(function (currentDoc) {
-                return transaction.get(receiverDocRef).then(function (receiverDoc) {
-                    if (currentDoc.exists) {
-                        if (receiverDoc.exists) {
-                            const name = receiverDoc.data().fullName;
-
-                            if (name === currentDoc.data().fullName || amount < 1) {
-                                return Promise.reject("ERROR: Recheck data entered!");
-
-                            } else {
-                                const senderNewBalance = currentDoc.data().balance - amount;
-
-                                if (senderNewBalance < 0) {
-                                    return Promise.reject("ERROR: Insufficient funds to complete transfer");
-
-                                } else {
-                                    transaction.update(currentDocRef, {
-                                        balance: senderNewBalance,
-                                        submittedBy: fullName,
-                                        submittedOn: firestore.FieldValue.serverTimestamp()
-                                    });
-
-                                    transaction.update(receiverDocRef, {
-                                        balance: firestore.FieldValue.increment(amount),
-                                        submittedBy: fullName,
-                                        submittedOn: firestore.FieldValue.serverTimestamp()
-                                    });
-
-                                    transaction.set(userLogRef, {
-                                        event: 'sent money to ' + name,
-                                        receiver: name,
-                                        amount: amount,
-                                        submittedBy: fullName,
-                                        submittedOn: firestore.FieldValue.serverTimestamp()
-                                    });
-                                }
-                            }
-                        } else {
-                            return Promise.reject("ERROR: Doc doesn't exist!");
-                        }
-
-                    } else {
-                        return Promise.reject("ERROR: Doc doesn't exist!");
-                    }
-                })
-            })
-        }).then(() => {
-            dispatch({type: 'MONEY_SENT', money});
-            window.alert("Data submitted");
-            load.style.display = 'none';
-            clearForm('send-money-form');
-
-        }).catch((err) => {
-            const error = err.message || err;
-            dispatch({type: 'MONEY_ERROR', error});
-
-            window.alert(error);
-            load.style.display = 'none';
-            window.location = '/';
-            clearForm('send-money-form');
-        })
 
         setPerformanceEnd('SEND_MONEY_TIME');
     }
