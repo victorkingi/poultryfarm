@@ -1,4 +1,5 @@
-import React from 'react';
+import 'babel-polyfill';
+import React, {useEffect} from 'react';
 import {BrowserRouter, Route, Switch} from 'react-router-dom'
 
 import Dashboard from "./components/dashboard/Dashboard";
@@ -28,15 +29,69 @@ import InputNews from "./components/projects/InputNews";
 import {setPerformanceEnd, setPerformanceStart} from "./store/actions/moneyAction";
 import NotFound from "./NotFound";
 import "./App.css";
+import {toast, ToastContainer} from "react-toastify";
 
 setPerformanceStart();
 
+function componentDidMount() {
+    navigator.serviceWorker.addEventListener("message", (message) => {
+        const customId = "myToast";
+        if (message?.data) {
+            const _data = `${message.data['firebase-messaging-msg-data'].data?.title}`;
+            const _notification = `${message.data['firebase-messaging-msg-data']
+                .notification?.title}: ${message.data['firebase-messaging-msg-data']
+                .notification?.body}`;
+
+            if (_data === 'undefined') {
+                toast.info(_notification, {
+                    toastId: customId,
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+            } else {
+                toast.info(_data, {
+                    toastId: customId,
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+            }
+        }
+
+    });
+}
+
 const App = () => {
+
+    useEffect(() => {
+        componentDidMount();
+    }, []);
+
     return (
         <BrowserRouter>
             <div>
                 <Navbar/>
                 <Sidebar/>
+                <ToastContainer
+                    position="top-right"
+                    autoClose={5000}
+                    hideProgressBar={false}
+                    newestOnTop={false}
+                    closeOnClick
+                    rtl={false}
+                    pauseOnFocusLoss
+                    draggable
+                    pauseOnHover
+                />
                 <Switch>
                     <Route path='/s/:id' component={SalesDetails}/>
                     <Route path='/sd/:id' component={SickDeadDetails}/>

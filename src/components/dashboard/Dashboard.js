@@ -12,8 +12,6 @@ import BagsList from "../projects/BagsList";
 import ChickenDetails from "./ChickenDetails";
 import News from "./News";
 import InputNews from "../projects/InputNews";
-import {toast, ToastContainer} from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import {setPerformanceEnd, setPerformanceStart} from "../../store/actions/moneyAction";
 import {messaging} from "../../config/fbConfig";
 import "../../App.css";
@@ -33,43 +31,6 @@ function time() {
     } else {
         period = "Good Evening";
     }
-}
-
-function componentDidMount() {
-    navigator.serviceWorker.addEventListener("message", (message) => {
-        const customId = "myToast";
-        if (message?.data) {
-            const _data = `${message.data['firebase-messaging-msg-data'].data?.title}`;
-            const _notification = `${message.data['firebase-messaging-msg-data']
-                .notification?.title}: ${message.data['firebase-messaging-msg-data']
-                .notification?.body}`;
-
-            if (_data === 'undefined') {
-                toast.info(_notification, {
-                    toastId: customId,
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                });
-            } else {
-                toast.info(_data, {
-                    toastId: customId,
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                });
-            }
-        }
-
-    });
 }
 
 export const handleToken = (sendTokenToServer_, renderCount) => {
@@ -117,7 +78,6 @@ function Dashboard(props) {
     useEffect(() => {
         time();
         props.checkClaims();
-        componentDidMount();
 
     }, [props]);
 
@@ -136,17 +96,6 @@ function Dashboard(props) {
                 return (
                     <div className="dashboard container">
                         <div className="row">
-                            <ToastContainer
-                                position="top-right"
-                                autoClose={5000}
-                                hideProgressBar={false}
-                                newestOnTop={false}
-                                closeOnClick
-                                rtl={false}
-                                pauseOnFocusLoss
-                                draggable
-                                pauseOnHover
-                            />
                             <div className="center-align">
                                 <h3 className="spinner-blue" id="details"> {period} {firstName}</h3>
                             </div>

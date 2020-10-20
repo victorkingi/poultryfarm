@@ -118,6 +118,7 @@ export const inputSell = (sales) => {
                                                     if (transMade) {
                                                         transaction.set(salesDocRef, {
                                                             ...sales,
+                                                            buyerName: buyer,
                                                             key: key,
                                                             weeklyTotal: newWeeklyTotal,
                                                             monthlyTotal: newMonthlyTotal,
@@ -190,6 +191,7 @@ export const inputSell = (sales) => {
                                                 }
                                                 transaction.set(salesDocRef, {
                                                     ...sales,
+                                                    buyerName: buyer,
                                                     key: key,
                                                     weeklyTotal: newWeeklyTotal,
                                                     monthlyTotal: newMonthlyTotal,

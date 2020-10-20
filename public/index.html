@@ -1,6 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-gb">
 <head>
+    <script>
+        const language = navigator.language.split("-")[0] || navigator.userLanguage?.split("-")[0] || "en";
+        document.documentElement.setAttribute('lang', language);
+    </script>
     <script>
         (function (i, s, o, g, r, a, m) {
             i['GoogleAnalyticsObject'] = r;
