@@ -39,15 +39,15 @@ export const inputNews = (details) => {
                 window.location = '/';
                 clearForm('news-form');
             }
+            setPerformanceEnd('NEWS_UPDATE_TIME');
         }).catch((err) => {
             dispatch({type: 'UPLOAD_ERROR'});
             window.alert("ERROR: " + err.message);
             load.style.display = 'none';
             window.location = '/';
             clearForm('news-form');
+            setPerformanceEnd('NEWS_UPDATE_TIME');
         })
-
-        setPerformanceEnd('NEWS_UPDATE_TIME');
     }
 }
 
