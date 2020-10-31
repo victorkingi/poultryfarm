@@ -20,18 +20,6 @@ describe("social app", () => {
         assert.strictEqual(2+2, 4);
     });
 
-    it("Can read items in the read-only collection", async() => {
-        const db = getFirestore(null);
-        const testDoc = db.collection("notifyToken").doc("2020");
-        await firebase.assertFails(testDoc.get());
-    })
-
-    it("Can't write items in the read-only collection", async() => {
-        const db = getFirestore(null);
-        const testDoc = db.collection("readonly").doc("testDoc");
-        await firebase.assertFails(testDoc.set({foo: "bar"}));
-    })
-
     it("can write user doc", async() => {
         const myAuth = {uid: "user_abc", email: "abc@gmail.com"};
         const db = getFirestore(myAuth);
