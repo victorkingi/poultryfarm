@@ -1,4 +1,5 @@
 import {makeid} from "./salesAction";
+import {clearForm} from "../../scenes/Input Pages/scenes/Sales/components/Inputsell";
 
 function setPerformanceStart() {
     performance.mark('measurementStart');
@@ -81,6 +82,7 @@ export const sendMoney = (money) => {
                     dispatch({type: 'MONEY_SENT', money});
                     window.alert("Data submitted");
                     load.style.display = 'none';
+                    clearForm('send-money-form');
 
                 }).catch((err) => {
                 const error = err.message || err;
@@ -238,7 +240,10 @@ export const weClearedOurDebt = (details) => {
                                             if (final < 0) {
                                                 return Promise.reject("ERROR: Contact main admin for help!");
                                             } else if (final === 0) {
-                                                transaction.delete(thikaDebtDocRef);
+                                                transaction.update(thikaDebtDocRef, {
+                                                    total: final,
+                                                    submittedOn: firestore.FieldValue.serverTimestamp()
+                                                });
 
                                                 transaction.update(buyDocRef, {status: true});
 
@@ -520,6 +525,7 @@ export const borrowSomeMoney = (details) => {
             dispatch({type: 'BORROW_SUCCESS'});
             window.alert("Money successfully borrowed");
             load.style.display = 'none';
+            clearForm('borrow-form');
 
         }).catch((err) => {
             const error = err.message || err;

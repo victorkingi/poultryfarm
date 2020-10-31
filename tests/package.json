@@ -2,7 +2,7 @@
   "name": "test",
   "version": "1.0.0",
   "description": "Unit testing for poultryfarm web app",
-  "main": "test.js",
+  "main": "",
   "scripts": {
     "test": "mocha --exit"
   },

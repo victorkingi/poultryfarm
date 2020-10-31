@@ -21,9 +21,8 @@ function SignIn(props) {
 
     useEffect(() => {
         M.AutoInit();
-        window.alert("NOTICE: This web app is still in development therefore you can only read data and not input and might encounter some error messages or crashes. This message will automatically disappear when beta testing is done");
 
-    }, []);
+        }, []);
 
     const handleChange = (e) => {
         setState({

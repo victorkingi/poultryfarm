@@ -1,5 +1,6 @@
 import {dateCheck, leapYear, makeid} from "./salesAction";
 import {setPerformanceEnd, setPerformanceStart} from "./moneyAction";
+import {clearForm} from "../../scenes/Input Pages/scenes/Sales/components/Inputsell";
 
 export const inputPurchase = (buys) => {
     return (dispatch, getState, {getFirebase, getFirestore}) => {
@@ -60,8 +61,8 @@ export const inputPurchase = (buys) => {
                         return transaction.get(currentDocRef).then(function (currentDoc) {
                             function commonTransactions() {
                                 if (section === "Feeds") {
-                                    transaction.set(bagsDocRef, {
-                                        number: parseInt(buys.objectNo),
+                                    transaction.update(bagsDocRef, {
+                                        number: firestore.FieldValue.increment(parseInt(buys.objectNo)),
                                         key: key,
                                         counter: new Date(year, newMonth, enteredDate, getHours, getMinutes, getSeconds),
                                         date: new Date(year, newMonth, enteredDate, getHours, getMinutes, getSeconds),
@@ -183,6 +184,7 @@ export const inputPurchase = (buys) => {
                     dispatch({type: 'INPUT_BUYING', buys});
                     window.alert("Data Submitted");
                     load.style.display = 'none';
+                    clearForm('buys-form');
 
                     setPerformanceEnd('PURCHASE_TIME');
 

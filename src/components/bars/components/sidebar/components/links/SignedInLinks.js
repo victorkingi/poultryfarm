@@ -48,6 +48,7 @@ const SignedInLinks = (props) => {
                     <li>
                         <span className="subheader">Payments</span>
                     </li>
+                    <li><NavLink to='/signin' onClick={props.signOut}>Log Out</NavLink></li>
 
                     <li><NavLink to='/l'>Late Payments</NavLink></li>
                     <li><NavLink to='/rb'>Random Borrowing</NavLink></li>
@@ -75,7 +76,6 @@ const SignedInLinks = (props) => {
                         <span className="subheader">Exit</span>
                     </li>
 
-                    <li><NavLink to='/signin' onClick={props.signOut}>Log Out</NavLink></li>
                 </ul>
             </div>
         );

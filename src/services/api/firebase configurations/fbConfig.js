@@ -5,7 +5,7 @@ import 'firebase/functions';
 import 'firebase/messaging';
 import 'firebase/performance';
 
-const firebaseConfig = {
+let firebaseConfig = {
     apiKey: "AIzaSyD3tzp-dWkeucSmG8dME_J7Zlxj9vm1hvw",
     authDomain: "poultry101-6b1ed.firebaseapp.com",
     databaseURL: "https://poultry101-6b1ed.firebaseio.com",

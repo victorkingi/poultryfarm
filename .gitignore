@@ -23,13 +23,15 @@ yarn-debug.log*
 yarn-error.log*
 /functions/
 /.firebase/
-/storage.rules
-/package-lock.json
-/firestore.rules
-/firestore.indexes.json
+./storage.rules
+./package-lock.json
+./firestore.rules
+./firestore.indexes.json
 /.firebaserc
 ./firebaserc
-/firestore-debug.log
-/pubsub-debug.log
-/remoteconfig.template.json
-/ui-debug.log
+./firebase-debug.log
+./pubsub-debug.log
+./remoteconfig.template.json
+./ui-debug.log
+/src/services/api/firebase configurations
+

@@ -1,4 +1,5 @@
 import {setPerformanceEnd, setPerformanceStart} from "./moneyAction";
+import {clearForm} from "../../scenes/Input Pages/scenes/Sales/components/Inputsell";
 
 function makeid(l) {
     let text = "";
@@ -261,6 +262,7 @@ export const inputSell = (sales) => {
                         dispatch({type: 'INPUT_SALES', sales});
                         window.alert("Data Submitted");
                         load.style.display = 'none';
+                        clearForm('sales-form');
                         setPerformanceEnd('SELL_TIME');
 
                     }).catch((err) => {
