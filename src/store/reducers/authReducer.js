@@ -70,6 +70,8 @@ const authReducer = (state = initState, action) => {
 
         case 'SIGNUP_SUCCESS':
             console.log('signup success');
+            window.alert("Your request will be reviewed and you will get a notification when complete." +
+                "\nNB:- It might take upto 2 days");
             try {
                 localStorage.setItem('user', action._user);
             } catch (e) {

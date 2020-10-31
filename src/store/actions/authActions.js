@@ -65,21 +65,17 @@ export const signUp = (newUser) => {
 
         firebase.auth().createUserWithEmailAndPassword(newUser.email, newUser.password)
             .then((resp) => {
-                firebase.auth().onAuthStateChanged(user => {
-                    if (user) {
-                        if (!user.displayName) {
-                            user.updateProfile({
-                                displayName: `${newUser.firstName} ${newUser.lastName}`
-                            });
-                        }
-                    }
+                const user = firebase.auth().currentUser;
+                user.updateProfile({
+                    displayName: `${newUser.firstName} ${newUser.lastName}`
                 });
 
                 return firestore.collection('users').doc(resp.user.uid).set({
                     firstName: newUser.firstName,
                     lastName: newUser.lastName,
                     initials: newUser.firstName[0] + newUser.lastName[0],
-                    email: newUser.email
+                    email: newUser.email,
+                    request: newUser.level
                 })
             }).then((user) => {
             const _user = user.user.email;

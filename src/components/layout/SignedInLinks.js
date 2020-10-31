@@ -6,8 +6,8 @@ import {checkClaims, signOut} from "../../store/actions/authActions";
 const SignedInLinks = (props) => {
     const {admin, changer, auth} = props;
     props.checkClaims();
-    const lastIndex = auth?.displayName.lastIndexOf(" ");
-    const initials = `${auth?.displayName.substring(0, 1)}${auth?.displayName.substring(lastIndex + 1, lastIndex + 2)}`
+    const lastIndex = auth?.displayName?.lastIndexOf(" ");
+    const initials = `${auth?.displayName?.substring(0, 1)}${auth?.displayName?.substring(lastIndex + 1, lastIndex + 2)}`
 
     if (admin) {
         return (
@@ -29,7 +29,7 @@ const SignedInLinks = (props) => {
                     <li><NavLink to='/eggs'>Input Eggs</NavLink></li>
                     <li><NavLink to='/buy'>Input Purchases</NavLink></li>
                     <li><NavLink to='/ib'>Input Borrowing</NavLink></li>
-                    <li><NavLink to='/d'>Input Sick / Dead Chicken</NavLink></li>
+                    <li><NavLink to='/d'>Input Dead / Sick Chicken</NavLink></li>
 
                     <li>
                         <div className="divider"/>

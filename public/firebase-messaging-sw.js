@@ -1,7 +1,6 @@
 importScripts("https://www.gstatic.com/firebasejs/5.9.4/firebase-app.js");
 importScripts("https://www.gstatic.com/firebasejs/5.9.4/firebase-messaging.js");
 firebase.initializeApp({
-// Project Settings => Add Firebase to your web app
     messagingSenderId: "921557433248"
 });
 const messaging = firebase.messaging();
@@ -25,7 +24,12 @@ messaging.setBackgroundMessageHandler(function (payload) {
             const _data_title = payload.data?.title || payload.notification?.title;
             const _data_body = payload.data?.body || payload.notification?.body;
 
+
             return registration.showNotification(_data_title, {
+                actions: [
+                    {action: 'Accept', title: 'Accept'},
+                    {action: 'Reject', title: 'Reject'}
+                ],
                 body: _data_body,
                 icon: 'chicken.jpg',
                 requireInteraction: true,
@@ -33,7 +37,22 @@ messaging.setBackgroundMessageHandler(function (payload) {
             });
         });
 });
+
+function silentlyRejectClaims() {
+
+}
+
+function silentlyAcceptClaims() {
+}
+
 self.addEventListener('notificationclick', function (event) {
     event.notification.close();
-    clients.openWindow("https://poultryfarm.web.app");
+
+    if (event.action === 'Accept') {
+        silentlyAcceptClaims();
+    } else if (event.action === 'Reject') {
+        silentlyRejectClaims();
+    } else {
+        clients.openWindow("https://poultryfarm.web.app");
+    }
 });

@@ -57,30 +57,31 @@ export const sendTokenToServer = (token) => {
 
         const firestore = getFirestore();
         const firebase = getFirebase();
-        const batch = firestore.batch();
         const name = firebase.auth().currentUser.displayName;
 
         if (name) {
             const tokenRef = firestore.collection("notifyToken").doc(name).collection("tokens").doc(token);
-
-            batch.set(tokenRef, {
-                token: token,
-                submittedOn: firestore.FieldValue.serverTimestamp()
-            });
-
-            batch.commit().then(() => {
-                console.log("new token")
-                window.location.reload();
-            }).catch((err) => {
-                console.log("entered: ", err.message);
-                window.alert(`ERROR: ${err.message} If you are already subscribed to notifications, please uncheck box and click submit to proceed. If after doing this you are still seeing this error, contact admin for help`);
-                const load = document.getElementById("loading");
-                const submit = document.getElementById("login");
-                load.style.display = 'none';
-                submit.style.display = 'block';
-            });
+            tokenRef.get().then((doc) => {
+                if (doc.exists) {
+                    return null;
+                } else {
+                    tokenRef.set({
+                        token: token,
+                        submittedOn: firestore.FieldValue.serverTimestamp()
+                    }).then(() => {
+                        setPerformanceEnd('TOKEN_SEND_TIME');
+                        console.log("new token")
+                        window.location.reload();
+                    }).catch((err) => {
+                        console.log("entered: ", err.message);
+                        window.alert(`ERROR: ${err.message} If you are already subscribed to notifications, please uncheck box and click submit to proceed. If after doing this you are still seeing this error, contact admin for help`);
+                        const load = document.getElementById("loading");
+                        const submit = document.getElementById("login");
+                        load.style.display = 'none';
+                        submit.style.display = 'block';
+                    });
+                }
+            })
         }
-
-        setPerformanceEnd('TOKEN_SEND_TIME');
     }
 }

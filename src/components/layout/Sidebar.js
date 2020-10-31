@@ -17,7 +17,8 @@ const Sidebar = (props) => {
         const instance = () => {
             M.Sidenav.init(elem, {
                 edge: "left",
-                inDuration: 250
+                inDuration: 250,
+                outDuration: 250
             });
         }
         instance();
