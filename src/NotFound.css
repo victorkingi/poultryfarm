@@ -1,9 +1,0 @@
-.not-found > img {
-    object-fit: contain;
-    width: 70%;
-    max-height: 640px;
-}
-
-.not-found {
-    max-height: 640px;
-}
