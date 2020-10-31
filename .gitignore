@@ -28,3 +28,8 @@ yarn-error.log*
 /firestore.rules
 /firestore.indexes.json
 /.firebaserc
+./firebaserc
+/firestore-debug.log
+/pubsub-debug.log
+/remoteconfig.template.json
+/ui-debug.log
