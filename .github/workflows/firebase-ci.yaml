@@ -15,5 +15,5 @@ jobs:
         working-directory: poultryfarm/test
       - name: Run all the tests
         working-directory: poultryfarm/test
-        run: firebase emulators:exec 'npm test'
+        run: firebase emulators:exec --project poultry101-6b1ed 'npm test'
         
