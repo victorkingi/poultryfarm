@@ -13,6 +13,6 @@ jobs:
       - name: Install dependencies
         run: npm install
       - name: Run all the tests
-        working-directory: poultryfarm/test
+        working-directory: test/
         run: firebase emulators:exec --project poultry101-6b1ed 'npm test'
         
