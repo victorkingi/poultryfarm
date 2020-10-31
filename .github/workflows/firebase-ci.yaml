@@ -1,0 +1,19 @@
+on: [push, pull_request]
+jobs:
+  emulator_test:
+    name: Run all tests using Firebase Emulator Suite
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: "15"
+      - name: Install Firebase Emulator Suite
+        run: npm install -g firebase-tools
+      - name: Install dependencies
+        run: npm install
+        working-directory: poultryfarm/test
+      - name: Run all the tests
+        working-directory: poultryfarm/test
+        run: firebase emulators:exec 'npm test'
+        
