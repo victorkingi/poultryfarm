@@ -214,7 +214,6 @@ export const inputSell = (sales) => {
                         })
                     }).then(() => {
                         const batch = firestore.batch();
-                        const allThikaDocRef = firestore.collection("otherDebt").doc("TotalThikaFarmers");
                         if (sales.section === "Thika Farmers") {
                             firestore.collection("otherDebt").orderBy("date", "desc").get().then(function (snapshot) {
                                 if (snapshot.size === 0) {
@@ -244,10 +243,7 @@ export const inputSell = (sales) => {
                                     }
                                 }
                                 const newTotal = total * -1;
-                                batch.update(allThikaDocRef, {
-                                    total: firestore.FieldValue.increment(newTotal),
-                                    submittedOn: firestore.FieldValue.serverTimestamp()
-                                })
+
                                 batch.update(currentDocRef, {
                                     balance: firestore.FieldValue.increment(newTotal),
                                     submittedOn: firestore.FieldValue.serverTimestamp()
@@ -277,7 +273,7 @@ export const inputSell = (sales) => {
                     const error = "No previous sales doc found";
                     dispatch({type: 'INPUT_SALES_ERROR', error});
 
-                    window.alert("ERROR: ", error);
+                    window.alert(`ERROR: ${error}`);
                     load.style.display = 'none';
                     window.location = '/';
                     setPerformanceEnd('SELL_TIME');

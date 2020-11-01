@@ -21,7 +21,6 @@ const authReducer = (state = initState, action) => {
             } catch (e) {
                 console.log(e)
             }
-            window.location = '/';
             return {
                 ...state,
                 authError: null
