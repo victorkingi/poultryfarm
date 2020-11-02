@@ -1,4 +1,5 @@
 import {makeid} from "./salesAction";
+import {clearForm} from "../../scenes/Input Pages/scenes/Sales/components/Inputsell";
 
 function setPerformanceStart() {
     performance.mark('measurementStart');
@@ -81,6 +82,7 @@ export const sendMoney = (money) => {
                     dispatch({type: 'MONEY_SENT', money});
                     window.alert("Data submitted");
                     load.style.display = 'none';
+                    clearForm('send-money-form');
 
                 }).catch((err) => {
                 const error = err.message || err;
@@ -189,7 +191,6 @@ export const weClearedOurDebt = (details) => {
         const currentDocRef = firestore.collection("current").doc(fullName);
         const oweJeffDocRef = firestore.collection("oweJeff").doc(halfId);
         const otherDebtDocRef = firestore.collection("otherDebt").doc(details.id);
-        const thikaDebtDocRef = firestore.collection("otherDebt").doc("TotalThikaFarmers");
         const userLogRef = firestore.collection("userLogs").doc(user.uid).collection("logs").doc();
 
         firestore.runTransaction(function (transaction) {
@@ -198,7 +199,6 @@ export const weClearedOurDebt = (details) => {
                 return transaction.get(buyDocRef).then(function (buyDoc) {
                     return transaction.get(oweJeffDocRef).then(function (oweJeffDoc) {
                         return transaction.get(otherDebtDocRef).then(function (otherDebtDoc) {
-                            return transaction.get(thikaDebtDocRef).then(function (thikaDoc) {
                                 if (currentDoc.exists) {
                                     const currentData = currentDoc.data().balance;
                                     const final = parseInt(currentData) - parseInt(details.balance);
@@ -224,39 +224,14 @@ export const weClearedOurDebt = (details) => {
                                         } else {
                                             transaction.set(oweJeffDocRef, {
                                                 UsedOn: details.debtor,
-                                                balance: balance,
+                                                balance,
                                                 submittedBy: fullName,
                                                 submittedOn: firestore.FieldValue.serverTimestamp()
                                             });
                                         }
+                                        transaction.update(buyDocRef, {status: true});
 
-                                        if (buyDoc.exists && otherDebtDoc.exists && thikaDoc.exists) {
-                                            const dataDebt = parseInt(otherDebtDoc.data().balance);
-                                            const thikaTotal = parseInt(thikaDoc.data().total);
-                                            const final = thikaTotal - dataDebt;
-
-                                            if (final < 0) {
-                                                return Promise.reject("ERROR: Contact main admin for help!");
-                                            } else if (final === 0) {
-                                                transaction.delete(thikaDebtDocRef);
-
-                                                transaction.update(buyDocRef, {status: true});
-
-                                                transaction.delete(otherDebtDocRef);
-                                            } else {
-                                                transaction.update(buyDocRef, {status: true});
-
-                                                transaction.delete(otherDebtDocRef);
-
-                                                transaction.update(thikaDebtDocRef, {
-                                                    total: final,
-                                                    submittedOn: firestore.FieldValue.serverTimestamp()
-                                                })
-                                            }
-
-                                        } else {
-                                            return Promise.reject("ERROR: No document found");
-                                        }
+                                        transaction.delete(otherDebtDocRef);
 
                                         transaction.set(userLogRef, {
                                             event: 'balance partly cleared of ' + details.debtor,
@@ -292,7 +267,6 @@ export const weClearedOurDebt = (details) => {
                                 } else {
                                     return Promise.reject("ERROR: No document found");
                                 }
-                            })
                         })
                     })
                 })
@@ -520,6 +494,7 @@ export const borrowSomeMoney = (details) => {
             dispatch({type: 'BORROW_SUCCESS'});
             window.alert("Money successfully borrowed");
             load.style.display = 'none';
+            clearForm('borrow-form');
 
         }).catch((err) => {
             const error = err.message || err;

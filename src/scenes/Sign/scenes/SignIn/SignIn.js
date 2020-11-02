@@ -5,6 +5,10 @@ import M from "materialize-css";
 import {myFirebase} from "../../../../services/api/firebase configurations/fbConfig";
 import "./SignIn.css";
 import {signIn} from "../../../../services/actions/authActions";
+import {sendTokenToServer} from "../../../../services/actions/chickenAction";
+import {handleToken} from "../../../../services/actions/utilAction";
+
+let renderCount = 0;
 
 function ValidateEmail(mail) {
     if (/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(mail)) {
@@ -21,11 +25,13 @@ function SignIn(props) {
 
     useEffect(() => {
         M.AutoInit();
-        window.alert("NOTICE: This web app is still in development therefore you can only read data and not input and might encounter some error messages or crashes. This message will automatically disappear when beta testing is done");
 
-    }, []);
+        }, []);
 
     const handleChange = (e) => {
+        if (e.target.id === 'notify') {
+            renderCount += 1;
+        }
         setState({
             ...state,
             [e.target.id]: e.target.value
@@ -61,7 +67,7 @@ function SignIn(props) {
                 state.password
             ).then((user) => {
                 props.signIn(user);
-
+                handleToken(props.sendTokenToServer, renderCount);
             }).catch((err) => {
                 props.signIn(null, err);
                 submit.style.display = 'block';
@@ -182,7 +188,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        signIn: (creds) => dispatch(signIn(creds))
+        signIn: (creds) => dispatch(signIn(creds)),
+        sendTokenToServer: (token) => dispatch(sendTokenToServer(token))
     }
 }
 

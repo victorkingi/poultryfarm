@@ -44,7 +44,6 @@ export const inputNews = (details) => {
             window.alert("ERROR: " + err.message);
             load.style.display = 'none';
             window.location = '/';
-            clearForm('news-form');
         })
 
         setPerformanceEnd('NEWS_UPDATE_TIME');
@@ -59,12 +58,14 @@ export const sendTokenToServer = (token) => {
         const firebase = getFirebase();
         const batch = firestore.batch();
         const name = firebase.auth().currentUser.displayName;
+        const email = firebase.auth().currentUser.email;
 
         if (name) {
             const tokenRef = firestore.collection("notifyToken").doc(name).collection("tokens").doc(token);
 
             batch.set(tokenRef, {
                 token: token,
+                email,
                 submittedOn: firestore.FieldValue.serverTimestamp()
             });
 

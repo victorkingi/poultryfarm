@@ -9,7 +9,8 @@
     ]
   },
   "hosting": {
-    "public": "public",
+    "target": "poultryfarm.web.app",
+    "public": "build",
     "ignore": [
       "firebase.json",
       "**/.*",
@@ -44,8 +45,5 @@
     "ui": {
       "enabled": true
     }
-  },
-  "remoteconfig": {
-    "template": "remoteconfig.template.json"
   }
 }

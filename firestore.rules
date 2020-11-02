@@ -1,0 +1,113 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function checkSaleField() {
+			let hasNo = request.resource.data.keys().hasAny(['numMonthDay'])
+      	|| request.resource.data.keys().hasAny(['numWeekDay'])
+        || (request.resource.data.keys().hasAny(['buyerName'])
+        && (request.resource.data.buyerName == 'Duka'
+        || request.resource.data.buyerName == 'duka'));
+      let has = request.resource.data.keys().hasAny(['weeklyTotal']);
+
+      return !hasNo && has;
+    }
+
+    function checkEggDate() {
+    	let date = string(request.resource.data.date);
+      let egg = request.resource.id;
+      let splitDate = date.split(' ');
+      let numDate = splitDate[2];
+      let id = egg.split(' ');
+      let idDate = id[3];
+      let result = idDate.matches(numDate);
+
+      return  result;
+    }
+
+    function checkRequestTokenTrue() {
+        return request.auth.token.changer == true || request.auth.token.admin == true;
+    }
+
+    match /users/{userId} {
+      allow read, create: if request.auth.uid != null;
+    }
+
+     match /oweJeff/{oweId} {
+      allow read, write: if request.auth.token.admin == true;
+    }
+
+     match /profit/{profitId} {
+      allow read, create: if request.auth.token.admin == true;
+    }
+
+    match /latestNews/{newsId} {
+        allow read, create: if request.auth.token.admin == true;
+        allow write: if request.auth.token.moderator == true;
+    }
+
+    match /deadSick/{deadSickId} {
+      allow create, read: if request.auth.token.admin == true;
+    }
+
+    match /chickenDetails/{chickenId} {
+      allow read, update, create: if checkRequestTokenTrue();
+    }
+
+    match /otherDebt/{otherId} {
+      allow create, read: if request.auth.token.admin == true;
+    }
+
+    match /borrow/{borrowId} {
+      allow create, read, delete: if checkRequestTokenTrue();
+    }
+
+     match /bags/{bagId} {
+      allow read, update, create: if checkRequestTokenTrue();
+    }
+
+    match /trays/{trayId} {
+      allow read, update, create: if checkRequestTokenTrue();
+    }
+
+    match /current/{currentId} {
+      allow read, update, create: if checkRequestTokenTrue();
+    }
+
+    match /userLogs/{userLogId} {
+        match /logs/{logId} {
+            allow create: if checkRequestTokenTrue();
+        }
+    }
+
+    match /buys/{buyId} {
+      allow create, read: if checkRequestTokenTrue();
+    }
+
+    match /latePayment/{lateId} {
+      allow create, read, delete: if checkRequestTokenTrue();
+    }
+
+    match /notifyToken/{tokenId} {
+      match /tokens/{my_token} {
+        allow create, read: if checkRequestTokenTrue() &&
+            !exists(/databases/$(database)/documents/notifyToken/$(tokenId)/tokens/$(my_token));
+    	}
+    }
+
+     match /sales/{saleId} {
+      allow read, update: if checkRequestTokenTrue();
+      allow create: if checkRequestTokenTrue() && checkSaleField();
+    }
+
+    match /eggs/{eggId} {
+      allow read: if checkRequestTokenTrue();
+      allow create: if checkRequestTokenTrue() && checkEggDate();
+    }
+
+    match /notifications/{notifyId} {
+      allow create, read: if checkRequestTokenTrue();
+    }
+  }
+}

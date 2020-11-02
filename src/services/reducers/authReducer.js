@@ -21,7 +21,6 @@ const authReducer = (state = initState, action) => {
             } catch (e) {
                 console.log(e)
             }
-            window.location = '/';
             return {
                 ...state,
                 authError: null
@@ -65,6 +64,7 @@ const authReducer = (state = initState, action) => {
         case 'SIGN_OUT_SUCCESS':
             console.log('signed out');
             localStorage.clear();
+            window.reload();
             return state;
 
         case 'SIGNUP_SUCCESS':

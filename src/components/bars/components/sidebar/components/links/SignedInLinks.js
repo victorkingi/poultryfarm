@@ -66,16 +66,14 @@ const SignedInLinks = (props) => {
                     <li><NavLink to='/b'>Items Purchased</NavLink></li>
                     <li><NavLink to='/sd'>Sick / Dead Chicken</NavLink></li>
                     <li><NavLink to='/chart'>Charts</NavLink></li>
-
                     <li>
                         <div className="divider"/>
                     </li>
-
                     <li>
                         <span className="subheader">Exit</span>
                     </li>
-
                     <li><NavLink to='/signin' onClick={props.signOut}>Log Out</NavLink></li>
+
                 </ul>
             </div>
         );

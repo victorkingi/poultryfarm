@@ -1,5 +1,6 @@
 import {dateCheck, leapYear} from "./salesAction";
 import {setPerformanceEnd, setPerformanceStart} from "./moneyAction";
+import {clearForm} from "../../scenes/Input Pages/scenes/Sales/components/Inputsell";
 
 function isLastDay(dt) {
     const test = new Date(dt.getTime());
@@ -251,7 +252,7 @@ export const inputTray = (eggs) => {
             dispatch({type: 'INPUT_EGGS', eggs});
             window.alert("Data submitted");
             load.style.display = 'none';
-
+            clearForm('eggs-form');
             submit.style.display = 'block';
         }).catch((err) => {
             const error = err.message || err;

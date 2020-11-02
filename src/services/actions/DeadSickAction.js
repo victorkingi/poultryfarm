@@ -119,8 +119,6 @@ export const inputDeadSick = (deadSick, image) => {
                         window.alert(error);
                         load.style.display = 'none';
                         window.location = '/';
-                        clearForm('dead-sick-form');
-
                     });
                 })
         })
