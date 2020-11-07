@@ -21,7 +21,7 @@ function subscribeToTopics(myToken, myTopic) {
 }
 
 exports.checkForNewFCMTokens = functions.firestore.document('notifyToken/{docId}/tokens/{tokenId}')
-    .onCreate(async (snap, context) => {
+    .onCreate( (snap, context) => {
         const batch = admin.firestore().batch();
         const countDocRef = admin.firestore().collection('notifyToken')
             .doc(context.params.docId).collection('tokens').doc('count');
@@ -41,12 +41,12 @@ exports.checkForNewFCMTokens = functions.firestore.document('notifyToken/{docId}
             return console.error(err);
         });
 
-        await subscribeToTopics(snap.data().token, AllTopic);
+         subscribeToTopics(snap.data().token, AllTopic);
         return batch.commit();
     })
 
 exports.unsubscribeOnDelete = functions.firestore.document('notifyToken/{docId}/tokens/{tokenId}')
-    .onDelete(async (snap, context) => {
+    .onDelete( (snap, context) => {
         const batch = admin.firestore().batch();
         const countDocRef = admin.firestore().collection('notifyToken')
             .doc(context.params.docId).collection('tokens').doc('count');
@@ -66,7 +66,7 @@ exports.unsubscribeOnDelete = functions.firestore.document('notifyToken/{docId}/
             return console.error(err);
         });
 
-        await unsubscribeFromTopics(snap.data().token, AllTopic);
+         unsubscribeFromTopics(snap.data().token, AllTopic);
 
         return batch.commit();
     });

@@ -32,6 +32,7 @@ exports.updateBirdAge = functions.pubsub.schedule('every monday 04:00').onRun(((
         .catch((err) => {
             return console.error("chicken age error, ", err)
         });
+    return null;
 }))
 
 
@@ -83,6 +84,7 @@ exports.thikaFarmersDebt = functions.firestore.document('otherDebt/{debtId}')
         } else {
             amountCleared = parseInt(data.balance);
         }
+        
         batch.update(totalDoc, {
             submittedOn: admin.firestore.FieldValue.serverTimestamp(),
             total: admin.firestore.FieldValue.increment(amountCleared)

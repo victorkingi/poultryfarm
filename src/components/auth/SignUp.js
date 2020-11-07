@@ -1,9 +1,9 @@
 import React, {useMemo, useState} from "react";
 import {Redirect} from "react-router-dom";
 import {connect} from "react-redux";
-import {signUp} from "../../store/actions/authActions";
-import {sendTokenToServer} from "../../store/actions/chickenAction";
-import {handleToken} from "../dashboard/Dashboard";
+import {signUp} from "../../services/actions/authActions";
+import {sendTokenToServer} from "../../services/actions/chickenAction";
+import {handleToken} from "../../services/actions/utilAction";
 
 
 function SignUp(props) {

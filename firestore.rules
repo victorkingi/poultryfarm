@@ -4,7 +4,7 @@ service cloud.firestore {
   match /databases/{database}/documents {
 
     function checkSaleField() {
-			let hasNo = request.resource.data.keys().hasAny(['numMonthDay'])
+	  let hasNo = request.resource.data.keys().hasAny(['numMonthDay'])
       	|| request.resource.data.keys().hasAny(['numWeekDay'])
         || (request.resource.data.keys().hasAny(['buyerName'])
         && (request.resource.data.buyerName == 'Duka'
@@ -31,7 +31,8 @@ service cloud.firestore {
     }
 
     match /users/{userId} {
-      allow read, create: if request.auth.uid != null;
+      allow create: if request.auth.uid != null && !exists(/databases/$(database)/documents/users/$(userId));
+      allow read: if request.auth.uid == userId;
     }
 
      match /oweJeff/{oweId} {
@@ -39,12 +40,12 @@ service cloud.firestore {
     }
 
      match /profit/{profitId} {
-      allow read, create: if request.auth.token.admin == true;
+      allow read: if request.auth.token.admin == true;
     }
 
     match /latestNews/{newsId} {
-        allow read, create: if request.auth.token.admin == true;
-        allow write: if request.auth.token.moderator == true;
+        allow read: if request.auth.token.admin == true;
+        allow update: if request.auth.token.moderator == true;
     }
 
     match /deadSick/{deadSickId} {
@@ -52,7 +53,7 @@ service cloud.firestore {
     }
 
     match /chickenDetails/{chickenId} {
-      allow read, update, create: if checkRequestTokenTrue();
+      allow read, update: if checkRequestTokenTrue();
     }
 
     match /otherDebt/{otherId} {
@@ -64,15 +65,15 @@ service cloud.firestore {
     }
 
      match /bags/{bagId} {
-      allow read, update, create: if checkRequestTokenTrue();
+      allow read, update: if checkRequestTokenTrue();
     }
 
     match /trays/{trayId} {
-      allow read, update, create: if checkRequestTokenTrue();
+      allow read, update: if checkRequestTokenTrue();
     }
 
     match /current/{currentId} {
-      allow read, update, create: if checkRequestTokenTrue();
+      allow read, update: if checkRequestTokenTrue();
     }
 
     match /userLogs/{userLogId} {
@@ -82,7 +83,7 @@ service cloud.firestore {
     }
 
     match /buys/{buyId} {
-      allow create, read: if checkRequestTokenTrue();
+      allow create, read, update: if checkRequestTokenTrue();
     }
 
     match /latePayment/{lateId} {
@@ -91,7 +92,7 @@ service cloud.firestore {
 
     match /notifyToken/{tokenId} {
       match /tokens/{my_token} {
-        allow create, read: if checkRequestTokenTrue() &&
+        allow create: if checkRequestTokenTrue() &&
             !exists(/databases/$(database)/documents/notifyToken/$(tokenId)/tokens/$(my_token));
     	}
     }

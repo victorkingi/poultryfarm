@@ -1,11 +1,11 @@
 import React, {useEffect, useMemo, useState} from "react";
 import {connect} from 'react-redux';
-import {signIn} from "../../store/actions/authActions";
+import {signIn} from "../../services/actions/authActions";
 import {Redirect} from 'react-router-dom';
 import M from "materialize-css";
-import {handleToken} from "../dashboard/Dashboard";
-import {sendTokenToServer} from "../../store/actions/chickenAction";
-import {myFirebase} from "../../config/fbConfig";
+import {handleToken} from "../../services/actions/utilAction";
+import {sendTokenToServer} from "../../services/actions/chickenAction";
+import {myFirebase} from "../../services/api/firebase configurations/fbConfig";
 import "./SignIn.css";
 
 let renderCount = 0;

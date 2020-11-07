@@ -4,6 +4,7 @@ import 'firebase/auth';
 import 'firebase/functions';
 import 'firebase/messaging';
 import 'firebase/performance';
+import 'firebase/storage';
 
 let firebaseConfig = {
     apiKey: "AIzaSyD3tzp-dWkeucSmG8dME_J7Zlxj9vm1hvw",
@@ -18,13 +19,15 @@ let firebaseConfig = {
 // Initialize Firebase
 
 firebase.initializeApp(firebaseConfig);
-firebase.functions();
 firebase.firestore();
+
+firebase.functions();
 const myFirebase = firebase;
 const messaging = firebase.messaging();
 const perf = firebase.performance();
+const storage = firebase.storage();
 
 messaging.usePublicVapidKey("BAKZFaJ-BRXiOD_-PIzqLcqwXOjqx0j5vEqW8CWYWfB9T7v7YK_o5fzR_LPi6LNx8U31YXxxPWHx_VBUQ6nmpJM");
 
-export {myFirebase, messaging, perf};
+export {myFirebase, messaging, perf, storage};
 

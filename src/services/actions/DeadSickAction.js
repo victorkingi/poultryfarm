@@ -1,12 +1,12 @@
 import {dateCheck, leapYear} from "./salesAction";
 import {setPerformanceEnd, setPerformanceStart} from "./moneyAction";
-import {clearForm} from "../../scenes/Input Pages/scenes/Sales/components/Inputsell";
+import {storage} from "../api/firebase configurations/fbConfig";
 
 export const inputDeadSick = (deadSick, image) => {
     return (dispatch, getState, {getFirebase, getFirestore}) => {
         setPerformanceStart();
-        //make async call to database
 
+        //make async call to database
         const firestore = getFirestore();
         const profile = getState().firebase.profile;
         const firebase = getFirebase();
@@ -26,32 +26,57 @@ export const inputDeadSick = (deadSick, image) => {
         const userLogRef = firestore.collection("userLogs").doc(user.uid).collection("logs").doc();
         const chickenDocRef = firestore.collection("chickenDetails").doc("2020");
         const load = document.getElementById("loading-dead-sick");
+        const submit = document.getElementById("submit-btn-dead-sick");
 
         const dateChecks = dateCheck(enteredMonth, enteredDate, isLeap);
 
         if (dateChecks) {
             const error = "ERROR: Impossible date entered!";
-            dispatch({type: 'INPUT_BUYING_ERROR', error});
-
+            dispatch({type: 'UPLOAD_ERROR', error});
             window.alert(error);
+            submit.style.display = 'block';
+            load.style.display = 'none';
+            return new Error("ERROR: Impossible date entered!");
+        }
+        if (!image) {
+            const error = "ERROR: No Image given!";
+            dispatch({type: 'UPLOAD_ERROR', error});
+            window.alert(error);
+            submit.style.display = 'block';
+            load.style.display = 'none';
             return new Error("ERROR: Impossible date entered!");
         }
 
-        const storageRef = firebase.storage().ref();
+        const storageRef = storage.ref();
 
-        const uploadImagesRef = storageRef.child(`deadSick/${image.name}`);
+        const uploadImagesRef = storageRef.child(`deadSick/${image?.name}`);
+        const metadata = {
+            section
+        }
 
-        const uploadTask = uploadImagesRef.put(image);
+        const uploadTask = uploadImagesRef.put(image, metadata);
 
-
-        uploadTask.then(function (snapshot) {
+        uploadTask.on('state_changed',
+            function (snapshot) {
             const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            console.log(progress + " %");
-        }).then(() => {
-            firebase.storage().ref()
-                .child(`deadSick/${image.name}`)
-                .getDownloadURL()
-                .then((url) => {
+            console.log("Upload is " + progress + " % done");
+        }, function (error) {
+            switch (error.code) {
+                case 'storage/unauthorized':
+                    window.alert("ERROR: You don't have permission to perform this task!");
+                    break;
+
+                case 'storage/canceled':
+                    window.alert("Upload successfully cancelled!");
+                    break;
+                case 'storage/unknown':
+                    window.alert("ERROR: Unknown error occurred!");
+                    break;
+                default:
+                }
+            },
+            function () {
+                uploadTask.snapshot.ref.getDownloadURL().then(function(url) {
                     return firestore.runTransaction(function (transaction) {
                         return transaction.get(deadSickDocRef).then(function (deadSickDoc) {
                             return transaction.get(chickenDocRef).then(function (chickenDoc) {
@@ -110,18 +135,18 @@ export const inputDeadSick = (deadSick, image) => {
                         dispatch({type: 'UPLOAD_DONE'});
                         window.alert("Data submitted");
                         load.style.display = 'none';
-                        clearForm('dead-sick-form');
+                        window.location.reload();
 
                     }).catch((err) => {
                         const error = err.message || err;
-                        dispatch({type: 'INPUT_SALES_ERROR', error});
+                        dispatch({type: 'UPLOAD_ERROR', error});
 
                         window.alert(error);
                         load.style.display = 'none';
                         window.location = '/';
                     });
-                })
-        })
+                });
+            });
         setPerformanceEnd('DEAD_SICK_TIME');
     }
 }

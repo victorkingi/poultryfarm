@@ -12,6 +12,7 @@
     ]
   },
   "dependencies": {
+    "@google-cloud/storage": "^5.4.0",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
@@ -55,5 +56,5 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
-  "version": "2.4.4"
+  "version": "2.4.5"
 }
