@@ -84,7 +84,7 @@ exports.thikaFarmersDebt = functions.firestore.document('otherDebt/{debtId}')
         } else {
             amountCleared = parseInt(data.balance);
         }
-        
+
         batch.update(totalDoc, {
             submittedOn: admin.firestore.FieldValue.serverTimestamp(),
             total: admin.firestore.FieldValue.increment(amountCleared)
