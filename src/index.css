@@ -5,7 +5,7 @@ body {
     sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background: url("https://firebasestorage.googleapis.com/v0/b/poultry101-6b1ed.appspot.com/o/home%2FE6ZglU.jpg?alt=media&token=691cded2-856c-41c6-8213-ed23c0883ef3") scroll;
+    background: url("https://firebasestorage.googleapis.com/v0/b/poultry101-6b1ed.appspot.com/o/home%2FE6ZglU.jpg?alt=media&token=691cded2-856c-41c6-8213-ed23c0883ef3") scroll !important;
 }
 
 code {
