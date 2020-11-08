@@ -47,3 +47,5 @@ yarn-error.log*
 /functions/package-lock.json
 /functions/src/scheduled.js
 /functions/src/utils.js
+/functions/src/backup.js
+/functions/src/helper.js

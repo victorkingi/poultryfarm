@@ -61,6 +61,7 @@ function Inputmoney(props) {
                     <option value="Victor Kingi">Victor</option>
                     <option value="Purity Mukomaua">Purity</option>
                     <option value="Jeff Karue">Jeff</option>
+                    <option value="Babra Kingi">Wanja</option>
                     <option value="Anne Kingi">Anne</option>
                     <option value="Bank Account">Bank</option>
                 </select>
