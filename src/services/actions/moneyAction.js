@@ -234,7 +234,7 @@ export const weClearedOurDebt = (details) => {
                                         transaction.delete(otherDebtDocRef);
 
                                         transaction.set(userLogRef, {
-                                            event: 'balance partly cleared of ' + details.debtor,
+                                            event: `balance of ${details.debtor} cleared by jeff so we now owe jeff`,
                                             amount: balance,
                                             submittedBy: fullName,
                                             submittedOn: firestore.FieldValue.serverTimestamp()
