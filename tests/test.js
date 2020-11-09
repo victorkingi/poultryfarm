@@ -1704,41 +1704,6 @@ describe("Unit Tests For Firestore security rules", () => {
             await firebase.assertFails(testDoc.delete());
         });
     });
-
-    describe("test 2", () => {
-        it("Assert users collection is safe", async () => {
-
-
-            //create tests
-            // await firebase.assertSucceeds(testDoc.set({foo: "bar"}));
-            await firebase.assertSucceeds(testDocChanger.set({foo: "bar"}));
-            //     await firebase.assertSucceeds(testDocModerator.set({foo: "bar"}));
-            //     await firebase.assertSucceeds(testDoc.set({foo: "bar"}));
-            // await firebase.assertFails(testDocNoAuth.set({foo: "bar"}));
-
-            //read tests
-            //   await firebase.assertSucceeds(testDoc.get());
-            //    await firebase.assertSucceeds(testDocChanger.get());
-            //  await firebase.assertSucceeds(testDocModerator.get());
-            //   await firebase.assertSucceeds(testDoc.get());
-            // await firebase.assertFails(testDocNoAuth.get());
-
-            //update tests
-            /*   await firebase.assertFails(testDoc.update({foo: 'faz'}));
-               await firebase.assertFails(testDocChanger.update({foo: 'faz'}));
-               await firebase.assertFails(testDocModerator.update({foo: 'faz'}));
-               await firebase.assertFails(testDoc.update({foo: 'faz'}));
-               await firebase.assertFails(testDocNoAuth.update({foo: "faz"}));
-
-               //delete tests
-               await firebase.assertFails(testDoc.delete());
-               await firebase.assertFails(testDocChanger.delete());
-               await firebase.assertFails(testDocModerator.delete());
-               await firebase.assertFails(testDoc.delete());
-               await firebase.assertFails(testDocNoAuth.delete()); */
-
-        });
-    })
 });
 
 after(async() => {
