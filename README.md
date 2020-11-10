@@ -10,6 +10,7 @@ Demo version available at [poultry farming website demo](https://poultryfarmdumm
 The demo version lacks **most** of the newer awesome functionality found in the `src` directory e.g:
 1. Graphs for monthly laying percentage for each chicken section.
 1. Weekly profit and loss on main page.
+1. Optimized queries to backend for efficient and cleaner code.
 
 
 The demo doesn't include cloud functions since it is hosted on firebase spark plan. `functions` folder will not be pushed to this repo as of secruity reasons but the cloud functions are:
