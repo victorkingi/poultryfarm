@@ -1,13 +1,15 @@
-## Poultry data keeping web app
+# Poultry data keeping web app
 
-# Current To-do
+###### Current To-do
 Implement an undo algorithm when a write succeeds but the user gave a wrong value.
+
+## Overview
 
 Demo version available at [poultry farming website demo](https://poultryfarmdummy.web.app/).
 
 The demo version lacks **most** of the newer awesome functionality found in the `src` directory e.g:
-1. Graphs for monthly laying percentage for each chicken section
-1. Weekly profit and loss on main page
+1. Graphs for monthly laying percentage for each chicken section.
+1. Weekly profit and loss on main page.
 
 
 The demo doesn't include cloud functions since it is hosted on firebase spark plan. `functions` folder will not be pushed to this repo as of secruity reasons but the cloud functions are:
