@@ -78,22 +78,6 @@ describe("Unit Tests For Firestore security rules", () => {
 
            });
 
-           it("Assert Latest News collection is safe", async () => {
-               const testDoc = dbAdmin.collection("latestNews").doc("user_xyz");
-
-               //create tests
-               await firebase.assertFails(testDoc.set({foo: "bar"}));
-
-               //read tests
-               await firebase.assertSucceeds(testDoc.get());
-
-               //update tests
-               await firebase.assertFails(testDoc.update({foo: 'faz'}));
-
-               //delete tests
-               await firebase.assertFails(testDoc.delete());
-           });
-
            it("Assert deadSick collection is safe", async () => {
                const testDoc = dbAdmin.collection("deadSick").doc("user_xyz");
 
@@ -414,22 +398,6 @@ describe("Unit Tests For Firestore security rules", () => {
 
         });
 
-        it("Assert Latest News collection is safe", async () => {
-            const testDoc = dbChanger.collection("latestNews").doc("user_xyz");
-
-            //create tests
-            await firebase.assertFails(testDoc.set({foo: "bar"}));
-
-            //read tests
-            await firebase.assertFails(testDoc.get());
-
-            //update tests
-            await firebase.assertFails(testDoc.update({foo: 'faz'}));
-
-            //delete tests
-            await firebase.assertFails(testDoc.delete());
-        });
-
         it("Assert deadSick collection is safe", async () => {
             const testDoc = dbChanger.collection("deadSick").doc("user_xyz");
 
@@ -747,22 +715,6 @@ describe("Unit Tests For Firestore security rules", () => {
             //delete tests
             await firebase.assertFails(testDoc.delete());
 
-        });
-
-        it("Assert Latest News collection is safe", async () => {
-            const testDoc = dbModerator.collection("latestNews").doc("user_xyz");
-
-            //create tests
-            await firebase.assertFails(testDoc.set({foo: "bar"}));
-
-            //read tests
-            await firebase.assertFails(testDoc.get());
-
-            //update tests
-            await firebase.assertSucceeds(testDoc.update({foo: 'faz'}));
-
-            //delete tests
-            await firebase.assertFails(testDoc.delete());
         });
 
         it("Assert deadSick collection is safe", async () => {
@@ -1085,22 +1037,6 @@ describe("Unit Tests For Firestore security rules", () => {
 
         });
 
-        it("Assert Latest News collection is safe", async () => {
-            const testDoc = db.collection("latestNews").doc("user_xyz");
-
-            //create tests
-            await firebase.assertFails(testDoc.set({foo: "bar"}));
-
-            //read tests
-            await firebase.assertFails(testDoc.get());
-
-            //update tests
-            await firebase.assertFails(testDoc.update({foo: 'faz'}));
-
-            //delete tests
-            await firebase.assertFails(testDoc.delete());
-        });
-
         it("Assert deadSick collection is safe", async () => {
             const testDoc = db.collection("deadSick").doc("user_xyz");
 
@@ -1419,22 +1355,6 @@ describe("Unit Tests For Firestore security rules", () => {
             //delete tests
             await firebase.assertFails(testDoc.delete());
 
-        });
-
-        it("Assert Latest News collection is safe", async () => {
-            const testDoc = dbNoAuth.collection("latestNews").doc("user_xyz");
-
-            //create tests
-            await firebase.assertFails(testDoc.set({foo: "bar"}));
-
-            //read tests
-            await firebase.assertFails(testDoc.get());
-
-            //update tests
-            await firebase.assertFails(testDoc.update({foo: 'faz'}));
-
-            //delete tests
-            await firebase.assertFails(testDoc.delete());
         });
 
         it("Assert deadSick collection is safe", async () => {

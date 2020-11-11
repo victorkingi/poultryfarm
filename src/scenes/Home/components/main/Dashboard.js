@@ -9,7 +9,6 @@ import BagsList from "../bags in store/components/list/BagsList";
 import TrayList from "../trays in store/components/list/TrayList";
 import Current from "../current balance/components/balance/Current";
 import ChickenDetails from "../chicken data/ChickenDetails";
-import News from "../latest news/components/news/News";
 import Notifications from "../notifications/components/notifications/Notifications";
 import {setPerformanceEnd, setPerformanceStart} from "../../../../services/actions/moneyAction";
 
@@ -52,11 +51,11 @@ function Dashboard(props) {
     } else {
         if (admin) {
             const {
-                news, chicken, bags,
+                chicken, bags,
                 trays, debt
             } = props;
 
-            if (bags && trays && debt && news) {
+            if (bags && trays && debt) {
                 return (
                     <div className="dashboard container">
                         <div className="row">
@@ -66,10 +65,6 @@ function Dashboard(props) {
 
                             <div className="col s12 m5 offset-m1">
                                 <Notifications notifications={notifications}/>
-                            </div>
-
-                            <div className="col s12 m5 offset-m1 pointer">
-                                <News news={news}/>
                             </div>
 
                             <div className="col s12 m5 offset-m1">
@@ -151,8 +146,7 @@ const mapStateToProps = (state) => {
         changer: state.auth.changer,
         notifications: state.firestore.ordered.notifications,
         trays: state.firestore.ordered.trays,
-        bags: state.firestore.ordered.bags,
-        news: state.firestore.ordered.latestNews,
+        bags: state.firestore.ordered.bags
     }
 }
 
@@ -166,7 +160,6 @@ export default compose(
         {collection: 'chickenDetails'},
         {collection: 'oweJeff', limit: 4, orderBy: ['balance', 'desc']},
         {collection: 'trays', limit: 1, orderBy: ['number', 'desc']},
-        {collection: 'bags', limit: 1, orderBy: ['number', 'desc']},
-        {collection: 'latestNews', limit: 1, orderBy: ['time', 'desc']},
+        {collection: 'bags', limit: 1, orderBy: ['number', 'desc']}
     ])
 )(Dashboard)

@@ -21,7 +21,6 @@ import Sidebar from "./components/bars/components/sidebar/Sidebar";
 import {toast, ToastContainer} from "react-toastify";
 import InputDeadSick from "./scenes/Input Pages/scenes/Chicken Died And Sick/components/InputDeadSick";
 import Inputsell from "./scenes/Input Pages/scenes/Sales/components/Inputsell";
-import InputNews from "./scenes/Input Pages/scenes/News/components/InputNews";
 import Inputbuy from "./scenes/Input Pages/scenes/Purchases/components/Inputbuy";
 import Inputeggs from "./scenes/Input Pages/scenes/Collecting Eggs/components/Inputeggs";
 import Inputmoney from "./scenes/Input Pages/scenes/Sending Money/components/Inputmoney";
@@ -95,7 +94,6 @@ function App() {
             <Route path='/signin' component={SignIn}/>
             <Route path='/signup' component={SignUp}/>
             <Route path='/sales' component={Inputsell}/>
-            <Route path='/news' component={InputNews}/>
             <Route path='/buy' component={Inputbuy}/>
             <Route path='/eggs' component={Inputeggs}/>
             <Route path='/send' component={Inputmoney}/>
