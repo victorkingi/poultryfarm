@@ -5,13 +5,7 @@ Implement an undo algorithm when a write succeeds but the user gave a wrong valu
 
 ## Overview
 
-Demo version available at [poultry farming website demo](https://poultryfarmdummy.web.app/).
-
-The demo version lacks **most** of the newer awesome functionality found in the `src` directory e.g:
-1. Graphs for monthly laying percentage for each chicken section.
-1. Weekly profit and loss on main page.
-1. Optimized queries to backend for efficient and cleaner code.
-
+Demo version available at [poultry farming website demo](https://pdummy.web.app/).
 
 The demo doesn't include cloud functions since it is hosted on firebase spark plan. `functions` folder will not be pushed to this repo as of secruity reasons but the cloud functions are:
 1. **Pub/Sub scheduled functions**
@@ -19,7 +13,7 @@ The demo doesn't include cloud functions since it is hosted on firebase spark pl
     1. every sunday at 0100hrs CST Time zone, a full backup of the firestore database is done where all collections are exported to an archive.
     1. calculate weekly and monthly profit run every sunday at 0100hrs CST Time zone for weekly profit and 1st of every month for monthly profit.
     1. calculate number of bags of feeds left in the farm every 24hrs and send push notification to farmer if less than 3.
-    1. calculate total debt 1st of every month.
+    1. calculate total debt 1st of every month and send push notification to `admin` users.
 1. **Firestore Triggers**
 
     1. On submitting a purchase or sale a push notification is sent to every user subscribed to the topic `ADMIN_USERS`
