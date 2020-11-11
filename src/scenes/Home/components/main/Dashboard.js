@@ -30,7 +30,7 @@ function time() {
 }
 
 function Dashboard(props) {
-    const {auth, admin, moderator, changer, balance, notifications} = props;
+    const {auth, admin, changer, balance, notifications} = props;
     const firstName = auth?.displayName?.substring(0, auth?.displayName?.lastIndexOf(' '));
 
     const user = useMemo(() => {
@@ -55,7 +55,7 @@ function Dashboard(props) {
                 trays, debt
             } = props;
 
-            if (bags && trays && debt) {
+            if (bags) {
                 return (
                     <div className="dashboard container">
                         <div className="row">
@@ -97,12 +97,8 @@ function Dashboard(props) {
                     </div>
                 );
             }
-        } else if (moderator) {
-            return (
-                <div/>
-            )
         } else if (changer) {
-            if (notifications && balance) {
+            if (balance) {
                 return (
                     <div className="dashboard container">
 
@@ -142,7 +138,6 @@ const mapStateToProps = (state) => {
         balance: state.firestore.ordered.current,
         auth: state.firebase.auth,
         admin: state.auth.admin,
-        moderator: state.auth.moderator,
         changer: state.auth.changer,
         notifications: state.firestore.ordered.notifications,
         trays: state.firestore.ordered.trays,

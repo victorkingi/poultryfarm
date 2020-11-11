@@ -49,3 +49,4 @@ yarn-error.log*
 /functions/src/utils.js
 /functions/src/backup.js
 /functions/src/helper.js
+/functions/src/rollbackWrites.js
