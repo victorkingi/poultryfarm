@@ -82,6 +82,7 @@ export const sendMoney = (money) => {
                     dispatch({type: 'MONEY_SENT', money});
                     window.alert("Data submitted");
                     load.style.display = 'none';
+                    submit.style.display = 'block';
                     clearForm('send-money-form');
 
                 }).catch((err) => {
