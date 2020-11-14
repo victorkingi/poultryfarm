@@ -1,7 +1,7 @@
 import React from "react";
 import moment from "moment";
 
-const Notifications = (props) => {
+const Notifications = function(props) {
     const {notifications} = props;
 
     if (notifications) {
@@ -12,7 +12,7 @@ const Notifications = (props) => {
                         <span className="card-title">Notifications</span>
                         <ul className="notifications">
                             {notifications && notifications.map(
-                                item => {
+                                function(item) {
                                     return (
                                         <li key={item.id}>
                                         <span className="pink-text">

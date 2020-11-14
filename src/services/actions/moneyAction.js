@@ -123,7 +123,7 @@ export const sendMoney = (money) => {
 
 //if a customer has taken trays but hasn't paid, hasPaidLate fires
 export const hasPaidLate = (details) => {
-    return (dispatch, getState, {getFirebase, getFirestore}) => {
+    return function (dispatch, getState, {getFirebase, getFirestore}){
         setPerformanceStart();
 
         //make async call to database

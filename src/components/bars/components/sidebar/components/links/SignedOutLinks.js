@@ -1,7 +1,7 @@
 import React from 'react';
 import {NavLink} from 'react-router-dom'
 
-const SignedOutLinks = () => {
+const SignedOutLinks = function(){
     return (
         <ul>
             <li><NavLink to='/signup'>Sign Up</NavLink></li>

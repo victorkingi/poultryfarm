@@ -1,6 +1,6 @@
 const initState = {}
 
-const eggsReducer = (state = initState, action) => {
+const eggsReducer = function(state = initState, action){
     switch (action.type) {
         case 'INPUT_EGGS':
             console.log('eggs data added', action.eggs);

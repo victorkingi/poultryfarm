@@ -6,15 +6,15 @@ import M from "materialize-css/dist/js/materialize.min.js";
 import "materialize-css/dist/css/materialize.min.css";
 import "./SideBar.css";
 
-const Sidebar = (props) => {
+const Sidebar = function(props) {
     function componentDidMount() {
 
     }
 
-    useEffect(() => {
+    useEffect(function() {
         M.AutoInit();
         const elem = document.querySelector(".sidenav");
-        const instance = () => {
+        const instance = function(){
             M.Sidenav.init(elem, {
                 edge: "left",
                 inDuration: 250,
@@ -44,7 +44,7 @@ const Sidebar = (props) => {
 
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = function(state) {
     return {
         auth: state.firebase.auth,
         profile: state.firebase.profile,

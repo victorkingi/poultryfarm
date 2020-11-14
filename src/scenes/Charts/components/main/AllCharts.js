@@ -12,7 +12,7 @@ import EachSection from "../eggs collected/components/each section eggs/EachSect
 
 function AllCharts(props) {
     const {eggs, profit} = props;
-    const user = useMemo(() => {
+    const user = useMemo(function () {
         const __user = localStorage.getItem('user') || false;
 
         return {__user};
@@ -65,7 +65,7 @@ function AllCharts(props) {
     }
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = function (state) {
     return {
         eggs: state.firestore.ordered.eggs,
         profit: state.firestore.ordered.profit

@@ -2,14 +2,14 @@ import React from "react";
 import sample from "../../../../../../images/noProductBanner.jpg";
 import DebtSummary from "../summary/DebtSummary";
 
-const DebtList = ({debt}) => {
+const DebtList = function ({debt}) {
 
     if (debt) {
         if (debt['length'] > 0) {
 
             return (
                 <div className="project-list section">
-                    {debt && debt.map(item => {
+                    {debt && debt.map(function(item){
                         return (
                             <DebtSummary item={item} key={item.id}/>
                         );

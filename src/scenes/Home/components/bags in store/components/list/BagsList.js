@@ -2,13 +2,13 @@ import React from "react";
 import sample from "../../../../../../images/noProductBanner.jpg";
 import BagsSummary from "../summary/BagsSummary";
 
-const BagsList = (bags) => {
+const BagsList = function(bags) {
 
     if (bags.bags) {
         if (bags.bags['length'] > 0) {
             return (
                 <div className="project-list section">
-                    {bags.bags && bags.bags.map(item => {
+                    {bags.bags && bags.bags.map(function(item) {
                         return (
                             <BagsSummary item={item} key={item.id}/>
                         );

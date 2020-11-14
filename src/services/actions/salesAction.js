@@ -3,7 +3,7 @@ import {clearForm} from "../../scenes/Input Pages/scenes/Sales/components/Inputs
 
 function makeid(l) {
     let text = "";
-    const char_list = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    const char_list = ' !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~';
     for (let i = 0; i < l; i++) {
         text += char_list.charAt(Math.floor(Math.random() * char_list.length));
     }

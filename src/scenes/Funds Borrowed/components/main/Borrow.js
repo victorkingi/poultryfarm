@@ -10,7 +10,7 @@ setPerformanceStart();
 
 function Borrow(props) {
     const {borrow} = props;
-    const user = useMemo(() => {
+    const user = useMemo(function () {
         const __user = localStorage.getItem('user') || false;
 
         return {__user};
@@ -34,7 +34,7 @@ function Borrow(props) {
     );
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = function (state) {
     return {
         borrow: state.firestore.ordered.borrow
     }

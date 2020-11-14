@@ -1,7 +1,7 @@
 import {setPerformanceEnd, setPerformanceStart} from "./moneyAction";
 
-export const signIn = (user, err) => {
-    return (dispatch) => {
+export const signIn = function(user, err) {
+    return function(dispatch) {
         if (user === null) {
             dispatch({type: 'LOGIN_ERROR', err})
         } else {
@@ -11,15 +11,15 @@ export const signIn = (user, err) => {
     }
 }
 
-export const checkClaims = () => {
-    return (dispatch, getState, {getFirebase}) => {
+export const checkClaims = function() {
+    return function(dispatch, getState, {getFirebase}) {
         setPerformanceStart();
         const firebase = getFirebase();
 
-        firebase.auth().onAuthStateChanged(user => {
+        firebase.auth().onAuthStateChanged(function(user) {
             if (user) {
 
-                user.getIdTokenResult().then(idToken => {
+                user.getIdTokenResult().then(function(idToken) {
 
                     if (idToken.claims.admin) {
                         dispatch({type: 'ADMIN_ACCESS'})
@@ -30,7 +30,7 @@ export const checkClaims = () => {
                     } else {
                         dispatch({type: 'ADMIN_DENIED'})
                     }
-                }).catch(err => {
+                }).catch(function(err){
                     dispatch({type: 'ADMIN_ERROR', err})
                 })
             }
@@ -41,15 +41,15 @@ export const checkClaims = () => {
 }
 
 
-export const signOut = () => {
-    return (dispatch, getState, {getFirebase}) => {
+export const signOut = function(){
+    return function(dispatch, getState, {getFirebase}) {
         setPerformanceStart();
         const firebase = getFirebase();
 
         firebase.auth().signOut()
-            .then(() => {
+            .then(function() {
                 dispatch({type: 'SIGN_OUT_SUCCESS'})
-            }).catch((err) => {
+            }).catch(function(err) {
             dispatch({type: 'SIGN_OUT_ERROR', err})
         });
 
@@ -57,15 +57,15 @@ export const signOut = () => {
     }
 }
 
-export const signUp = (newUser) => {
-    return (dispatch, getState, {getFirebase, getFirestore}) => {
+export const signUp = function(newUser) {
+    return function(dispatch, getState, {getFirebase, getFirestore}){
         setPerformanceStart();
         const firebase = getFirebase();
         const firestore = getFirestore();
 
         firebase.auth().createUserWithEmailAndPassword(newUser.email, newUser.password)
-            .then((resp) => {
-                firebase.auth().onAuthStateChanged(user => {
+            .then(function(resp) {
+                firebase.auth().onAuthStateChanged(function(user) {
                     if (user) {
                         if (!user.displayName) {
                             user.updateProfile({

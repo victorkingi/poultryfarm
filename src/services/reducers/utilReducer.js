@@ -2,7 +2,7 @@ export const initialState = {
     hide: false
 }
 
-const utilReducer = (state = initialState, action) => {
+const utilReducer = function (state = initialState, action) {
     switch (action.type) {
         case 'HIDE_BARS':
             return {

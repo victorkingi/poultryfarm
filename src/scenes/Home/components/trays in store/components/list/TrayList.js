@@ -2,13 +2,13 @@ import React from "react";
 import sample from "../../../../../../images/noProductBanner.jpg";
 import TraySummary from "../summary/TraySummary";
 
-const TrayList = (trays) => {
+const TrayList = function(trays){
 
     if (trays.trays) {
         if (trays.trays['length'] > 0) {
             return (
                 <div className="project-list section">
-                    {trays.trays && trays.trays.map(item => {
+                    {trays.trays && trays.trays.map(function(item) {
                         return (
                             <TraySummary item={item} key={item.id}/>
                         );

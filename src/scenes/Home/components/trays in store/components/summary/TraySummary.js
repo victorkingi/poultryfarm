@@ -2,7 +2,7 @@ import React from "react";
 import moment from "moment";
 import sample from "../../../../../../images/noProductBanner.jpg";
 
-const TraySummary = (tray) => {
+const TraySummary = function(tray) {
     if (tray.item.submittedOn && (parseInt(tray.item.number) > 0 || parseInt(tray.item.remainder) > 0)) {
         const time = tray.item.submittedOn.toDate() ? tray.item.submittedOn.toDate() : "No date given";
 

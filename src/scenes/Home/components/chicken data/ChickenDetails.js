@@ -3,7 +3,7 @@ import {connect} from "react-redux";
 import numeral from "numeral";
 
 
-const ChickenDetails = (props) => {
+const ChickenDetails = function(props){
     const {chicken} = props;
 
     if (chicken) {
@@ -14,7 +14,7 @@ const ChickenDetails = (props) => {
                         <span className="card-title">Birds' Details</span>
                         <ul className="notifications">
                             {chicken && chicken.map(
-                                item => {
+                                function(item){
                                     const weekPercent = Math
                                         .round((item.weekPercent + Number.EPSILON) * 100) / 100;
                                     const weekCagePercent = Math
@@ -87,7 +87,7 @@ const ChickenDetails = (props) => {
 }
 
 
-const mapStateToProps = (state) => {
+const mapStateToProps = function(state) {
     return {
         auth: state.firebase.auth
     }

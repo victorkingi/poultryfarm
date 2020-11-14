@@ -4,10 +4,10 @@ import {connect} from "react-redux";
 import numeral from "numeral";
 import {borrowerReturnsFunds} from "../../../../services/actions/moneyAction";
 
-const BorrowSummary = (borrow) => {
+const BorrowSummary = function (borrow) {
     const inputRef = useRef();
 
-    const handleClick = (e) => {
+    const handleClick = function (e) {
         e.preventDefault();
         const load = document.getElementById(`load${borrow.item.id}`);
         load.style.display = 'block';
@@ -80,7 +80,7 @@ const BorrowSummary = (borrow) => {
                     </div>
                 </div>
 
-                <button ref={inputRef} style={{display: 'block'}} id={`submit${borrow.item.id}`} onClick={(e) => {
+                <button ref={inputRef} style={{display: 'block'}} id={`submit${borrow.item.id}`} onClick={function(e) {
                     handleClick(e)
                 }} className="btn pink lighten-2 z-depth-0">Cleared
                 </button>
@@ -98,10 +98,12 @@ const BorrowSummary = (borrow) => {
     }
 }
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = function(dispatch) {
 
     return {
-        borrowerReturnsFunds: (details) => dispatch(borrowerReturnsFunds(details))
+        borrowerReturnsFunds: function(details) {
+            dispatch(borrowerReturnsFunds(details));
+        }
     }
 }
 

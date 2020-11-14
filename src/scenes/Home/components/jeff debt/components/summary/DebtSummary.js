@@ -4,11 +4,11 @@ import {connect} from "react-redux";
 import numeral from "numeral";
 import {payBackJeff} from "../../../../../../services/actions/moneyAction";
 
-const DebtSummary = (debt) => {
+const DebtSummary = function(debt) {
     const inputRef = useRef();
 
 
-    const handleClick = (e) => {
+    const handleClick = function(e) {
         e.preventDefault();
         const load = document.getElementById(`load${debt.item.id}`);
         load.style.display = 'block';
@@ -81,7 +81,7 @@ const DebtSummary = (debt) => {
                 </div>
 
                 <button ref={inputRef} style={{display: 'block'}} id={`submit${debt.item.id}`} type="submit"
-                        onClick={(e) => {
+                        onClick={function(e) {
                             handleClick(e)
                         }} className="btn pink lighten-2 z-depth-0">Pay off
                 </button>
@@ -99,10 +99,13 @@ const DebtSummary = (debt) => {
     }
 }
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = function(dispatch){
 
     return {
-        payBackJeff: (details) => dispatch(payBackJeff(details))
+        payBackJeff: function(details)
+    {
+        dispatch(payBackJeff(details));
+    }
     }
 }
 

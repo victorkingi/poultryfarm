@@ -3,7 +3,7 @@ import {NavLink} from 'react-router-dom'
 import {connect} from 'react-redux';
 import {checkClaims, signOut} from "../../../../../../services/actions/authActions";
 
-const SignedInLinks = (props) => {
+const SignedInLinks = function(props) {
     const {admin, changer, auth} = props;
     props.checkClaims();
     const lastIndex = auth?.displayName.lastIndexOf(" ");
@@ -153,7 +153,7 @@ const SignedInLinks = (props) => {
     }
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = function(state){
     return {
         admin: state.auth.admin,
         changer: state.auth.changer,
@@ -162,10 +162,14 @@ const mapStateToProps = (state) => {
 }
 
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = function(dispatch) {
     return {
-        signOut: () => dispatch(signOut()),
-        checkClaims: () => dispatch(checkClaims())
+        signOut: function() {
+            dispatch(signOut())
+        },
+        checkClaims: function() {
+            dispatch(checkClaims())
+        }
     }
 }
 

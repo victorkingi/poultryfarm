@@ -2,14 +2,14 @@ import React from "react";
 import sample from "../../../../images/noProductBanner.jpg";
 import BorrowSummary from "../summary/BorrowSummary";
 
-const BorrowList = ({borrow}) => {
+const BorrowList = function ({borrow}) {
 
     if (borrow) {
         if (borrow['length'] > 0) {
 
             return (
                 <div className="project-list section">
-                    {borrow && borrow.map(item => {
+                    {borrow && borrow.map(function (item) {
                         return (
                             <BorrowSummary item={item} key={item.id}/>
                         );

@@ -3,7 +3,7 @@ import {Link} from 'react-router-dom';
 import "./NavBar.css";
 import {connect} from "react-redux";
 
-const Navbar = ({hide}) => {
+const Navbar = function({hide}) {
 
     return (
         <nav className={`nav-wrapper grey darken-3 my-navbar ${hide && 'my-navbar-hide'}`}>
@@ -15,7 +15,7 @@ const Navbar = ({hide}) => {
 }
 
 
-const mapStateToProps = (state) => {
+const mapStateToProps = function(state) {
     return {
         hide: state.util.hide
     }

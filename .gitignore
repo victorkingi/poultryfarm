@@ -1,17 +1,18 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-/node_modules
+node_modules/
 /tests/node_modules
 /tests/package-lock.json
 /.pnp
 .pnp.js
+/src/services/api/firebase\ configurations/
 
 # testing
 /coverage
 
 # production
-/build
+build/
 
 # misc
 .DS_Store
@@ -35,18 +36,4 @@ yarn-error.log*
 /pubsub-debug.log
 /ui-debug.log
 
-
-/functions/.eslintrc.json
-/functions/.gitignore
-/functions/src/firestoreTrigger.js
-/functions/src/__tests__/first.test.js
-/functions/src/handleFCM.js
-/functions/index.js
-/functions/jest.config.js
-/functions/package.json
-/functions/package-lock.json
-/functions/src/scheduled.js
-/functions/src/utils.js
-/functions/src/backup.js
-/functions/src/helper.js
-/functions/src/rollbackWrites.js
+functions/

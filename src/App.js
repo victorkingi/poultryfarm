@@ -66,7 +66,7 @@ function componentDidMount() {
 
 function App() {
 
-  useEffect(() => {
+  useEffect(function () {
     componentDidMount();
   }, []);
 

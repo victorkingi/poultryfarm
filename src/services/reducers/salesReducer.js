@@ -1,6 +1,6 @@
 const initState = {}
 
-const salesReducer = (state = initState, action) => {
+const salesReducer = function (state = initState, action) {
     switch (action.type) {
         case 'INPUT_SALES':
             console.log('sales data added', action.sales)

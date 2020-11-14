@@ -2,7 +2,7 @@ import React from "react";
 import moment from "moment";
 import sample from "../../../../../../images/noProductBanner.jpg";
 
-const BagsSummary = (bag) => {
+const BagsSummary = function(bag) {
 
     if (bag) {
         if (parseInt(bag.item.number) < 1) {

@@ -1,7 +1,7 @@
 import React from "react";
 import moment from "moment";
 
-const EggsSummary = ({egg}) => {
+const EggsSummary = function ({egg}) {
 
     if (egg.submittedOn) {
         const time = egg.date.toDate() ? egg.date.toDate() : "No date given";

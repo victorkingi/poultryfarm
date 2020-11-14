@@ -4,7 +4,7 @@ import {Redirect} from "react-router-dom";
 import {connect} from 'react-redux';
 import numeral from "numeral";
 
-const Current = (props) => {
+const Current = function(props) {
     const {balance} = props;
     const {auth, admin} = props;
 
@@ -23,7 +23,7 @@ const Current = (props) => {
                         <span className="card-title">Current Balance</span>
                         <ul className="notifications">
                             {balance && balance.map(
-                                item => {
+                                function(item) {
                                     if (admin) {
                                         return (
                                             <li key={item.id}>
@@ -81,7 +81,7 @@ const Current = (props) => {
 }
 
 
-const mapStateToProps = (state) => {
+const mapStateToProps = function(state){
     return {
         auth: state.firebase.auth,
         admin: state.auth.admin,

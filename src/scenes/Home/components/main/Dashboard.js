@@ -33,13 +33,13 @@ function Dashboard(props) {
     const {auth, admin, changer, balance, notifications} = props;
     const firstName = auth?.displayName?.substring(0, auth?.displayName?.lastIndexOf(' '));
 
-    const user = useMemo(() => {
+    const user = useMemo(function() {
         const __user = localStorage.getItem('user') || false;
 
         return {__user};
     }, []);
 
-    useEffect(() => {
+    useEffect(function(){
         time();
 
     }, [props]);
@@ -131,7 +131,7 @@ function Dashboard(props) {
     }
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = function(state) {
     return {
         chicken: state.firestore.ordered.chickenDetails,
         debt: state.firestore.ordered.oweJeff,
