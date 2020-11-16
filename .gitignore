@@ -4,6 +4,8 @@
 node_modules/
 /tests/node_modules
 /tests/package-lock.json
+/tests/firestore-debug.log
+/tests/pubsub-debug.log
 /.pnp
 .pnp.js
 /src/services/api/firebase\ configurations/
