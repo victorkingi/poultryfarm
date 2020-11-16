@@ -1,5 +1,6 @@
 import React, {useEffect} from 'react';
 import {BrowserRouter, Route, Switch} from 'react-router-dom'
+
 import './App.css';
 import SignIn from "./scenes/Sign/scenes/SignIn/SignIn";
 import SalesDetails from "./scenes/Sales/components/details/SalesDetails";
@@ -26,6 +27,8 @@ import Inputeggs from "./scenes/Input Pages/scenes/Collecting Eggs/components/In
 import Inputmoney from "./scenes/Input Pages/scenes/Sending Money/components/Inputmoney";
 import AllCharts from "./scenes/Charts/components/main/AllCharts";
 import InputBorrow from "./scenes/Input Pages/scenes/Borrowing Funds/components/InputBorrow";
+
+import {messaging} from "./services/api/firebase configurations/fbConfig";
 
 function componentDidMount() {
   navigator.serviceWorker.addEventListener("message", (message) => {
@@ -66,8 +69,10 @@ function componentDidMount() {
 
 function App() {
 
-  useEffect(function () {
-    componentDidMount();
+  useEffect(() => {
+    if (messaging !== null) {
+      componentDidMount();
+    }
   }, []);
 
   return (

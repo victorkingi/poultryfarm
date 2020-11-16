@@ -2,7 +2,7 @@ import React, {useEffect, useMemo, useState} from "react";
 import {connect} from 'react-redux';
 import {Redirect} from 'react-router-dom';
 import M from "materialize-css";
-import {myFirebase} from "../../../../services/api/firebase configurations/fbConfig";
+import {firebase} from "../../../../services/api/firebase configurations/fbConfig";
 import "./SignIn.css";
 import {signIn} from "../../../../services/actions/authActions";
 import {sendTokenToServer} from "../../../../services/actions/chickenAction";
@@ -40,7 +40,7 @@ function SignIn(props) {
 
     const handleForgotPass = (e) => {
         e.preventDefault();
-        const auth = myFirebase.auth();
+        const auth = firebase.auth();
         if (ValidateEmail(state.email)) {
             submit.style.display = 'none';
             load.style.display = 'block';
@@ -62,7 +62,7 @@ function SignIn(props) {
         if (state.email && state.password) {
             submit.style.display = 'none';
             load.style.display = 'block';
-            myFirebase.auth().signInWithEmailAndPassword(
+            firebase.auth().signInWithEmailAndPassword(
                 state.email,
                 state.password
             ).then((user) => {

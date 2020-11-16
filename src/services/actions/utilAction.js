@@ -7,8 +7,10 @@ export const hideBars = () => {
 }
 
 export const handleToken = (sendTokenToServer_, renderCount) => {
+    const load = document.getElementById("loading");
+    const submit = document.getElementById("login");
 
-    if (renderCount % 2 !== 0) {
+    if (renderCount % 2 !== 0 && messaging !== null) {
         messaging.requestPermission()
             .then(async function () {
                 const token = await messaging.getToken();
@@ -16,9 +18,7 @@ export const handleToken = (sendTokenToServer_, renderCount) => {
             })
             .catch(function (err) {
                 console.log("Unable to get permission to notify.", err);
-                alert("ERROR: It seems that your browser has blocked notifications. Try changing your option in settings for this site or rather, uncheck the checkbox to continue");
-                const load = document.getElementById("loading");
-                const submit = document.getElementById("login");
+                window.alert("ERROR: It seems that your browser has blocked notifications. Try changing your option in settings for this site or rather, uncheck the checkbox to continue");
 
                 load.style.display = 'none';
                 submit.style.display = 'block';
@@ -33,7 +33,12 @@ export const handleToken = (sendTokenToServer_, renderCount) => {
                 window.location.reload();
             });
         });
-    } else {
+    } else if (messaging === null && renderCount % 2 !== 0 ) {
+        window.alert("ERROR: This browser does not support push notifications, please uncheck the box");
+        load.style.display = 'none';
+        submit.style.display = 'block';
+    }
+    else {
         window.location.reload();
     }
 }
