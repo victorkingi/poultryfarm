@@ -30,7 +30,6 @@ yarn-error.log*
 /firestore.rules
 /firestore.indexes.json
 /firebase-debug.log
-/firebase.json
 /.firebaserc
 /firestore-debug.log
 /pubsub-debug.log
