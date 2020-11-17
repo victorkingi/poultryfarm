@@ -8,7 +8,6 @@ node_modules/
 /tests/pubsub-debug.log
 /.pnp
 .pnp.js
-/src/services/api/firebase\ configurations/
 
 # testing
 /coverage
