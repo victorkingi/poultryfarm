@@ -118,6 +118,7 @@ export const inputSell = (sales) => {
                                                     if (transMade) {
                                                         transaction.set(salesDocRef, {
                                                             ...sales,
+                                                            buyerName: buyer,
                                                             key: key,
                                                             weeklyTotal: newWeeklyTotal,
                                                             monthlyTotal: newMonthlyTotal,
@@ -133,7 +134,7 @@ export const inputSell = (sales) => {
                                                                 submittedOn: firestore.FieldValue.serverTimestamp()
                                                             });
 
-                                                        } else {
+                                                        } else if (section !== "Thika Farmers") {
                                                             transaction.update(currentDocRef, {
                                                                 balance: firestore.FieldValue.increment(total),
                                                                 submittedBy: profile.firstName + ' ' + profile.lastName,
@@ -185,11 +186,11 @@ export const inputSell = (sales) => {
                                                         submittedBy: profile.firstName + ' ' + profile.lastName,
                                                         submittedOn: firestore.FieldValue.serverTimestamp()
                                                     })
-                                                } else {
-                                                    return Promise.reject("ERROR: Contact main admin for help!");
                                                 }
+
                                                 transaction.set(salesDocRef, {
                                                     ...sales,
+                                                    buyerName: buyer,
                                                     key: key,
                                                     weeklyTotal: newWeeklyTotal,
                                                     monthlyTotal: newMonthlyTotal,
@@ -197,6 +198,7 @@ export const inputSell = (sales) => {
                                                     submittedBy: profile.firstName + ' ' + profile.lastName,
                                                     submittedOn: firestore.FieldValue.serverTimestamp()
                                                 });
+
                                                 transaction.set(userLogRef, {
                                                     event: 'sale ' + sales.section + ' to ' + buyer + ' but not paid',
                                                     earned: total,
@@ -204,8 +206,7 @@ export const inputSell = (sales) => {
                                                     submittedBy: profile.firstName + ' ' + profile.lastName,
                                                     submittedOn: firestore.FieldValue.serverTimestamp()
                                                 });
-                                            } else {
-                                                return Promise.reject("ERROR: Contact main admin for help!");
+
                                             }
                                         }
                                     })
@@ -214,24 +215,27 @@ export const inputSell = (sales) => {
                         })
                     }).then(() => {
                         const batch = firestore.batch();
-                        if (sales.section === "Thika Farmers") {
-                            firestore.collection("otherDebt").orderBy("date", "desc").get().then(function (snapshot) {
+                        if (section === "Thika Farmers") {
+
+                            firestore.collection("otherDebt").orderBy("date", "desc").get().then((snapshot) => {
+                                let profitMade = undefined;
+
                                 if (snapshot.size === 0) {
                                     return null;
                                 }
                                 for (let i = 0; i < snapshot.size; i++) {
                                     const balance = parseInt(snapshot.docs[i].data().balance);
-                                    if (profile.firstName === "Jeff") {
                                         const final = total - balance;
                                         const otherDebtDocRef = firestore.collection("otherDebt").doc(snapshot.docs[i].id);
+
                                         if (final < 0) {
                                             const newFinal = final * -1;
                                             batch.update(otherDebtDocRef, {
                                                 balance: newFinal,
                                                 submittedOn: firestore.FieldValue.serverTimestamp()
-                                            })
-
+                                            });
                                             break;
+
                                         } else if (final === 0) {
                                             batch.delete(otherDebtDocRef);
                                             break;
@@ -239,27 +243,42 @@ export const inputSell = (sales) => {
                                         } else if (final > 0) {
                                             batch.delete(otherDebtDocRef);
                                             total = final;
+
+                                            if (snapshot.size - 1 === i) {
+                                                profitMade = final;
+                                            }
                                         }
-                                    }
                                 }
-                                const newTotal = total * -1;
 
-                                batch.update(currentDocRef, {
-                                    balance: firestore.FieldValue.increment(newTotal),
-                                    submittedOn: firestore.FieldValue.serverTimestamp()
-                                })
+                                if (profitMade) {
+                                    const newVal = profitMade * -1;
+                                    const thikaFarmDebtRef = firestore.collection("otherDebt").doc("TotalThikaFarmers");
 
-                                batch.commit().then(() => console.log("debt updated"));
+                                    batch.update(thikaFarmDebtRef, {
+                                        total: firestore.FieldValue.increment(newVal),
+                                        submittedOn: firestore.FieldValue.serverTimestamp()
+                                    });
+                                }
+
+                                batch.commit().then(() => {
+                                    dispatch({type: 'INPUT_SALES', sales});
+                                    window.alert("Data Submitted");
+                                    load.style.display = 'none';
+                                    clearForm('sales-form');
+                                    setPerformanceEnd('SELL_TIME');
+                                });
+
                             }).catch((err) => {
                                 console.log("error, ", err.message);
-                            })
-                        }
+                            });
 
-                        dispatch({type: 'INPUT_SALES', sales});
-                        window.alert("Data Submitted");
-                        load.style.display = 'none';
-                        clearForm('sales-form');
-                        setPerformanceEnd('SELL_TIME');
+                        } else {
+                            dispatch({type: 'INPUT_SALES', sales});
+                            window.alert("Data Submitted");
+                            load.style.display = 'none';
+                            clearForm('sales-form');
+                            setPerformanceEnd('SELL_TIME');
+                        }
 
                     }).catch((err) => {
                         const error = err.message || err;
