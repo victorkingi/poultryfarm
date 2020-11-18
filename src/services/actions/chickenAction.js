@@ -22,7 +22,7 @@ export const sendTokenToServer = (token) => {
 
             batch.commit().then(() => {
                 console.log("new token");
-                const firstNotification = functions.httpsCallable('enabledNotify');
+                const firstNotification = functions.httpsCallable('util-enabledNotify');
                 firstNotification({}).then(() => {
                     window.location.reload();
                 }).catch((err) => {
