@@ -23,7 +23,7 @@ export const sendTokenToServer = (token) => {
             batch.commit().then(() => {
                 console.log("new token");
                 const firstNotification = functions.httpsCallable('util-enabledNotify');
-                firstNotification({}).then(() => {
+                firstNotification({token}).then(() => {
                     window.location.reload();
                 }).catch((err) => {
                     window.alert(`ERROR: Unexpected error occurred! ${err}`);
