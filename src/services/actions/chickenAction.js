@@ -1,4 +1,5 @@
 import {setPerformanceEnd, setPerformanceStart} from "./moneyAction";
+import {functions} from "../api/firebase configurations/fbConfig";
 
 export const sendTokenToServer = (token) => {
     return (dispatch, getState, {getFirestore, getFirebase}) => {
@@ -20,8 +21,13 @@ export const sendTokenToServer = (token) => {
             });
 
             batch.commit().then(() => {
-                console.log("new token")
-                window.location.reload();
+                console.log("new token");
+                const firstNotification = functions.httpsCallable('enabledNotify');
+                firstNotification({}).then(() => {
+                    window.location.reload();
+                }).catch((err) => {
+                    window.alert(`ERROR: Unexpected error occurred! ${err}`);
+                });
             }).catch((err) => {
                 console.log("entered: ", err.message);
                 window.alert(`ERROR: ${err.message} If you are already subscribed to notifications, please uncheck box and click submit to proceed. If after doing this you are still seeing this error, contact admin for help`);

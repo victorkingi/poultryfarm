@@ -27,10 +27,9 @@ export const handleToken = (sendTokenToServer_, renderCount) => {
             messaging.getToken().then((refreshedToken) => {
                 console.log('Token refreshed.');
                 sendTokenToServer_(refreshedToken);
-                window.location.reload();
             }).catch((err) => {
                 console.log('Unable to retrieve refreshed token ', err);
-                window.location.reload();
+                window.alert(`ERROR: unable to retrieve messaging token ${err} uncheck box to continue`);
             });
         });
     } else if (messaging === null && renderCount % 2 !== 0 ) {
