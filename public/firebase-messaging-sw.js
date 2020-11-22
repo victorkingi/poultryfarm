@@ -22,14 +22,24 @@ messaging.setBackgroundMessageHandler(function (payload) {
         .then(() => {
             const _data_title = payload.data?.title || payload.notification?.title;
             const _data_body = payload.data?.body || payload.notification?.body;
+            const _data_image = payload.data?.image || payload.notification?.image || null;
 
-
-            return registration.showNotification(_data_title, {
-                body: _data_body,
-                icon: 'chicken.jpg',
-                requireInteraction: true,
-                silent: false
-            });
+            if (_data_image !== null) {
+                return registration.showNotification(_data_title, {
+                    body: _data_body,
+                    icon: 'chicken.jpg',
+                    requireInteraction: true,
+                    silent: false,
+                    image: _data_image
+                });
+            } else {
+                return registration.showNotification(_data_title, {
+                    body: _data_body,
+                    icon: 'chicken.jpg',
+                    requireInteraction: true,
+                    silent: false
+                });
+            }
         });
 });
 

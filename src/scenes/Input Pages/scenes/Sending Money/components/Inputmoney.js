@@ -22,21 +22,21 @@ function Inputmoney(props) {
         });
     }
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const selectBox = document.getElementById("receiver");
         const selectedValue = selectBox.options[selectBox.selectedIndex].value;
 
         if (selectedValue === "0" || selectedValue === auth.displayName) {
-            document.getElementById("error-text").innerHTML = "Error with selection";
-            submit.style.display = 'block';
-            load.style.display = 'none';
-        } else {
-            document.getElementById("error-text").innerHTML = "";
-            submit.style.display = 'none';
-            load.style.display = 'block';
-            props.sendMoney(state);
-        }
+                document.getElementById("error-text").innerHTML = "Error with selection";
+                submit.style.display = 'block';
+                load.style.display = 'none';
+            } else {
+                document.getElementById("error-text").innerHTML = "";
+                submit.style.display = 'none';
+                load.style.display = 'block';
+                props.sendMoney(state);
+            }
     }
 
     const user = useMemo(() => {
@@ -65,6 +65,7 @@ function Inputmoney(props) {
                     <option value="Anne Kingi">Anne</option>
                     <option value="Bank Account">Bank</option>
                 </select>
+                <br />
 
                 <div className="input-field">
                     <label htmlFor="amount">Enter amount</label>
@@ -130,7 +131,6 @@ function Inputmoney(props) {
                 </div>
 
                 <div className="red-text center" id="error-text"/>
-
             </form>
         </div>
     );
@@ -145,7 +145,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        sendMoney: (money) => dispatch(sendMoney(money)),
+        sendMoney: (money) => dispatch(sendMoney(money))
     }
 }
 

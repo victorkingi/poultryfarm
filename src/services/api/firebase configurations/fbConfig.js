@@ -22,12 +22,11 @@ firebase.initializeApp(firebaseConfig);
 let messaging = null;
 const performance = firebase.performance();
 const storage = firebase.storage();
-const functions = firebase.functions();
 
 if (firebase.messaging.isSupported()) {
   messaging = firebase.messaging();
   messaging.usePublicVapidKey("");
 }
 
-export {firebase, performance, storage, messaging, functions};
+export {firebase, performance, storage, messaging};
 

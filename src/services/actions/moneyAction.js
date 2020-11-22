@@ -30,9 +30,10 @@ export const sendMoney = (money) => {
         const submit = document.getElementById("submit-btn-send-money");
 
         function sendTheFunds() {
-            firestore.runTransaction(function (transaction) {
+            return firestore.runTransaction(function (transaction) {
                 return transaction.get(currentDocRef).then(function (currentDoc) {
                     return transaction.get(receiverDocRef).then(function (receiverDoc) {
+
                         if (currentDoc.exists) {
                             if (receiverDoc.exists) {
                                 const name = receiverDoc.data().fullName;
@@ -77,14 +78,12 @@ export const sendMoney = (money) => {
                         }
                     })
                 })
-            })
-                .then(() => {
+            }).then(() => {
                     dispatch({type: 'MONEY_SENT', money});
                     window.alert("Data submitted");
                     load.style.display = 'none';
                     submit.style.display = 'block';
                     clearForm('send-money-form');
-
                 }).catch((err) => {
                 const error = err.message || err;
                 dispatch({type: 'MONEY_ERROR', error});
@@ -102,7 +101,8 @@ export const sendMoney = (money) => {
                         if (!idToken.claims.admin) {
                             return Promise.reject("ERROR: You are not an admin!");
                         } else {
-                            sendTheFunds();
+                            setPerformanceEnd('SEND_MONEY_TIME');
+                            return sendTheFunds();
                         }
                     }).catch((err) => {
                         console.error(err);
@@ -114,10 +114,9 @@ export const sendMoney = (money) => {
                 }
             });
         } else {
-            sendTheFunds();
+            setPerformanceEnd('SEND_MONEY_TIME');
+            return sendTheFunds();
         }
-
-        setPerformanceEnd('SEND_MONEY_TIME');
     }
 }
 

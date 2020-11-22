@@ -16,6 +16,7 @@
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
     "animejs": "^3.2.1",
+    "axios": "^0.21.0",
     "chart.js": "^2.9.3",
     "firebase": "^7.23.0",
     "first-input-delay": "^0.1.3",

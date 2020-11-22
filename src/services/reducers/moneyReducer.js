@@ -4,8 +4,9 @@ const moneyReducer = (state = initState, action) => {
     switch (action.type) {
         case 'MONEY_SENT':
             console.log('money sent ', action.money);
-            return state;
-
+            return {
+                ...state
+            };
         case 'REPAID':
             console.log('borrow cleared ');
             return state;
