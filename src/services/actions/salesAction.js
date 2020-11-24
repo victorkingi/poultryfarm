@@ -69,7 +69,17 @@ export const inputSell = (sales) => {
             dispatch({type: 'INPUT_BUYING_ERROR', error});
 
             window.alert(error);
-            return new Error("ERROR: Impossible date entered!");
+            return new Error(error);
+        }
+        const criticalBuyerNameCheck = ((section === "Thika Farmers" && buyer !== "Thika Farmers") || (section === "Simbi" && buyer !== "Simbi") || (section === "Cakes" && buyer !== "Cakes"))
+            || !(section !== "Thika Farmers" && section !== "Simbi" && section !== "Cakes");
+
+        if (criticalBuyerNameCheck) {
+            const error = "ERROR: Impossible buyer name entered!";
+            dispatch({type: 'INPUT_BUYING_ERROR', error});
+
+            window.alert(error);
+            return new Error(error);
         }
 
         firestore.collection("sales").orderBy("submittedOn", "desc").limit(1).get().then(function (snapshot) {
