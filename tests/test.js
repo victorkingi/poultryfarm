@@ -299,7 +299,9 @@ describe("Unit Tests For Firestore security rules", () => {
                const testDoc = dbAdmin.collection("sales").doc("user_xyz");
 
                //create test
-               await firebase.assertSucceeds(testDoc.set({foo: "bar", buyerName: "Dummy", weeklyTotal: 500 }));
+               await firebase.assertSucceeds(testDoc.set({foo: "bar", buyerName: "Dummy"}));
+               await firebase.assertFails(testDoc.set({foo: "bar", buyerName: "Dummy", section: "Thika Farmers"}));
+               await firebase.assertFails(testDoc.set({foo: "bar", buyerName: "Duka"}));
 
                //read test
                await firebase.assertSucceeds(testDoc.get());
@@ -619,7 +621,9 @@ describe("Unit Tests For Firestore security rules", () => {
             const testDoc = dbChanger.collection("sales").doc("user_xyz");
 
             //create test
-            await firebase.assertSucceeds(testDoc.set({foo: "bar", buyerName: "Dummy", weeklyTotal: 500 }));
+            await firebase.assertSucceeds(testDoc.set({foo: "bar", buyerName: "Dummy"}));
+            await firebase.assertFails(testDoc.set({foo: "bar", buyerName: "Dummy", section: "Thika Farmers"}));
+            await firebase.assertFails(testDoc.set({foo: "bar", buyerName: "Duka"}));
 
             //read test
             await firebase.assertSucceeds(testDoc.get());
@@ -938,7 +942,9 @@ describe("Unit Tests For Firestore security rules", () => {
             const testDoc = dbModerator.collection("sales").doc("user_xyz");
 
             //create test
-            await firebase.assertFails(testDoc.set({foo: "bar", buyerName: "Dummy", weeklyTotal: 500 }));
+            await firebase.assertFails(testDoc.set({foo: "bar", buyerName: "Dummy"}));
+            await firebase.assertFails(testDoc.set({foo: "bar", buyerName: "Dummy", section: "Thika Farmers"}));
+            await firebase.assertFails(testDoc.set({foo: "bar", buyerName: "Duka"}));
 
             //read test
             await firebase.assertFails(testDoc.get());
@@ -1258,7 +1264,9 @@ describe("Unit Tests For Firestore security rules", () => {
             const testDoc = db.collection("sales").doc("user_xyz");
 
             //create test
-            await firebase.assertFails(testDoc.set({foo: "bar", buyerName: "Dummy", weeklyTotal: 500 }));
+            await firebase.assertFails(testDoc.set({foo: "bar", buyerName: "Dummy"}));
+            await firebase.assertFails(testDoc.set({foo: "bar", buyerName: "Dummy", section: "Thika Farmers"}));
+            await firebase.assertFails(testDoc.set({foo: "bar", buyerName: "Duka"}));
 
             //read test
             await firebase.assertFails(testDoc.get());
@@ -1578,7 +1586,9 @@ describe("Unit Tests For Firestore security rules", () => {
             const testDoc = dbNoAuth.collection("sales").doc("user_xyz");
 
             //create test
-            await firebase.assertFails(testDoc.set({foo: "bar", buyerName: "Dummy", weeklyTotal: 500 }));
+            await firebase.assertFails(testDoc.set({foo: "bar", buyerName: "Dummy"}));
+            await firebase.assertFails(testDoc.set({foo: "bar", buyerName: "Dummy", section: "Thika Farmers"}));
+            await firebase.assertFails(testDoc.set({foo: "bar", buyerName: "Duka"}));
 
             //read test
             await firebase.assertFails(testDoc.get());

@@ -71,10 +71,21 @@ export const inputSell = (sales) => {
             window.alert(error);
             return new Error(error);
         }
-        const criticalBuyerNameCheck = ((section === "Thika Farmers" && buyer !== "Thika Farmers") || (section === "Simbi" && buyer !== "Simbi") || (section === "Cakes" && buyer !== "Cakes"))
-            || !(section !== "Thika Farmers" && section !== "Simbi" && section !== "Cakes");
+        const assertChickenValues = (sales.trayPrice || sales.trayNo) || (!sales.chickenNo || !sales.chickenPrice);
+        const assertTrayValues = (!sales.trayPrice || !sales.trayNo) || (sales.chickenNo || sales.chickenPrice);
+        console.log(sales)
 
-        if (criticalBuyerNameCheck) {
+        if ((assertChickenValues && section === "Old Chickens") || (assertTrayValues && section !== "Old Chickens")) {
+            const error = "ERROR: Impossible chicken data entered!";
+            dispatch({type: 'INPUT_BUYING_ERROR', error});
+
+            window.alert(error);
+            return new Error(error);
+        }
+
+        const criticalBuyerNameCheck = section !== buyer;
+
+        if (criticalBuyerNameCheck && (section === "Thika Farmers" || section === "Cakes" || section === "Simbi")) {
             const error = "ERROR: Impossible buyer name entered!";
             dispatch({type: 'INPUT_BUYING_ERROR', error});
 
@@ -124,6 +135,8 @@ export const inputSell = (sales) => {
                                                     let transMade = false;
                                                     if (sales.trayNo) {
                                                         transMade = commonTransaction();
+                                                    } else if (sales.chickenNo) {
+                                                        transMade = true;
                                                     }
                                                     if (transMade) {
                                                         transaction.set(salesDocRef, {
@@ -260,6 +273,8 @@ export const inputSell = (sales) => {
                                         }
                                 }
 
+                                // a special case whereby all Feeds debt docs have been deleted but we made a profit
+                                //hence thika farmers will owe us
                                 if (profitMade) {
                                     const newVal = profitMade * -1;
                                     const thikaFarmDebtRef = firestore.collection("otherDebt").doc("TotalThikaFarmers");

@@ -145,6 +145,58 @@ export const hasPaidLate = (details) => {
                 balance: firestore.FieldValue.increment(amountDue),
                 submittedOn: firestore.FieldValue.serverTimestamp()
             });
+        } else if (details.section === "Thika Farmers") {
+            let amount_ = parseInt(details.amountDue);
+
+            firestore.collection("otherDebt").orderBy("date", "desc").get().then((snapshot) => {
+                let profitMade = undefined;
+
+                if (snapshot.size === 0) {
+                    return null;
+                }
+                for (let i = 0; i < snapshot.size; i++) {
+                    const balance = parseInt(snapshot.docs[i].data().balance);
+                    const final = amount_ - balance;
+                    const otherDebtDocRef = firestore.collection("otherDebt").doc(snapshot.docs[i].id);
+
+                        if (final < 0) {
+                            const newFinal = final * -1;
+                            batch.update(otherDebtDocRef, {
+                                balance: newFinal,
+                                submittedOn: firestore.FieldValue.serverTimestamp()
+                            });
+                            break;
+
+                        } else if (final === 0) {
+                            batch.delete(otherDebtDocRef);
+                            break;
+
+                        } else if (final > 0) {
+                            batch.delete(otherDebtDocRef);
+                            amount_ = final;
+
+                            if (snapshot.size - 1 === i) {
+                                profitMade = final;
+                            }
+                        }
+                    }
+
+                    // a special case whereby all Feeds debt docs have been deleted but we made a profit
+                    //hence thika farmers will owe us
+                    if (profitMade) {
+                        const newVal = profitMade * -1;
+                        const thikaFarmDebtRef = firestore.collection("otherDebt").doc("TotalThikaFarmers");
+
+                        batch.update(thikaFarmDebtRef, {
+                            total: firestore.FieldValue.increment(newVal),
+                            submittedOn: firestore.FieldValue.serverTimestamp()
+                        });
+                    }
+
+                }).catch((err) => {
+                    console.log("error, ", err.message);
+                });
+
         } else {
             batch.update(currentDocRef, {
                 balance: firestore.FieldValue.increment(amountDue),
@@ -163,7 +215,7 @@ export const hasPaidLate = (details) => {
 
         batch.delete(latePaymentDocRef);
 
-        batch.commit().then(function () {
+        batch.commit().then(() => {
             dispatch({type: 'LATE_REPAID'});
         }).catch((err) => {
             dispatch({type: 'LATE_ERROR'});

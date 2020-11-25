@@ -23,11 +23,9 @@ function Inputsell(props) {
         const statusValue = status.options[status.selectedIndex].value;
         const date = document.getElementById('date').value;
         const month = document.getElementById('month').value;
-        const final = document.getElementById("final");
         const mysec = document.getElementById('mySection');
         const sales = document.getElementById('sales');
         const old = document.getElementById("old");
-        const trayPrice = document.getElementById('trayPrice').value;
         const checks = parseInt(date) > 0 && parseInt(date) < 32 && date !== "" && parseInt(month) > 0 && parseInt(month) < 13;
 
 
@@ -63,22 +61,14 @@ function Inputsell(props) {
             other.style.display = 'block';
             old.style.display = 'block';
             sales.style.display = 'none';
-            final.style.display = 'block';
         } else {
             old.style.display = 'none';
-            final.style.display = 'none';
         }
 
         if (selectedValue !== "Old Chickens" && selectedValue !== "Other") {
             const item = document.getElementById("other");
             item.style.display = 'none';
 
-        }
-
-        if (parseInt(trayPrice) > 0 && selectedValue !== "Old Chickens") {
-            final.style.display = 'block';
-        } else if (parseInt(trayPrice) < 0 && selectedValue !== "Old Chickens") {
-            final.style.display = 'none';
         }
 
         if (statusValue !== "0") {
@@ -212,7 +202,7 @@ function Inputsell(props) {
 
                 </div>
 
-                <div style={{display: 'none'}} id="final">
+                <div id="final">
                     <select id="status" onChange={handleChange} className="white" defaultValue="0">
                         <option value="0" disabled="disabled">Status</option>
                         <option value={true}>Paid</option>
