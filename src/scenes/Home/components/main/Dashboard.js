@@ -11,26 +11,33 @@ import Current from "../current balance/components/balance/Current";
 import ChickenDetails from "../chicken data/ChickenDetails";
 import Notifications from "../notifications/components/notifications/Notifications";
 import {setPerformanceEnd, setPerformanceStart} from "../../../../services/actions/moneyAction";
+import CloudCost from "../cloud costs/CloudCost";
 
 
 setPerformanceStart();
 
-let checkHour = new Date();
-checkHour = checkHour.getHours();
+let todayInMillis = new Date().getTime();
 let period = "";
 
 function time() {
-    if ((checkHour >= 0) && (checkHour <= 12)) {
+    let sunrise = null;
+    let sunset = null;
+    try {
+        sunrise = localStorage.getItem('sunrise');
+        sunset = localStorage.getItem('sunset');
+    } catch (e) {
+        console.log(e);
+    }
+
+    if (todayInMillis > parseInt(sunrise) && todayInMillis < parseInt(sunset)) {
         period = "Good Morning";
-    } else if ((checkHour >= 12) && (checkHour <= 18)) {
-        period = "Afternoon";
     } else {
         period = "Good Evening";
     }
 }
 
 function Dashboard(props) {
-    const {auth, admin, changer, balance, notifications} = props;
+    const {auth, admin, changer, balance, notifications, billing } = props;
     const firstName = auth?.displayName?.substring(0, auth?.displayName?.lastIndexOf(' '));
 
     const user = useMemo(function() {
@@ -61,6 +68,10 @@ function Dashboard(props) {
                         <div className="row">
                             <div className="center-align">
                                 <h3 className="spinner-blue" id="details"> {period} {firstName}</h3>
+                            </div>
+
+                            <div className="col s12 m5 offset-m1">
+                                <CloudCost billing={billing}/>
                             </div>
 
                             <div className="col s12 m5 offset-m1">
@@ -141,7 +152,8 @@ const mapStateToProps = function(state) {
         changer: state.auth.changer,
         notifications: state.firestore.ordered.notifications,
         trays: state.firestore.ordered.trays,
-        bags: state.firestore.ordered.bags
+        bags: state.firestore.ordered.bags,
+        billing: state.firestore.ordered.private
     }
 }
 
@@ -155,6 +167,7 @@ export default compose(
         {collection: 'chickenDetails'},
         {collection: 'oweJeff', limit: 4, orderBy: ['balance', 'desc']},
         {collection: 'trays', limit: 1, orderBy: ['number', 'desc']},
-        {collection: 'bags', limit: 1, orderBy: ['number', 'desc']}
+        {collection: 'bags', limit: 1, orderBy: ['number', 'desc']},
+        {collection: 'private'}
     ])
 )(Dashboard)

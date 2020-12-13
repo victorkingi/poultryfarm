@@ -20,7 +20,7 @@ export const inputPurchase = (buys) => {
         const enteredDate = parseInt(buys.date);
         const year = date.getFullYear();
         const isLeap = leapYear(year);
-        const status = JSON.parse(buys.status);
+        let status = JSON.parse(buys.status);
         const fullName = profile.firstName + ' ' + profile.lastName;
         const item = buys.itemName || buys.vaccineName || buys.drugName || buys.labourName;
         const buyDocRef = firestore.collection("buys").doc('Month ' + enteredMonth + ' Date ' + enteredDate + ' ' + section + ': ' + item);
@@ -33,6 +33,10 @@ export const inputPurchase = (buys) => {
         const load = document.getElementById("loading-buys");
 
         const dateChecks = dateCheck(enteredMonth, enteredDate, isLeap);
+
+        if (section === "Feeds") {
+            status = false
+        }
 
 
         if (dateChecks) {

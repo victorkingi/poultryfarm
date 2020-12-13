@@ -47,7 +47,7 @@ export const inputSell = (sales) => {
         const enteredDate = parseInt(sales.date);
         const year = date.getFullYear();
         const isLeap = leapYear(year);
-        const status = JSON.parse(sales.status);
+        let status = JSON.parse(sales.status);
         const buyer = sales.buyerName ? sales.buyerName : sales.section;
         const salesDocRef = buyer ? firestore.collection("sales").doc('Month ' + enteredMonth + ' Date ' + enteredDate
             + ' ' + section + ': ' + buyer) : firestore.collection("sales").doc('Month ' + enteredMonth
@@ -64,6 +64,10 @@ export const inputSell = (sales) => {
             : parseInt(sales.chickenNo) * parseInt(sales.chickenPrice);
         const dateChecks = dateCheck(enteredMonth, enteredDate, isLeap);
 
+        if (section === "Thika Farmers") {
+            status = true
+        }
+
         if (dateChecks) {
             const error = "ERROR: Impossible date entered!";
             dispatch({type: 'INPUT_BUYING_ERROR', error});
@@ -73,7 +77,6 @@ export const inputSell = (sales) => {
         }
         const assertChickenValues = (sales.trayPrice || sales.trayNo) || (!sales.chickenNo || !sales.chickenPrice);
         const assertTrayValues = (!sales.trayPrice || !sales.trayNo) || (sales.chickenNo || sales.chickenPrice);
-        console.log(sales)
 
         if ((assertChickenValues && section === "Old Chickens") || (assertTrayValues && section !== "Old Chickens")) {
             const error = "ERROR: Impossible chicken data entered!";

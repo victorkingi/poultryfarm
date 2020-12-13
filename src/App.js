@@ -1,5 +1,8 @@
 import React, {useEffect} from 'react';
 import {BrowserRouter, Route, Switch} from 'react-router-dom'
+import { ThemeProvider } from 'styled-components';
+import { lightTheme, darkTheme } from "./components/dark mode/theme";
+import { GlobalStyles } from "./components/dark mode/global";
 
 import './App.css';
 import SignIn from "./scenes/Sign/scenes/SignIn/SignIn";
@@ -29,6 +32,7 @@ import AllCharts from "./scenes/Charts/components/main/AllCharts";
 import InputBorrow from "./scenes/Input Pages/scenes/Borrowing Funds/components/InputBorrow";
 
 import {messaging} from "./services/api/firebase configurations/fbConfig";
+import {useDarkMode} from "./services/utils/useDarkMode";
 
 function componentDidMount() {
   navigator.serviceWorker.addEventListener("message", (message) => {
@@ -68,6 +72,7 @@ function componentDidMount() {
 }
 
 function App() {
+  const [theme] = useDarkMode();
 
   useEffect(() => {
     if (messaging !== null) {
@@ -76,48 +81,96 @@ function App() {
   }, []);
 
   return (
-      <BrowserRouter>
-        <div>
-          <Navbar/>
-          <Sidebar/>
-          <ToastContainer
-              position="top-right"
-              autoClose={5000}
-              hideProgressBar={false}
-              newestOnTop={false}
-              closeOnClick
-              rtl={false}
-              pauseOnFocusLoss
-              draggable
-              pauseOnHover
-          />
-          <Switch>
-            <Route path='/s/:id' component={SalesDetails}/>
-            <Route path='/sd/:id' component={SickDeadDetails}/>
-            <Route path='/e/:id' component={EggsDetails}/>
-            <Route path='/b/:id' component={BuyDetails}/>
-            <Route path='/signin' component={SignIn}/>
-            <Route path='/signup' component={SignUp}/>
-            <Route path='/sales' component={Inputsell}/>
-            <Route path='/buy' component={Inputbuy}/>
-            <Route path='/eggs' component={Inputeggs}/>
-            <Route path='/send' component={Inputmoney}/>
-            <Route path='/d' component={InputDeadSick}/>
-            <Route path='/l' component={Late}/>
-            <Route path='/o' component={OtherDebts}/>
-            <Route path='/s' component={Sale}/>
-            <Route path='/sd' component={SickDead}/>
-            <Route path='/b' component={Buy}/>
-            <Route path='/e' component={Egg}/>
-            <Route path='/chart' component={AllCharts}/>
-            <Route path='/rb' component={Borrow}/>
-            <Route path='/ib' component={InputBorrow}/>
-            <Route exact path='/' component={Dashboard}/>
-            <Route path="*" component={NotFound} status={404}/>
-          </Switch>
-        </div>
-      </BrowserRouter>
+      <div>
+      <ThemeProvider theme={theme === 'l' ? lightTheme : darkTheme}>
+          <GlobalStyles />
+          <BrowserRouter>
+            <div>
+              <Navbar/>
+              <Sidebar/>
+              <ToastContainer
+                  position="top-right"
+                  autoClose={5000}
+                  hideProgressBar={false}
+                  newestOnTop={false}
+                  closeOnClick
+                  rtl={false}
+                  pauseOnFocusLoss
+                  draggable
+                  pauseOnHover
+              />
+              <Switch>
+                <Route path='/s/:id' component={SalesDetails}/>
+                <Route path='/sd/:id' component={SickDeadDetails}/>
+                <Route path='/e/:id' component={EggsDetails}/>
+                <Route path='/b/:id' component={BuyDetails}/>
+                <Route path='/signin' component={SignIn}/>
+                <Route path='/signup' component={SignUp}/>
+                <Route path='/sales' component={Inputsell}/>
+                <Route path='/buy' component={Inputbuy}/>
+                <Route path='/eggs' component={Inputeggs}/>
+                <Route path='/send' component={Inputmoney}/>
+                <Route path='/d' component={InputDeadSick}/>
+                <Route path='/l' component={Late}/>
+                <Route path='/o' component={OtherDebts}/>
+                <Route path='/s' component={Sale}/>
+                <Route path='/sd' component={SickDead}/>
+                <Route path='/b' component={Buy}/>
+                <Route path='/e' component={Egg}/>
+                <Route path='/chart' component={AllCharts}/>
+                <Route path='/rb' component={Borrow}/>
+                <Route path='/ib' component={InputBorrow}/>
+                <Route exact path='/' component={Dashboard}/>
+                <Route path="*" component={NotFound} status={404}/>
+              </Switch>
+            </div>
+          </BrowserRouter>
+          <footer>
+          </footer>
+      </ThemeProvider>
+      </div>
   );
 }
 
 export default App;
+/*<BrowserRouter>
+  <div>
+    <Navbar/>
+    <Sidebar/>
+    <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+    />
+    <Switch>
+      <Route path='/s/:id' component={SalesDetails}/>
+      <Route path='/sd/:id' component={SickDeadDetails}/>
+      <Route path='/e/:id' component={EggsDetails}/>
+      <Route path='/b/:id' component={BuyDetails}/>
+      <Route path='/signin' component={SignIn}/>
+      <Route path='/signup' component={SignUp}/>
+      <Route path='/sales' component={Inputsell}/>
+      <Route path='/buy' component={Inputbuy}/>
+      <Route path='/eggs' component={Inputeggs}/>
+      <Route path='/send' component={Inputmoney}/>
+      <Route path='/d' component={InputDeadSick}/>
+      <Route path='/l' component={Late}/>
+      <Route path='/o' component={OtherDebts}/>
+      <Route path='/s' component={Sale}/>
+      <Route path='/sd' component={SickDead}/>
+      <Route path='/b' component={Buy}/>
+      <Route path='/e' component={Egg}/>
+      <Route path='/chart' component={AllCharts}/>
+      <Route path='/rb' component={Borrow}/>
+      <Route path='/ib' component={InputBorrow}/>
+      <Route exact path='/' component={Dashboard}/>
+      <Route path="*" component={NotFound} status={404}/>
+    </Switch>
+  </div>
+</BrowserRouter>*/
