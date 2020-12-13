@@ -13,7 +13,7 @@ const CloudCost = (props) => {
                             {billing && billing.map((item) => {
                                     return (
                                         <li key={item.id}>
-                                            <p style={{fontSize: "18px"}}>£. {item.lastReportedCost}</p>
+                                            <p style={{fontSize: "18px"}}>£. {item.total}</p>
                                         </li>
                                     )
                                 }
