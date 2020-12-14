@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { getSunrise, getSunset } from 'sunrise-sunset-js';
 
 export const useDarkMode = () => {
     const [theme, setTheme] = useState('light');
+    const [position, setPosition] = useState(false);
 
     const usePosition = (position) => {
         const sunrise = getSunrise(position.coords.latitude, position.coords.longitude);
@@ -13,19 +14,21 @@ export const useDarkMode = () => {
         window.localStorage.setItem('sunset', setDate.toString());
     }
 
-    const getPosition = () => {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(usePosition);
-        }
-    }
-
     const setMode = mode => {
         window.localStorage.setItem('theme', mode)
         setTheme(mode)
     };
 
     useEffect(() => {
-        getPosition();
+        if (navigator.geolocation && position) {
+            navigator.geolocation.getCurrentPosition(usePosition);
+            setPosition(true);
+        } else {
+            setPosition(false);
+        }
+    }, [position]);
+
+    useEffect(() => {
         const localTheme = window.localStorage.getItem('theme');
         const risePos = window.localStorage.getItem('sunrise');
         const setPos = window.localStorage.getItem('sunset');
@@ -34,9 +37,12 @@ export const useDarkMode = () => {
         if (risePos !== null && setPos !== null) {
             checkSun = currentTime >= parseInt(risePos) && currentTime < parseInt(setPos);
         }
+        console.log()
 
         if (localTheme === 'light' && checkSun) {
             setTheme(localTheme);
+        } else if (localTheme === 'dark' && checkSun) {
+            setMode('light');
         } else {
             setMode('dark');
         }
