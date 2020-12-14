@@ -258,6 +258,7 @@ export const inputSell = (sales) => {
                                             const newFinal = final * -1;
                                             batch.update(otherDebtDocRef, {
                                                 balance: newFinal,
+                                                updateKey: key,
                                                 submittedOn: firestore.FieldValue.serverTimestamp()
                                             });
                                             break;
