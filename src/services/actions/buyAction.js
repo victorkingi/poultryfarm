@@ -162,6 +162,7 @@ export const inputPurchase = (buys) => {
                                         debtor: buys.section,
                                         balance: total,
                                         key: key,
+                                        updateKey: 'new',
                                         order: 2,
                                         date: new Date(year, newMonth, enteredDate, getHours, getMinutes, getSeconds),
                                         submittedBy: fullName,
