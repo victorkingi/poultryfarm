@@ -1,8 +1,8 @@
 import React, {useEffect} from 'react';
 import {BrowserRouter, Route, Switch} from 'react-router-dom'
 import { ThemeProvider } from 'styled-components';
-import { lightTheme, darkTheme } from "./components/dark mode/theme";
-import { GlobalStyles } from "./components/dark mode/global";
+import { lightTheme, darkTheme } from "./services/utils/dark mode/theme";
+import { GlobalStyles } from "./services/utils/dark mode/global";
 
 import './App.css';
 import SignIn from "./scenes/Sign/scenes/SignIn/SignIn";

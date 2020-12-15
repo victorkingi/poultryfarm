@@ -3,7 +3,6 @@ import { getSunrise, getSunset } from 'sunrise-sunset-js';
 
 export const useDarkMode = () => {
     const [theme, setTheme] = useState('light');
-    const [position, setPosition] = useState(false);
 
     const usePosition = (position) => {
         const sunrise = getSunrise(position.coords.latitude, position.coords.longitude);
@@ -15,33 +14,25 @@ export const useDarkMode = () => {
     }
 
     const setMode = mode => {
-        window.localStorage.setItem('theme', mode)
         setTheme(mode)
     };
 
     useEffect(() => {
-        if (navigator.geolocation && position) {
+        if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(usePosition);
-            setPosition(true);
-        } else {
-            setPosition(false);
         }
-    }, [position]);
+    }, []);
 
     useEffect(() => {
-        const localTheme = window.localStorage.getItem('theme');
         const risePos = window.localStorage.getItem('sunrise');
         const setPos = window.localStorage.getItem('sunset');
         const currentTime = new Date().getTime();
-        let checkSun = null
+        let checkSun = false
         if (risePos !== null && setPos !== null) {
             checkSun = currentTime >= parseInt(risePos) && currentTime < parseInt(setPos);
         }
-        console.log()
 
-        if (localTheme === 'light' && checkSun) {
-            setTheme(localTheme);
-        } else if (localTheme === 'dark' && checkSun) {
+        if (checkSun) {
             setMode('light');
         } else {
             setMode('dark');
