@@ -32,9 +32,7 @@ export const useDarkMode = () => {
             checkSun = currentTime >= parseInt(risePos) && currentTime < parseInt(setPos);
         }
 
-        if (checkSun) {
-            setMode('light');
-        } else {
+        if (!checkSun) {
             setMode('dark');
         }
     }, []);

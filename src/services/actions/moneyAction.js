@@ -311,7 +311,7 @@ export const payBackJeff = (details) => {
                                 const currentData = parseInt(currentDoc.data().balance);
                                 const final = currentData - parseInt(details.balance);
 
-                                if (final < 0 && user.email !== "jeffkarue@gmail.com") {
+                                if (final < 0 && user.email !== "jeffkarue@gmail.com" && currentData !== 0) {
                                     const newFinal = final * -1;
 
                                     transaction.set(userLogRef, {

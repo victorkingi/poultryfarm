@@ -23,7 +23,7 @@ const DebtSummary = function(debt) {
         return (
             <div className="card z-depth-0 project-summary">
                 <div className="card-content grey-text text-darken-3">
-                    <span className="card-title">Debts Owing Jeff</span>
+                    <span className="card-title">Debt Owing Jeff</span>
                     <p>Ksh.{numeral(debt.item.balance).format("0,0")}</p>
                     <p className="grey-text">{moment(time).calendar()}</p>
                 </div>

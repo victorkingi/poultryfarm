@@ -71,6 +71,10 @@ function Dashboard(props) {
                             </div>
 
                             <div className="col s12 m5 offset-m1">
+                                <BagsList bags={bags}/>
+                            </div>
+
+                            <div className="col s12 m5 offset-m1">
                                 <CloudCost billing={billing}/>
                             </div>
 
@@ -88,10 +92,6 @@ function Dashboard(props) {
 
                             <div className="col s12 m5 offset-m1">
                                 <TrayList trays={trays}/>
-                            </div>
-
-                            <div className="col s12 m5 offset-m1">
-                                <BagsList bags={bags}/>
                             </div>
 
                             <div className="col s12 m5 offset-m1">
