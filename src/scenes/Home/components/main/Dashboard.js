@@ -16,21 +16,15 @@ import CloudCost from "../cloud costs/CloudCost";
 
 setPerformanceStart();
 
-let todayInMillis = new Date().getTime();
+let checkHour = new Date();
+checkHour = checkHour.getHours();
 let period = "";
 
 function time() {
-    let sunrise = null;
-    let sunset = null;
-    try {
-        sunrise = localStorage.getItem('sunrise');
-        sunset = localStorage.getItem('sunset');
-    } catch (e) {
-        console.log(e);
-    }
-
-    if (todayInMillis > parseInt(sunrise) && todayInMillis < parseInt(sunset)) {
+    if ((checkHour >= 0) && (checkHour <= 12)) {
         period = "Good Morning";
+    } else if ((checkHour >= 12) && (checkHour <= 18)) {
+        period = "Afternoon";
     } else {
         period = "Good Evening";
     }

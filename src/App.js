@@ -1,8 +1,5 @@
 import React, {useEffect} from 'react';
 import {BrowserRouter, Route, Switch} from 'react-router-dom'
-import { ThemeProvider } from 'styled-components';
-import { lightTheme, darkTheme } from "./services/utils/dark mode/theme";
-import { GlobalStyles } from "./services/utils/dark mode/global";
 
 import './App.css';
 import SignIn from "./scenes/Sign/scenes/SignIn/SignIn";
@@ -32,7 +29,6 @@ import AllCharts from "./scenes/Charts/components/main/AllCharts";
 import InputBorrow from "./scenes/Input Pages/scenes/Borrowing Funds/components/InputBorrow";
 
 import {messaging} from "./services/api/firebase configurations/fbConfig";
-import {useDarkMode} from "./services/utils/useDarkMode";
 
 function componentDidMount() {
   navigator.serviceWorker.addEventListener("message", (message) => {
@@ -72,7 +68,6 @@ function componentDidMount() {
 }
 
 function App() {
-  const [theme] = useDarkMode();
 
   useEffect(() => {
     if (messaging !== null) {
@@ -82,8 +77,6 @@ function App() {
 
   return (
       <div>
-      <ThemeProvider theme={theme === 'l' ? lightTheme : darkTheme}>
-          <GlobalStyles />
           <BrowserRouter>
             <div>
               <Navbar/>
@@ -125,9 +118,6 @@ function App() {
               </Switch>
             </div>
           </BrowserRouter>
-          <footer>
-          </footer>
-      </ThemeProvider>
       </div>
   );
 }
