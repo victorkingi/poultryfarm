@@ -49,18 +49,21 @@ export const sendMoney = (money) => {
 
                                     } else {
                                         transaction.update(currentDocRef, {
+                                            cloud: false,
                                             balance: senderNewBalance,
                                             submittedBy: fullName,
                                             submittedOn: firestore.FieldValue.serverTimestamp()
                                         });
 
                                         transaction.update(receiverDocRef, {
+                                            cloud: false,
                                             balance: firestore.FieldValue.increment(amount),
                                             submittedBy: fullName,
                                             submittedOn: firestore.FieldValue.serverTimestamp()
                                         });
 
                                         transaction.set(userLogRef, {
+                                            cloud: false,
                                             event: 'sent money to ' + name,
                                             receiver: name,
                                             amount: amount,
@@ -122,7 +125,7 @@ export const sendMoney = (money) => {
 
 //if a customer has taken trays but hasn't paid, hasPaidLate fires
 export const hasPaidLate = (details) => {
-    return function (dispatch, getState, {getFirebase, getFirestore}){
+    return (dispatch, getState, {getFirebase, getFirestore}) => {
         setPerformanceStart();
 
         //make async call to database
@@ -132,44 +135,52 @@ export const hasPaidLate = (details) => {
         const firebase = getFirebase();
         const user = firebase.auth().currentUser;
         const amountDue = parseInt(details.amountDue);
-        const salesDocRef = firestore.collection("sales").doc(details.id);
+        const salesRef = firestore.collection("sales");
         const currentDocRef = firestore.collection("current").doc(fullName);
-        const currentJeffDocRef = firestore.collection("current").doc("Jeff Karue");
-        const latePaymentDocRef = firestore.collection("latePayment").doc(details.id);
+        const latePaymentRef = firestore.collection("latePayment");
         const userLogRef = firestore.collection("userLogs").doc(user.uid).collection("logs").doc();
 
-        const batch = firestore.batch();
+        return salesRef.where("docId", "==", details.docId).where("submittedOn", "==", details.submittedOn).get()
+            .then((query) => {
+                query.forEach((doc) => {
+                    latePaymentRef.where("docId", "==", details.docId)
+                        .where("submittedOn", "==", details.submittedOn).get()
+                        .then((innerQuery) => {
+                            innerQuery.forEach((lateDoc) => {
+                                const batch = firestore.batch();
+                                const salesDocRef = firestore.collection("sales").doc(doc.id);
+                                const latePaymentDocRef = firestore.collection("latePayment").doc(lateDoc.id);
 
-        if (details.section === "Simbi") {
-            batch.update(currentJeffDocRef, {
-                balance: firestore.FieldValue.increment(amountDue),
-                submittedOn: firestore.FieldValue.serverTimestamp()
-            });
-        } else {
-            batch.update(currentDocRef, {
-                balance: firestore.FieldValue.increment(amountDue),
-                submittedOn: firestore.FieldValue.serverTimestamp()
-            });
-        }
+                                batch.update(currentDocRef, {
+                                    cloud: false,
+                                    balance: firestore.FieldValue.increment(amountDue),
+                                    submittedOn: firestore.FieldValue.serverTimestamp()
+                                });
 
-        batch.update(salesDocRef, {status: true});
+                                batch.update(salesDocRef, {status: true, cloud: false});
 
-        batch.set(userLogRef, {
-            event: 'late payment from ' + details.buyer,
-            earned: amountDue,
-            submittedBy: fullName,
-            submittedOn: firestore.FieldValue.serverTimestamp()
-        });
+                                batch.set(userLogRef, {
+                                    cloud: false,
+                                    event: 'late payment from ' + details.buyer,
+                                    earned: amountDue,
+                                    submittedBy: fullName,
+                                    submittedOn: firestore.FieldValue.serverTimestamp()
+                                });
 
-        batch.delete(latePaymentDocRef);
+                                batch.delete(latePaymentDocRef);
 
-        batch.commit().then(() => {
-            dispatch({type: 'LATE_REPAID'});
-        }).catch((err) => {
-            dispatch({type: 'LATE_ERROR'});
-            window.alert("ERROR: " + err.message);
-        });
-        setPerformanceEnd('LATE_PAYMENT_TIME');
+                                batch.commit().then(() => {
+                                    dispatch({type: 'LATE_REPAID'});
+                                }).catch((err) => {
+                                    dispatch({type: 'LATE_ERROR'});
+                                    window.alert("ERROR: " + err.message);
+                                });
+                                setPerformanceEnd('LATE_PAYMENT_TIME');
+                            })
+                        })
+
+                })
+            })
     }
 }
 
@@ -185,104 +196,111 @@ export const weClearedOurDebt = (details) => {
         const firebase = getFirebase();
         const user = firebase.auth().currentUser;
         const balance = parseInt(details.balance);
-        const id = details.id;
-        const halfId = id.substring(0, 7);
-        const buyDocRef = firestore.collection("buys").doc(details.id);
+        const buyRef = firestore.collection("buys");
         const currentDocRef = firestore.collection("current").doc(fullName);
-        const oweJeffDocRef = firestore.collection("oweJeff").doc(halfId);
-        const otherDebtDocRef = firestore.collection("otherDebt").doc(details.id);
+        const oweJeffDocRef = firestore.collection("oweJeff").doc("Amount");
+        const otherDebtRef = firestore.collection("otherDebt");
         const userLogRef = firestore.collection("userLogs").doc(user.uid).collection("logs").doc();
 
-        firestore.runTransaction(function (transaction) {
+        return buyRef.where("docId", "==", details.docId).where("submittedOn", "==", details.submittedOn).get()
+            .then((query) => {
+                query.forEach((doc) => {
+                    otherDebtRef.where("docId", "==", details.docId)
+                        .where("submittedOn", "==", details.submittedOn).get()
+                        .then((innerQuery) => {
+                            innerQuery.forEach((debtDoc) => {
+                                const buyDocRef = firestore.collection("buys").doc(doc.id);
+                                const otherDebtDocRef = firestore.collection("otherDebt").doc(debtDoc.id);
 
-            return transaction.get(currentDocRef).then(function (currentDoc) {
-                return transaction.get(buyDocRef).then(function (buyDoc) {
-                    return transaction.get(oweJeffDocRef).then(function (oweJeffDoc) {
-                        return transaction.get(otherDebtDocRef).then(function (otherDebtDoc) {
-                                if (currentDoc.exists) {
-                                    const currentData = currentDoc.data().balance;
-                                    const final = parseInt(currentData) - parseInt(details.balance);
+                                firestore.runTransaction((transaction) => {
+                                    return transaction.get(currentDocRef).then(function (currentDoc) {
+                                        return transaction.get(buyDocRef).then(function (buyDoc) {
+                                            return transaction.get(oweJeffDocRef).then(function (oweJeffDoc) {
+                                                return transaction.get(otherDebtDocRef).then(function (otherDebtDoc) {
+                                                    if (currentDoc.exists) {
+                                                        const currentData = currentDoc.data().balance;
+                                                        const final = parseInt(currentData) - parseInt(details.balance);
 
-                                    if (final < 0 && user.email !== "jeffkarue@gmail.com") {
+                                                        if (final < 0 && user.email !== "jeffkarue@gmail.com") {
 
-                                        return Promise.reject("ERROR: Insufficient funds");
-                                    } else if (final < 0 && user.email === "jeffkarue@gmail.com") {
-                                        const newFinal = final * -1;
+                                                            return Promise.reject("ERROR: Insufficient funds");
+                                                        } else if (final < 0 && user.email === "jeffkarue@gmail.com") {
+                                                            const newFinal = final * -1;
 
-                                        transaction.update(currentDocRef, {
-                                            balance: 0,
-                                            submittedBy: fullName,
-                                            submittedOn: firestore.FieldValue.serverTimestamp()
-                                        });
+                                                            transaction.update(currentDocRef, {
+                                                                cloud: false,
+                                                                balance: 0,
+                                                                submittedBy: fullName,
+                                                                submittedOn: firestore.FieldValue.serverTimestamp()
+                                                            });
 
-                                        if (oweJeffDoc.exists) {
-                                            transaction.update(oweJeffDocRef, {
-                                                balance: firestore.FieldValue.increment(newFinal),
-                                                submittedBy: fullName,
-                                                submittedOn: firestore.FieldValue.serverTimestamp()
-                                            });
-                                        } else {
-                                            transaction.set(oweJeffDocRef, {
-                                                UsedOn: details.debtor,
-                                                balance,
-                                                submittedBy: fullName,
-                                                submittedOn: firestore.FieldValue.serverTimestamp()
-                                            });
-                                        }
-                                        transaction.update(buyDocRef, {status: true});
+                                                            transaction.update(oweJeffDocRef, {
+                                                                cloud: false,
+                                                                balance: firestore.FieldValue.increment(newFinal),
+                                                                submittedBy: fullName,
+                                                                submittedOn: firestore.FieldValue.serverTimestamp()
+                                                            });
 
-                                        transaction.delete(otherDebtDocRef);
+                                                            transaction.update(buyDocRef, {status: true, cloud: false});
 
-                                        transaction.set(userLogRef, {
-                                            event: `balance of ${details.debtor} cleared by jeff so we now owe jeff`,
-                                            amount: balance,
-                                            submittedBy: fullName,
-                                            submittedOn: firestore.FieldValue.serverTimestamp()
-                                        });
+                                                            transaction.delete(otherDebtDocRef);
 
-                                    } else if (final === 0 || final > 0) {
-                                        transaction.update(currentDocRef, {
-                                            balance: final,
-                                            submittedBy: fullName,
-                                            submittedOn: firestore.FieldValue.serverTimestamp()
-                                        });
+                                                            transaction.set(userLogRef, {
+                                                                cloud: false,
+                                                                event: `balance of ${details.debtor} cleared by jeff so we now owe jeff`,
+                                                                amount: balance,
+                                                                submittedBy: fullName,
+                                                                submittedOn: firestore.FieldValue.serverTimestamp()
+                                                            });
 
-                                        if (buyDoc.exists && otherDebtDoc.exists) {
-                                            transaction.update(buyDocRef, {status: true});
+                                                        } else if (final === 0 || final > 0) {
+                                                            transaction.update(currentDocRef, {
+                                                                cloud: false,
+                                                                balance: final,
+                                                                submittedBy: fullName,
+                                                                submittedOn: firestore.FieldValue.serverTimestamp()
+                                                            });
 
-                                            transaction.delete(otherDebtDocRef);
+                                                            if (buyDoc.exists && otherDebtDoc.exists) {
+                                                                transaction.update(buyDocRef, {status: true, cloud: false});
 
-                                        } else {
-                                            return Promise.reject("ERROR: No document found");
-                                        }
+                                                                transaction.delete(otherDebtDocRef);
 
-                                        transaction.set(userLogRef, {
-                                            event: 'balance cleared of ' + details.debtor,
-                                            amount: balance,
-                                            submittedBy: fullName,
-                                            submittedOn: firestore.FieldValue.serverTimestamp()
-                                        });
+                                                            } else {
+                                                                return Promise.reject("ERROR: No document found");
+                                                            }
 
-                                    }
-                                } else {
-                                    return Promise.reject("ERROR: No document found");
-                                }
-                        })
-                    })
-                })
-            })
-        }).then(() => {
-            dispatch({type: 'OWE_OTHERS'});
-        }).catch((err) => {
-            const error = err.message || err;
-            dispatch({type: 'CLEAR_ERROR', error});
+                                                            transaction.set(userLogRef, {
+                                                                cloud: false,
+                                                                event: 'balance cleared of ' + details.debtor,
+                                                                amount: balance,
+                                                                submittedBy: fullName,
+                                                                submittedOn: firestore.FieldValue.serverTimestamp()
+                                                            });
 
-            window.alert(error);
-            window.location = '/';
-        })
-        setPerformanceEnd('CLEAR_DEBT_TIME');
+                                                        }
+                                                    } else {
+                                                        return Promise.reject("ERROR: No document found");
+                                                    }
+                                                })
+                                            })
+                                        })
+                                    })
+                                }).then(() => {
+                                    dispatch({type: 'OWE_OTHERS'});
+                                }).catch((err) => {
+                                    const error = err.message || err;
+                                    dispatch({type: 'CLEAR_ERROR', error});
+
+                                    window.alert(error);
+                                    window.location = '/';
+                                })
+                                setPerformanceEnd('CLEAR_DEBT_TIME');
+                            });
+                        });
+                });
+        });
     }
-
 }
 
 //executed if we want to pay back Jeff
@@ -297,7 +315,7 @@ export const payBackJeff = (details) => {
         const firebase = getFirebase();
         const user = firebase.auth().currentUser;
         const currentDocRef = firestore.collection("current").doc(fullName);
-        const oweJeffDocRef = firestore.collection("oweJeff").doc(details.id);
+        const oweJeffDocRef = firestore.collection("oweJeff").doc("Amount");
         const bankDocRef = firestore.collection("current").doc("Bank Account");
         const userLogRef = firestore.collection("userLogs").doc(user.uid).collection("logs").doc();
 
@@ -315,6 +333,7 @@ export const payBackJeff = (details) => {
                                     const newFinal = final * -1;
 
                                     transaction.set(userLogRef, {
+                                        cloud: false,
                                         event: 'some debt paid off',
                                         amount: currentData,
                                         submittedBy: fullName,
@@ -322,6 +341,7 @@ export const payBackJeff = (details) => {
                                     });
 
                                     transaction.update(currentDocRef, {
+                                        cloud: false,
                                         balance: 0,
                                         submittedBy: fullName,
                                         submittedOn: firestore.FieldValue.serverTimestamp()
@@ -329,6 +349,7 @@ export const payBackJeff = (details) => {
 
 
                                     transaction.update(oweJeffDocRef, {
+                                        cloud: false,
                                         balance: newFinal,
                                         submittedBy: fullName,
                                         submittedOn: firestore.FieldValue.serverTimestamp()
@@ -337,6 +358,7 @@ export const payBackJeff = (details) => {
                                 } else if (final === 0 || final > 0) {
 
                                     transaction.set(userLogRef, {
+                                        cloud: false,
                                         event: 'all debt paid off',
                                         amount: details.balance,
                                         submittedBy: fullName,
@@ -344,6 +366,7 @@ export const payBackJeff = (details) => {
                                     });
 
                                     transaction.update(currentDocRef, {
+                                        cloud: false,
                                         balance: final,
                                         submittedBy: fullName,
                                         submittedOn: firestore.FieldValue.serverTimestamp()
@@ -361,6 +384,7 @@ export const payBackJeff = (details) => {
                                         const newFinalBalance = finalBalance * -1;
 
                                         transaction.set(userLogRef, {
+                                            cloud: false,
                                             event: 'some debt paid off',
                                             amount: balance,
                                             submittedBy: fullName,
@@ -368,12 +392,14 @@ export const payBackJeff = (details) => {
                                         });
 
                                         transaction.update(bankDocRef, {
+                                            cloud: false,
                                             balance: 0,
                                             submittedBy: fullName,
                                             submittedOn: firestore.FieldValue.serverTimestamp()
                                         });
 
                                         transaction.update(oweJeffDocRef, {
+                                            cloud: false,
                                             balance: newFinalBalance,
                                             submittedBy: fullName,
                                             submittedOn: firestore.FieldValue.serverTimestamp()
@@ -382,6 +408,7 @@ export const payBackJeff = (details) => {
                                     } else if (finalBalance === 0 || finalBalance > 0) {
 
                                         transaction.set(userLogRef, {
+                                            cloud: false,
                                             event: 'all debt paid off',
                                             amount: details.balance,
                                             submittedBy: fullName,
@@ -389,6 +416,7 @@ export const payBackJeff = (details) => {
                                         });
 
                                         transaction.update(bankDocRef, {
+                                            cloud: false,
                                             balance: finalBalance,
                                             submittedBy: fullName,
                                             submittedOn: firestore.FieldValue.serverTimestamp()
@@ -398,6 +426,7 @@ export const payBackJeff = (details) => {
                                     }
 
                                     transaction.update(currentDocRef, {
+                                        cloud: false,
                                         balance: 0,
                                         submittedBy: fullName,
                                         submittedOn: firestore.FieldValue.serverTimestamp()
@@ -462,12 +491,14 @@ export const borrowSomeMoney = (details) => {
                         return Promise.reject("ERROR: Insufficient funds");
                     } else {
                         transaction.update(currentDocRef, {
+                            cloud: false,
                             balance: final,
                             submittedBy: fullName,
                             submittedOn: firestore.FieldValue.serverTimestamp()
                         });
 
                         transaction.set(borrowDocRef, {
+                            cloud: false,
                             borrowAmount: borrowAmount,
                             borrower: details.borrower,
                             key: key,
@@ -477,6 +508,7 @@ export const borrowSomeMoney = (details) => {
                         });
 
                         transaction.set(userLogRef, {
+                            cloud: false,
                             event: details.borrower + ' borrowed money',
                             amount: borrowAmount,
                             key: key,
@@ -533,6 +565,7 @@ export const borrowerReturnsFunds = (details) => {
                         return transaction.get(userLogRef).then(function (userLogDoc) {
                             if (currentDoc.exists) {
                                 transaction.update(currentDocRef, {
+                                    cloud: false,
                                     balance: firestore.FieldValue.increment(borrowAmount),
                                     submittedBy: fullName,
                                     submittedOn: firestore.FieldValue.serverTimestamp()
@@ -544,6 +577,7 @@ export const borrowerReturnsFunds = (details) => {
                                     return Promise.reject("ERROR: Contact admin for help");
                                 } else {
                                     transaction.set(userLogRef, {
+                                        cloud: false,
                                         event: 'received borrowed money from ' + details.borrower,
                                         amount: borrowAmount,
                                         key: key,

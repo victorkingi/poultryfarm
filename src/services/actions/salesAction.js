@@ -49,22 +49,20 @@ export const inputSell = (sales) => {
         const isLeap = leapYear(year);
         let status = JSON.parse(sales.status);
         const buyer = sales.buyerName ? sales.buyerName : sales.section;
-        const salesDocRef = buyer ? firestore.collection("sales").doc('Month ' + enteredMonth + ' Date ' + enteredDate
-            + ' ' + section + ': ' + buyer) : firestore.collection("sales").doc('Month ' + enteredMonth
-            + ' Date ' + enteredDate + ' ' + section);
+        const salesRef = `Month ${enteredMonth} Date ${enteredDate} ${section}: ${buyer}`;
+        const salesDocRef = firestore.collection("sales").doc();
         const currentDocRef = firestore.collection("current").doc(fullName);
         const currentJeffRef = firestore.collection("current").doc("Jeff Karue");
         const traysDocRef = firestore.collection("trays").doc("CurrentTrays");
         const userLogRef = firestore.collection("userLogs").doc(user.uid).collection("logs").doc();
-        const latePaymentDocRef = buyer ? firestore.collection("latePayment").doc('Month ' + enteredMonth
-            + ' Date ' + enteredDate + ' ' + section + ': ' + buyer) : firestore.collection("latePayment")
-            .doc('Month ' + enteredMonth + ' Date ' + enteredDate + ' ' + section);
+        const latePaymentDocRef = firestore.collection("latePayment").doc();
         const load = document.getElementById("loading-sales");
         let total = sales.trayNo ? parseInt(sales.trayNo) * parseInt(sales.trayPrice)
             : parseInt(sales.chickenNo) * parseInt(sales.chickenPrice);
         const dateChecks = dateCheck(enteredMonth, enteredDate, isLeap);
 
-        if (section === "Thika Farmers") {
+        if (section === "Thika Farmers" || section === "Simbi") {
+            sales.status = true
             status = true
         }
 
@@ -108,223 +106,237 @@ export const inputSell = (sales) => {
                     const newWeeklyTotal = total + prevWeeklyTotal;
                     const newMonthlyTotal = total + prevMonthlyTotal;
 
-                    return firestore.runTransaction(function (transaction) {
-                        return transaction.get(salesDocRef).then(function (salesDoc) {
-                            return transaction.get(currentDocRef).then(function (currentDoc) {
-                                return transaction.get(traysDocRef).then(function (traysDoc) {
-                                    return transaction.get(currentJeffRef).then(function (jeffDoc) {
-                                        function commonTransaction() {
-                                            if (traysDoc.exists) {
-                                                const trayData = traysDoc.data().number;
-                                                const final = parseInt(trayData) - parseInt(sales.trayNo);
-                                                if (final === 0 || final > 0) {
-                                                    transaction.update(traysDocRef, {
-                                                        number: final,
-                                                        submittedBy: profile.firstName + ' ' + profile.lastName,
-                                                        submittedOn: firestore.FieldValue.serverTimestamp()
-                                                    })
-                                                    return true;
-                                                } else {
-                                                    return false;
-                                                }
-                                            }
-                                        }
+                    firestore.collection("sales").where("docId", "==", salesRef).get()
+                        .then((query) => {
+                            if (query.size !== 0) {
+                                return new Error("ERROR: Data already exists!");
+                            } else {
 
-                                        if (salesDoc.exists) {
-                                            return Promise.reject("ERROR: Data already exists!");
-                                        } else {
-                                            if (user.uid && status) {
-                                                if (currentDoc.exists) {
-                                                    let transMade = false;
-                                                    if (sales.trayNo) {
-                                                        transMade = commonTransaction();
-                                                    } else if (sales.chickenNo) {
-                                                        transMade = true;
+                                return firestore.runTransaction(function (transaction) {
+                                    return transaction.get(currentDocRef).then(function (currentDoc) {
+                                        return transaction.get(salesDocRef).then((_saleDoc) => {
+                                            return transaction.get(traysDocRef).then(function (traysDoc) {
+                                                return transaction.get(currentJeffRef).then(function (jeffDoc) {
+                                                    function commonTransaction() {
+                                                        if (traysDoc.exists) {
+                                                            const trayData = traysDoc.data().number;
+                                                            const final = parseInt(trayData) - parseInt(sales.trayNo);
+                                                            if (final === 0 || final > 0) {
+                                                                transaction.update(traysDocRef, {
+                                                                    cloud: false,
+                                                                    number: final,
+                                                                    submittedBy: profile.firstName + ' ' + profile.lastName,
+                                                                    submittedOn: firestore.FieldValue.serverTimestamp()
+                                                                })
+                                                                return true;
+                                                            } else {
+                                                                return false;
+                                                            }
+                                                        }
                                                     }
-                                                    if (transMade) {
-                                                        transaction.set(salesDocRef, {
-                                                            ...sales,
-                                                            buyerName: buyer,
-                                                            key: key,
-                                                            weeklyTotal: newWeeklyTotal,
-                                                            monthlyTotal: newMonthlyTotal,
-                                                            date: new Date(year, newMonth, enteredDate, getHours, getMinutes, getSeconds),
-                                                            submittedBy: profile.firstName + ' ' + profile.lastName,
-                                                            submittedOn: firestore.FieldValue.serverTimestamp()
-                                                        });
 
-                                                        if (section === "Simbi" && jeffDoc.exists) {
-                                                            transaction.update(currentJeffRef, {
-                                                                balance: firestore.FieldValue.increment(total),
+                                                    if (_saleDoc.exists) {
+                                                        return Promise.reject("ERROR: Data already exists!");
+                                                    } else {
+                                                        if (user.uid && status) {
+                                                            if (currentDoc.exists) {
+                                                                let transMade = false;
+                                                                if (sales.trayNo) {
+                                                                    transMade = commonTransaction();
+                                                                } else if (sales.chickenNo) {
+                                                                    transMade = true;
+                                                                }
+                                                                if (transMade) {
+                                                                    transaction.set(salesDocRef, {
+                                                                        ...sales,
+                                                                        cloud: false,
+                                                                        docId: salesRef,
+                                                                        buyerName: buyer,
+                                                                        key: key,
+                                                                        weeklyTotal: newWeeklyTotal,
+                                                                        monthlyTotal: newMonthlyTotal,
+                                                                        date: new Date(year, newMonth, enteredDate, getHours, getMinutes, getSeconds),
+                                                                        submittedBy: profile.firstName + ' ' + profile.lastName,
+                                                                        submittedOn: firestore.FieldValue.serverTimestamp()
+                                                                    });
+
+                                                                    if (section === "Simbi" && jeffDoc.exists) {
+                                                                        transaction.update(currentJeffRef, {
+                                                                            cloud: false,
+                                                                            balance: firestore.FieldValue.increment(total),
+                                                                            submittedBy: profile.firstName + ' ' + profile.lastName,
+                                                                            submittedOn: firestore.FieldValue.serverTimestamp()
+                                                                        });
+
+                                                                    } else if (section !== "Thika Farmers") {
+                                                                        transaction.update(currentDocRef, {
+                                                                            cloud: false,
+                                                                            balance: firestore.FieldValue.increment(total),
+                                                                            submittedBy: profile.firstName + ' ' + profile.lastName,
+                                                                            submittedOn: firestore.FieldValue.serverTimestamp()
+                                                                        });
+                                                                    }
+                                                                    transaction.set(userLogRef, {
+                                                                        cloud: false,
+                                                                        event: 'sale ' + sales.section + ' to ' + buyer,
+                                                                        earned: total,
+                                                                        key: key,
+                                                                        submittedBy: profile.firstName + ' ' + profile.lastName,
+                                                                        submittedOn: firestore.FieldValue.serverTimestamp()
+                                                                    });
+                                                                } else {
+                                                                    return Promise.reject("ERROR: No trays in store!");
+                                                                }
+                                                            } else {
+                                                                return Promise.reject("ERROR: Document doesn't exist!");
+                                                            }
+                                                        } else if (user.uid && !status) {
+                                                            let transMade = false;
+                                                            if (sales.trayNo) {
+                                                                transMade = commonTransaction();
+                                                            }
+                                                            if (transMade) {
+
+                                                                transaction.set(latePaymentDocRef, {
+                                                                    cloud: false,
+                                                                    amountDue: total,
+                                                                    docId: salesRef,
+                                                                    trayNo: sales.trayNo,
+                                                                    key: key,
+                                                                    trayPrice: sales.trayPrice,
+                                                                    date: new Date(year, newMonth, enteredDate, getHours, getMinutes, getSeconds),
+                                                                    section: sales.section,
+                                                                    buyer: buyer,
+                                                                    submittedBy: profile.firstName + ' ' + profile.lastName,
+                                                                    submittedOn: firestore.FieldValue.serverTimestamp()
+                                                                })
+                                                            } else if (sales.chickenNo) {
+                                                                transaction.set(latePaymentDocRef, {
+                                                                    cloud: false,
+                                                                    docId: salesRef,
+                                                                    amountDue: total,
+                                                                    chickenNo: sales.chickenNo,
+                                                                    key: key,
+                                                                    weeklyTotal: newWeeklyTotal,
+                                                                    monthlyTotal: newMonthlyTotal,
+                                                                    chickenPrice: sales.chickenPrice,
+                                                                    date: new Date(year, newMonth, enteredDate, getHours, getMinutes, getSeconds),
+                                                                    section: sales.section,
+                                                                    buyer: buyer,
+                                                                    submittedBy: profile.firstName + ' ' + profile.lastName,
+                                                                    submittedOn: firestore.FieldValue.serverTimestamp()
+                                                                })
+                                                            }
+
+                                                            transaction.set(salesDocRef, {
+                                                                ...sales,
+                                                                cloud: false,
+                                                                docId: salesRef,
+                                                                buyerName: buyer,
+                                                                key: key,
+                                                                weeklyTotal: newWeeklyTotal,
+                                                                monthlyTotal: newMonthlyTotal,
+                                                                date: new Date(year, newMonth, enteredDate, getHours, getMinutes, getSeconds),
                                                                 submittedBy: profile.firstName + ' ' + profile.lastName,
                                                                 submittedOn: firestore.FieldValue.serverTimestamp()
                                                             });
 
-                                                        } else if (section !== "Thika Farmers") {
-                                                            transaction.update(currentDocRef, {
-                                                                balance: firestore.FieldValue.increment(total),
+                                                            transaction.set(userLogRef, {
+                                                                cloud: false,
+                                                                event: 'sale ' + sales.section + ' to ' + buyer + ' but not paid',
+                                                                earned: total,
+                                                                key: key,
                                                                 submittedBy: profile.firstName + ' ' + profile.lastName,
                                                                 submittedOn: firestore.FieldValue.serverTimestamp()
                                                             });
                                                         }
-                                                        transaction.set(userLogRef, {
-                                                            event: 'sale ' + sales.section + ' to ' + buyer,
-                                                            earned: total,
-                                                            key: key,
-                                                            submittedBy: profile.firstName + ' ' + profile.lastName,
-                                                            submittedOn: firestore.FieldValue.serverTimestamp()
-                                                        });
-                                                    } else {
-                                                        return Promise.reject("ERROR: No trays in store!");
                                                     }
-                                                } else {
-                                                    return Promise.reject("ERROR: Document doesn't exist!");
-                                                }
-                                            } else if (user.uid && !status) {
-                                                let transMade = false;
-                                                if (sales.trayNo) {
-                                                    transMade = commonTransaction();
-                                                }
-                                                if (transMade) {
-
-                                                    transaction.set(latePaymentDocRef, {
-                                                        amountDue: total,
-                                                        trayNo: sales.trayNo,
-                                                        key: key,
-                                                        trayPrice: sales.trayPrice,
-                                                        date: new Date(year, newMonth, enteredDate, getHours, getMinutes, getSeconds),
-                                                        section: sales.section,
-                                                        buyer: buyer,
-                                                        submittedBy: profile.firstName + ' ' + profile.lastName,
-                                                        submittedOn: firestore.FieldValue.serverTimestamp()
-                                                    })
-                                                } else if (sales.chickenNo) {
-                                                    transaction.set(latePaymentDocRef, {
-                                                        amountDue: total,
-                                                        chickenNo: sales.chickenNo,
-                                                        key: key,
-                                                        weeklyTotal: newWeeklyTotal,
-                                                        monthlyTotal: newMonthlyTotal,
-                                                        chickenPrice: sales.chickenPrice,
-                                                        date: new Date(year, newMonth, enteredDate, getHours, getMinutes, getSeconds),
-                                                        section: sales.section,
-                                                        buyer: buyer,
-                                                        submittedBy: profile.firstName + ' ' + profile.lastName,
-                                                        submittedOn: firestore.FieldValue.serverTimestamp()
-                                                    })
-                                                }
-
-                                                transaction.set(salesDocRef, {
-                                                    ...sales,
-                                                    buyerName: buyer,
-                                                    key: key,
-                                                    weeklyTotal: newWeeklyTotal,
-                                                    monthlyTotal: newMonthlyTotal,
-                                                    date: new Date(year, newMonth, enteredDate, getHours, getMinutes, getSeconds),
-                                                    submittedBy: profile.firstName + ' ' + profile.lastName,
-                                                    submittedOn: firestore.FieldValue.serverTimestamp()
-                                                });
-
-                                                transaction.set(userLogRef, {
-                                                    event: 'sale ' + sales.section + ' to ' + buyer + ' but not paid',
-                                                    earned: total,
-                                                    key: key,
-                                                    submittedBy: profile.firstName + ' ' + profile.lastName,
-                                                    submittedOn: firestore.FieldValue.serverTimestamp()
-                                                });
-
-                                            }
-                                        }
+                                                })
+                                            })
+                                        })
                                     })
-                                })
-                            })
-                        })
-                    }).then(() => {
-                        const batch = firestore.batch();
-                        if (section === "Thika Farmers") {
+                                }).then(() => {
+                                    const batch = firestore.batch();
+                                    if (section === "Thika Farmers") {
 
-                            firestore.collection("otherDebt").orderBy("date", "desc").get().then((snapshot) => {
-                                let profitMade = undefined;
+                                        firestore.collection("otherDebt").orderBy("date", "desc").get().then((snapshot) => {
+                                            let profitMade = undefined;
 
-                                if (snapshot.size === 0) {
-                                    return null;
-                                }
-                                for (let i = 0; i < snapshot.size; i++) {
-                                    const balance = parseInt(snapshot.docs[i].data().balance);
-                                        const final = total - balance;
-                                        const otherDebtDocRef = firestore.collection("otherDebt").doc(snapshot.docs[i].id);
-
-                                        if (final < 0) {
-                                            const newFinal = final * -1;
-                                            batch.update(otherDebtDocRef, {
-                                                balance: newFinal,
-                                                updateKey: key,
-                                                submittedOn: firestore.FieldValue.serverTimestamp()
-                                            });
-                                            break;
-
-                                        } else if (final === 0) {
-                                            batch.delete(otherDebtDocRef);
-                                            break;
-
-                                        } else if (final > 0) {
-                                            batch.delete(otherDebtDocRef);
-                                            total = final;
-
-                                            if (snapshot.size - 1 === i) {
-                                                profitMade = final;
+                                            if (snapshot.size === 0) {
+                                                return null;
                                             }
-                                        }
-                                }
+                                            for (let i = 0; i < snapshot.size; i++) {
+                                                const balance = parseInt(snapshot.docs[i].data().balance);
+                                                const final = total - balance;
+                                                const otherDebtDocRef = firestore.collection("otherDebt").doc(snapshot.docs[i].id);
 
-                                // a special case whereby all Feeds debt docs have been deleted but we made a profit
-                                //hence thika farmers will owe us
-                                if (profitMade) {
-                                    const newVal = profitMade * -1;
-                                    const thikaFarmDebtRef = firestore.collection("otherDebt").doc("TotalThikaFarmers");
+                                                if (final < 0) {
+                                                    const newFinal = final * -1;
+                                                    batch.update(otherDebtDocRef, {
+                                                        cloud: false,
+                                                        balance: newFinal,
+                                                        updateKey: key,
+                                                        submittedOn: firestore.FieldValue.serverTimestamp()
+                                                    });
+                                                    break;
 
-                                    batch.update(thikaFarmDebtRef, {
-                                        total: firestore.FieldValue.increment(newVal),
-                                        submittedOn: firestore.FieldValue.serverTimestamp()
-                                    });
-                                }
+                                                } else if (final === 0) {
+                                                    batch.delete(otherDebtDocRef);
+                                                    break;
 
-                                batch.commit().then(() => {
-                                    dispatch({type: 'INPUT_SALES', sales});
-                                    window.alert("Data Submitted");
+                                                } else if (final > 0) {
+                                                    batch.delete(otherDebtDocRef);
+                                                    total = final;
+
+                                                    if (snapshot.size - 1 === i) {
+                                                        profitMade = final;
+                                                    }
+                                                }
+                                            }
+
+                                            // a special case whereby all Feeds debt docs have been deleted but we made a profit
+                                            //hence thika farmers will owe us
+                                            if (profitMade) {
+                                                const newVal = profitMade * -1;
+                                                const thikaFarmDebtRef = firestore.collection("otherDebt").doc("TotalThikaFarmers");
+
+                                                batch.update(thikaFarmDebtRef, {
+                                                    cloud: false,
+                                                    total: firestore.FieldValue.increment(newVal),
+                                                    submittedOn: firestore.FieldValue.serverTimestamp()
+                                                });
+                                            }
+
+                                            batch.commit().then(() => {
+                                                dispatch({type: 'INPUT_SALES', sales});
+                                                window.alert("Data Submitted");
+                                                load.style.display = 'none';
+                                                clearForm('sales-form');
+                                                setPerformanceEnd('SELL_TIME');
+                                            });
+
+                                        }).catch((err) => {
+                                            console.log("error, ", err.message);
+                                        });
+
+                                    } else {
+                                        dispatch({type: 'INPUT_SALES', sales});
+                                        window.alert("Data Submitted");
+                                        load.style.display = 'none';
+                                        clearForm('sales-form');
+                                        setPerformanceEnd('SELL_TIME');
+                                    }
+
+                                }).catch((err) => {
+                                    const error = err.message || err;
+                                    dispatch({type: 'INPUT_SALES_ERROR', error});
+                                    window.alert(error);
                                     load.style.display = 'none';
-                                    clearForm('sales-form');
+                                    window.location = '/';
                                     setPerformanceEnd('SELL_TIME');
                                 });
-
-                            }).catch((err) => {
-                                console.log("error, ", err.message);
-                            });
-
-                        } else {
-                            dispatch({type: 'INPUT_SALES', sales});
-                            window.alert("Data Submitted");
-                            load.style.display = 'none';
-                            clearForm('sales-form');
-                            setPerformanceEnd('SELL_TIME');
-                        }
-
-                    }).catch((err) => {
-                        const error = err.message || err;
-                        dispatch({type: 'INPUT_SALES_ERROR', error});
-                        window.alert(error);
-                        load.style.display = 'none';
-                        window.location = '/';
-                        setPerformanceEnd('SELL_TIME');
-                    });
-                } else {
-                    const error = "No previous sales doc found";
-                    dispatch({type: 'INPUT_SALES_ERROR', error});
-
-                    window.alert(`ERROR: ${error}`);
-                    load.style.display = 'none';
-                    window.location = '/';
-                    setPerformanceEnd('SELL_TIME');
+                            }
+                        })
                 }
             })
         })

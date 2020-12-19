@@ -28,11 +28,11 @@ const moneyReducer = (state = initState, action) => {
             return state;
 
         case 'LATE_REPAID':
-            console.log('payment successful');
+            console.log('completed successfully');
             return state;
 
         case 'LATE_ERROR':
-            console.log('error with payment');
+            console.log('ERROR Occurred');
             return state;
         case 'MONEY_ERROR':
             console.log('error sending money', action.error);

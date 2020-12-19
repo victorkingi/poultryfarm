@@ -22,7 +22,7 @@ export const inputDeadSick = (deadSick, image) => {
         const enteredDate = parseInt(deadSick.date);
         const year = date.getFullYear();
         const isLeap = leapYear(year);
-        const deadSickDocRef = firestore.collection("deadSick").doc('Month ' + enteredMonth + ' Date ' + enteredDate + ' ' + section);
+        const deadSickDocRef = firestore.collection("deadSick").doc();
         const userLogRef = firestore.collection("userLogs").doc(user.uid).collection("logs").doc();
         const chickenDocRef = firestore.collection("chickenDetails").doc("2020");
         const load = document.getElementById("loading-dead-sick");
@@ -77,74 +77,89 @@ export const inputDeadSick = (deadSick, image) => {
             },
             function () {
                 uploadTask.snapshot.ref.getDownloadURL().then(function(url) {
-                    return firestore.runTransaction(function (transaction) {
-                        return transaction.get(deadSickDocRef).then(function (deadSickDoc) {
-                            return transaction.get(chickenDocRef).then(function (chickenDoc) {
-                                if (deadSickDoc.exists) {
-                                    return Promise.reject("ERROR: Data already exists!");
-                                } else {
+                    firestore.collection("deadSick")
+                        .where("docId", "==", `Month ${enteredMonth} Date ${enteredDate} ${section}`)
+                        .get()
+                        .then((query) => {
+                            if (query.size !== 0) {
+                                return new Error("ERROR: Data already exists!");
+                            } else {
+                                return firestore.runTransaction(function (transaction) {
+                                    return transaction.get(deadSickDocRef).then(function (deadSickDoc) {
+                                        return transaction.get(chickenDocRef).then(function (chickenDoc) {
+                                            if (deadSickDoc.exists) {
+                                                return Promise.reject("ERROR: Data already exists!");
+                                            } else {
 
-                                    if (section === "Dead" && chickenDoc.exists) {
+                                                if (section === "Dead" && chickenDoc.exists) {
 
-                                        if (place === "Cage") {
-                                            const num = parseInt(chickenDoc.data().cage);
-                                            const newNum = num - 1;
-                                            transaction.update(chickenDocRef, {
-                                                cage: newNum
-                                            })
-                                        } else if (place === "House") {
-                                            const num = parseInt(chickenDoc.data().house);
-                                            const newNum = num - 1;
-                                            transaction.update(chickenDocRef, {
-                                                house: newNum
-                                            })
-                                        }
+                                                    if (place === "Cage") {
+                                                        const num = parseInt(chickenDoc.data().cage);
+                                                        const newNum = num - 1;
+                                                        transaction.update(chickenDocRef, {
+                                                            cloud: false,
+                                                            cage: newNum
+                                                        })
+                                                    } else if (place === "House") {
+                                                        const num = parseInt(chickenDoc.data().house);
+                                                        const newNum = num - 1;
+                                                        transaction.update(chickenDocRef, {
+                                                            cloud: false,
+                                                            house: newNum
+                                                        })
+                                                    }
 
-                                        const data = parseInt(chickenDoc.data().total);
-                                        const final = data - 1;
+                                                    const data = parseInt(chickenDoc.data().total);
+                                                    const final = data - 1;
 
-                                        if (final < 0) {
-                                            return new Error("ERROR: No more chickens left!");
-                                        } else {
-                                            transaction.update(chickenDocRef, {
-                                                total: final,
-                                                submittedOn: firestore.FieldValue.serverTimestamp()
-                                            })
-                                        }
+                                                    if (final < 0) {
+                                                        return new Error("ERROR: No more chickens left!");
+                                                    } else {
+                                                        transaction.update(chickenDocRef, {
+                                                            cloud: false,
+                                                            total: final,
+                                                            submittedOn: firestore.FieldValue.serverTimestamp()
+                                                        })
+                                                    }
 
-                                    }
+                                                }
 
-                                    transaction.set(deadSickDocRef, {
-                                        ...deadSick,
-                                        photoURL: url,
-                                        date: new Date(year, newMonth, enteredDate, getHours, getMinutes, getSeconds),
-                                        submittedBy: profile.firstName + ' ' + profile.lastName,
-                                        submittedOn: firestore.FieldValue.serverTimestamp()
+                                                transaction.set(deadSickDocRef, {
+                                                    cloud: false,
+                                                    ...deadSick,
+                                                    docId: `Month ${enteredMonth} Date ${enteredDate} ${section}`,
+                                                    photoURL: url,
+                                                    date: new Date(year, newMonth, enteredDate, getHours, getMinutes, getSeconds),
+                                                    submittedBy: profile.firstName + ' ' + profile.lastName,
+                                                    submittedOn: firestore.FieldValue.serverTimestamp()
 
+                                                })
+
+                                                transaction.set(userLogRef, {
+                                                    cloud: false,
+                                                    event: deadSick.section + " Chicken",
+                                                    submittedBy: profile.firstName + ' ' + profile.lastName,
+                                                    submittedOn: firestore.FieldValue.serverTimestamp()
+                                                })
+                                            }
+                                        })
                                     })
+                                }).then(() => {
+                                        dispatch({type: 'UPLOAD_DONE'});
+                                        window.alert("Data submitted");
+                                        load.style.display = 'none';
+                                        window.location.reload();
 
-                                    transaction.set(userLogRef, {
-                                        event: deadSick.section + " Chicken",
-                                        submittedBy: profile.firstName + ' ' + profile.lastName,
-                                        submittedOn: firestore.FieldValue.serverTimestamp()
-                                    })
-                                }
-                            })
-                        })
-                    }).then(() => {
-                        dispatch({type: 'UPLOAD_DONE'});
-                        window.alert("Data submitted");
-                        load.style.display = 'none';
-                        window.location.reload();
+                                    }).catch((err) => {
+                                        const error = err.message || err;
+                                        dispatch({type: 'UPLOAD_ERROR', error});
 
-                    }).catch((err) => {
-                        const error = err.message || err;
-                        dispatch({type: 'UPLOAD_ERROR', error});
-
-                        window.alert(error);
-                        load.style.display = 'none';
-                        window.location = '/';
-                    });
+                                        window.alert(error);
+                                        load.style.display = 'none';
+                                        window.location = '/';
+                                    });
+                            }
+                        });
                 });
             });
         setPerformanceEnd('DEAD_SICK_TIME');

@@ -29,6 +29,7 @@ import AllCharts from "./scenes/Charts/components/main/AllCharts";
 import InputBorrow from "./scenes/Input Pages/scenes/Borrowing Funds/components/InputBorrow";
 
 import {messaging} from "./services/api/firebase configurations/fbConfig";
+import Roll from "./scenes/Rollback/components/main/Roll";
 
 function componentDidMount() {
   navigator.serviceWorker.addEventListener("message", (message) => {
@@ -104,6 +105,7 @@ function App() {
                 <Route path='/eggs' component={Inputeggs}/>
                 <Route path='/send' component={Inputmoney}/>
                 <Route path='/d' component={InputDeadSick}/>
+                <Route path='/roll' component={Roll}/>
                 <Route path='/l' component={Late}/>
                 <Route path='/o' component={OtherDebts}/>
                 <Route path='/s' component={Sale}/>

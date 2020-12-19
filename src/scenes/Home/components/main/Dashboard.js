@@ -23,7 +23,7 @@ let period = "";
 function time() {
     if ((checkHour >= 0) && (checkHour <= 12)) {
         period = "Good Morning";
-    } else if ((checkHour >= 12) && (checkHour <= 18)) {
+    } else if ((checkHour >= 12) && (checkHour < 18)) {
         period = "Afternoon";
     } else {
         period = "Good Evening";

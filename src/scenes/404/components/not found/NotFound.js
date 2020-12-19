@@ -27,6 +27,61 @@ anime({
 function NotFound(props) {
     props.hideBars();
 
+ /*   const [seconds, setSeconds] = useState(59);
+    const [minutes, setMinutes] = useState(59);
+    const [hours, setHours] = useState(10);
+
+    const setValue = (val, num) => {
+        localStorage.setItem(val, num);
+    }
+
+    useEffect(() => {
+            const secSave = localStorage.getItem('second');
+            const minSave = localStorage.getItem('minute');
+            const hrSave = localStorage.getItem('hour');
+            if (secSave != null && minSave !== null && hrSave !== null) {
+                setSeconds(secSave);
+                setMinutes(minSave);
+                setHours(hrSave);
+            }
+    }, []);
+
+    if (seconds === 0 && hours !== 0) {
+        setSeconds(59);
+        setValue('second', seconds);
+    }
+    if (minutes === 0 && hours !== 0) {
+        setMinutes(59);
+        setValue('minute', minutes);
+    }
+
+    useEffect(() => {
+        const timer =
+            seconds > 0 && setInterval(() => setSeconds(seconds - 1), 1000);
+        setValue('second', seconds);
+        return () => clearInterval(timer);
+    }, [seconds]);
+
+    useEffect(() => {
+        const timer =
+            minutes > 0 && setInterval(() => setMinutes(minutes - 1), 60000);
+        setValue('minute', minutes);
+        return () => clearInterval(timer);
+    }, [minutes]);
+
+    useEffect(() => {
+        const timer =
+            hours > 0 && setInterval(() => setHours(hours - 1), 3600000);
+        setValue('hour', hours);
+
+        return () => clearInterval(timer);
+    }, [hours]);
+
+     <h1>Page under scheduled maintenance check back soon</h1>
+            <h1>Time left : {hours} H : {minutes} M : {seconds} S</h1>
+
+    */
+
     return (
         <div>
             <a href="/">

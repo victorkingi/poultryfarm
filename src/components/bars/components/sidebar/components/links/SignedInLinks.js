@@ -20,6 +20,8 @@ const SignedInLinks = function(props) {
                     <li>
                         <div className="divider"/>
                     </li>
+                    <br />
+                    <li><NavLink to='/roll'>Rewind</NavLink></li>
 
                     <li>
                         <span className="subheader">Inputs</span>
