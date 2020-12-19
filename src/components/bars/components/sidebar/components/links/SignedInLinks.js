@@ -4,10 +4,8 @@ import {connect} from 'react-redux';
 import {checkClaims, signOut} from "../../../../../../services/actions/authActions";
 
 const SignedInLinks = function(props) {
-    const {admin, changer, auth} = props;
+    const {admin, changer} = props;
     props.checkClaims();
-    const lastIndex = auth?.displayName.lastIndexOf(" ");
-    const initials = `${auth?.displayName.substring(0, 1)}${auth?.displayName.substring(lastIndex + 1, lastIndex + 2)}`
 
     if (admin) {
         return (
@@ -91,6 +89,9 @@ const SignedInLinks = function(props) {
                         <div className="divider"/>
                     </li>
 
+                    <br />
+                    <li><NavLink to='/roll'>Rewind</NavLink></li>
+
                     <li>
                         <span className="subheader">Inputs</span>
                     </li>
@@ -134,23 +135,7 @@ const SignedInLinks = function(props) {
         );
     } else {
         return (
-            <div className="container">
-                <ul>
-                    <li><NavLink to='/' className="btn btn-floating pink lighten-1">
-                        {props.profile.initials || initials}
-                    </NavLink></li>
-
-                    <li>
-                        <div className="divider"/>
-                    </li>
-
-                    <li>
-                        <span className="subheader">Exit</span>
-                    </li>
-
-                    <li><NavLink to='/signin' onClick={props.signOut}>Log Out</NavLink></li>
-                </ul>
-            </div>
+            <div />
         );
     }
 }
