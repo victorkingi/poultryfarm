@@ -42,6 +42,7 @@ export const inputTray = (eggs) => {
         const b2 = parseInt(eggs['B 2']);
         const c1 = parseInt(eggs['C 1']);
         const c2 = parseInt(eggs['C 2']);
+        const tempArr = [a1, a2, b1, b2, c1, c2];
         const house = parseInt(eggs['house']);
         const myTotal = a1 + a2 + b1 + b2 + c1 + c2 + house;
         const cagedTotal = a1 + a2 + b1 + b2 + c1 + c2;
@@ -49,6 +50,17 @@ export const inputTray = (eggs) => {
         const total = parseInt(myTotal);
         const load = document.getElementById("loading-eggs");
         const submit = document.getElementById("egg7");
+
+        for (let i = 0; i < tempArr.length; i++) {
+            if (tempArr[i] > 75 || tempArr[i] < 0) {
+                const error = "ERROR: Impossible values entered!";
+                dispatch({type: 'INPUT_BUYING_ERROR', error});
+                window.alert(error);
+                submit.style.display = 'block';
+                load.style.display = 'none';
+                return new Error("ERROR: Impossible values entered!");
+            }
+        }
 
         if (prevDate === 0) {
             prevMonth = prevMonth - 1;

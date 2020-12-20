@@ -1,4 +1,5 @@
 import {messaging} from "../api/firebase configurations/fbConfig";
+import {storage} from "../api/firebase configurations/fbConfig";
 
 export const hideBars = () => {
     return (dispatch) => {
@@ -6,28 +7,48 @@ export const hideBars = () => {
     }
 }
 
+// undo write events to database
 export const rollBack = (details) => {
     return (dispatch, getState, {getFirebase, getFirestore}) => {
         const firestore = getFirestore();
         const batch = firestore.batch();
         const rollDocRef = firestore.doc(details.docId);
         const rollBackDoc = firestore.collection("rollback").doc(details.id);
+        const storageRef = storage.ref();
 
         firestore.collection("rollback").where("isBatch", "==", details.isBatch)
             .get().then((snapshot) => {
-                console.log(details.prevValues);
-                if (details.action === "delete") {
+
+                if (details.action === "delete" && !details.imageId) {
+                    //this triggers rollback function again and when user deletes the rollback, it alternates
+                    //between 2 states
                     batch.delete(rollDocRef);
 
                 } else if (details.action === "create") {
-                    batch.set(rollDocRef, {...details.prevValues});
+                    batch.set(rollDocRef, {...details.prevValues, cloud: true});
 
                 }  else if (details.action === "update") {
-                    batch.update(rollDocRef, {...details.prevValues});
+                    batch.update(rollDocRef, {...details.prevValues, cloud: true});
 
+                } else if (details.action === "delete" && details.imageId) {
+                    //this triggers rollback function again and when user deletes the rollback, it alternates
+                    //between 2 states
+                    batch.delete(rollDocRef);
+                    // Create a reference to the file to delete
+                    const imageRef = storageRef.child(details.imageId);
+
+                    imageRef.delete().then(() => {
+                        // File deleted successfully
+                        return console.log("image deleted");
+                    }).catch(function(error) {
+                        // Uh-oh, an error occurred!
+                        window.alert(`ERROR: ${error}`);
+                        return console.error(error);
+                    });
                 }
                 batch.delete(rollBackDoc);
-                // if it wasn't a batch write/ transaction
+
+                // if it was a batch write/ transaction
                 if (snapshot.size !== 0) {
                     snapshot.docs.forEach((doc) => {
                         const data = doc.data();
@@ -35,17 +56,32 @@ export const rollBack = (details) => {
                         const actOnDocRef = firestore.doc(data.docId);
                         const prevValues = data.prevValues || null;
                         if (doc.id !== details.id) {
-                            if (data.action === "delete") {
+                            if (data.action === "delete" && !data.imageId) {
                                 batch.delete(actOnDocRef);
-
                             }
                             if (data.action === "create" && prevValues !== null) {
-                                batch.set(actOnDocRef, {...prevValues});
-
+                                batch.set(actOnDocRef, {...prevValues, cloud: true});
                             }
                             if (data.action === "update" && prevValues !== null) {
-                                batch.update(actOnDocRef, {...prevValues});
+                                batch.update(actOnDocRef, {...prevValues, cloud: true});
                             }
+                            if (data.action === "delete" && data.imageId) {
+                                //this triggers rollback function again and when user deletes the rollback, it alternates
+                                //between 2 states
+                                batch.delete(rollDocRef);
+                                // Create a reference to the file to delete
+                                const imageRef = storageRef.child(details.imageId);
+
+                                imageRef.delete().then(() => {
+                                    // File deleted successfully
+                                    return console.log("image deleted");
+                                }).catch(function(error) {
+                                    // Uh-oh, an error occurred!
+                                    window.alert(`ERROR: ${error}`);
+                                    return console.error(error);
+                                });
+                            }
+
                             batch.delete(queryDocRef);
                         }
                     });

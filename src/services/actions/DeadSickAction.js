@@ -95,14 +95,14 @@ export const inputDeadSick = (deadSick, image) => {
 
                                                     if (place === "Cage") {
                                                         const num = parseInt(chickenDoc.data().cage);
-                                                        const newNum = num - 1;
+                                                        const newNum = num - parseInt(deadSick.chickenNo);
                                                         transaction.update(chickenDocRef, {
                                                             cloud: false,
                                                             cage: newNum
                                                         })
                                                     } else if (place === "House") {
                                                         const num = parseInt(chickenDoc.data().house);
-                                                        const newNum = num - 1;
+                                                        const newNum = num - parseInt(deadSick.chickenNo);
                                                         transaction.update(chickenDocRef, {
                                                             cloud: false,
                                                             house: newNum
@@ -110,7 +110,7 @@ export const inputDeadSick = (deadSick, image) => {
                                                     }
 
                                                     const data = parseInt(chickenDoc.data().total);
-                                                    const final = data - 1;
+                                                    const final = data - parseInt(deadSick.chickenNo);
 
                                                     if (final < 0) {
                                                         return new Error("ERROR: No more chickens left!");
@@ -127,6 +127,7 @@ export const inputDeadSick = (deadSick, image) => {
                                                 transaction.set(deadSickDocRef, {
                                                     cloud: false,
                                                     ...deadSick,
+                                                    imageId: `deadSick/${image?.name}`,
                                                     docId: `Month ${enteredMonth} Date ${enteredDate} ${section}`,
                                                     photoURL: url,
                                                     date: new Date(year, newMonth, enteredDate, getHours, getMinutes, getSeconds),

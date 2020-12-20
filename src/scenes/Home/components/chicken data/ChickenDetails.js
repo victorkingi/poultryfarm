@@ -46,6 +46,8 @@ const ChickenDetails = function(props){
                                         } else if (status_m === 'Loss') {
                                             links = <div>{monthProfit}{weekProfit}</div>;
                                         }
+                                    } else {
+                                        links = <div>{weekProfit}{monthProfit}</div>;
                                     }
 
                                     return (

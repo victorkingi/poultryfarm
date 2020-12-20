@@ -29,7 +29,7 @@ const SignedInLinks = function(props) {
                     <li><NavLink to='/eggs'>Input Eggs</NavLink></li>
                     <li><NavLink to='/buy'>Input Purchases</NavLink></li>
                     <li><NavLink to='/ib'>Input Borrowing</NavLink></li>
-                    <li><NavLink to='/d'>Input Sick / Dead Chicken</NavLink></li>
+                    <li><NavLink to='/d'>Input Sick / Dead</NavLink></li>
 
                     <li>
                         <div className="divider"/>
