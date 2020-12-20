@@ -10,7 +10,7 @@
     "source": "functions"
   },
   "hosting": {
-    "target": "poultry101-6b1ed.web.app",
+    "target": "poultryfarm.web.app",
     "public": "build",
     "ignore": [
       "firebase.json",
