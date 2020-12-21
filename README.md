@@ -1,8 +1,5 @@
 # Poultry data keeping web app
 
-###### Current To-do
-Implement an undo algorithm when a write succeeds but the user gave a wrong value.
-
 ## Overview
 
 Demo version available at [poultry farming website demo](https://pdummy.web.app/) and a cool looking [404 page](https://pdummy.web.app/pppgtvt).
@@ -14,8 +11,9 @@ The demo doesn't include cloud functions since it is hosted on firebase spark pl
     1. calculate weekly and monthly profit run every sunday at 0100hrs CST Time zone for weekly profit and 1st of every month for monthly profit.
     1. calculate number of bags of feeds left in the farm every 24hrs and send push notification to farmer if less than 3.
     1. calculate total debt 1st of every month and send push notification to `admin` users.
+    
 1. **Firestore Triggers**
-
+    1. When a write is made to any document in any collection, a separate document is created called `rollback` which can be triggered from client side to go back to previous          state of document i.e. the undo algorithm.
     1. On submitting a purchase or sale a push notification is sent to every user subscribed to the topic `ADMIN_USERS`
     1. On submitting number of eggs collected, a push notification is sent to farmer if total trays in storage area is alot e.g. more than 100 trays.
     1. On submitting dead / sick chicken, a push notification is sent to all admin users that a chicken is sick and if dead, reduces total chicken count.
