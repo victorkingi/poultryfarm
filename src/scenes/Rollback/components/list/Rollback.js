@@ -7,11 +7,31 @@ const Rollback = ({roll}) => {
         return (
             <div className="project-list section">
                 {roll && roll.map(item => {
-                    return (
-                        <li key={item.id}>
-                            <RollbackSummary item={item}/>
-                        </li>
-                    )
+                    const user = item.docId?.substring(0, 8);
+                    const res = user
+                    === "userLogs" ? item.docId?.substring(9,
+                        item.docId?.lastIndexOf("/")) : null;
+                    const uid = res !== null ? res.substring(0, res.lastIndexOf("/")) : null;
+                    let name;
+                    if (uid === "1vMGrBhcwPXj2b4k2BlpAPyHAtc2") {
+                        name = "Babra";
+                    } else if (uid === "cMxQ5l47KmVackqSRBpaM3ieVCX2") {
+                        name = "Victor";
+                    } else if (uid === "jj9uon3O9LOaM6k5wtkeVUAy5wi2") {
+                        name = "Purity"
+                    } else if (uid === "uM7j65iqBzQmU5vJZCzAsOibba53") {
+                        name = "Jeff";
+                    }
+
+                    if (user && name) {
+                        return (
+                            <li key={item.id}>
+                                <RollbackSummary item={item} name={name} />
+                            </li>
+                        )
+                    } else {
+                        return <div key={item.id} />
+                    }
                 })}
             </div>
         );

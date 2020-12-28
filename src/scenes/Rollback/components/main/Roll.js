@@ -47,7 +47,8 @@ function Roll(props) {
 
 const mapStateToProps = (state) => {
     return {
-        roll: state.firestore.ordered.rollback
+        roll: state.firestore.ordered.rollback,
+        logs: state.firestore.ordered.userLogs
     }
 }
 
