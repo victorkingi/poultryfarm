@@ -28,7 +28,7 @@ const LatePaymentSummary = (late) => {
                     <p className="grey-text">{moment(time).calendar()}</p>
 
                     <div style={{display: 'none'}} id={`load${late.item.id}`}>
-                        <div className="preloader-wrapper medium active">
+                        <div className="preloader-wrapper small active">
                             <div className="spinner-layer spinner-blue">
                                 <div className="circle-clipper left">
                                     <div className="circle"/>
