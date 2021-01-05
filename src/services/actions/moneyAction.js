@@ -49,21 +49,21 @@ export const sendMoney = (money) => {
 
                                     } else {
                                         transaction.update(currentDocRef, {
-                                            cloud: false,
+                                            cloud: true,
                                             balance: senderNewBalance,
                                             submittedBy: fullName,
                                             submittedOn: firestore.FieldValue.serverTimestamp()
                                         });
 
                                         transaction.update(receiverDocRef, {
-                                            cloud: false,
+                                            cloud: true,
                                             balance: firestore.FieldValue.increment(amount),
                                             submittedBy: fullName,
                                             submittedOn: firestore.FieldValue.serverTimestamp()
                                         });
 
                                         transaction.set(userLogRef, {
-                                            cloud: false,
+                                            cloud: true,
                                             event: 'sent money to ' + name,
                                             receiver: name,
                                             amount: amount,
@@ -109,7 +109,7 @@ export const sendMoney = (money) => {
                         }
                     }).catch((err) => {
                         console.error(err);
-                        alert(err);
+                        window.alert(err);
                         submit.style.display = 'block';
                         load.style.display = 'none';
                         window.location = '/';
@@ -215,7 +215,6 @@ export const weClearedOurDebt = (details) => {
                                 firestore.runTransaction((transaction) => {
                                     return transaction.get(currentDocRef).then(function (currentDoc) {
                                         return transaction.get(buyDocRef).then(function (buyDoc) {
-                                            return transaction.get(oweJeffDocRef).then(function (oweJeffDoc) {
                                                 return transaction.get(otherDebtDocRef).then(function (otherDebtDoc) {
                                                     if (currentDoc.exists) {
                                                         const currentData = currentDoc.data().balance;
@@ -283,7 +282,6 @@ export const weClearedOurDebt = (details) => {
                                                         return Promise.reject("ERROR: No document found");
                                                     }
                                                 })
-                                            })
                                         })
                                     })
                                 }).then(() => {

@@ -1,5 +1,4 @@
-import {messaging} from "../api/firebase configurations/fbConfig";
-import {storage} from "../api/firebase configurations/fbConfig";
+import {messaging, storage} from "../api/firebase configurations/fbConfig";
 
 export const hideBars = () => {
     return (dispatch) => {
@@ -16,84 +15,117 @@ export const rollBack = (details) => {
         const rollBackDoc = firestore.collection("rollback").doc(details.id);
         const storageRef = storage.ref();
 
-        firestore.collection("rollback").where("isBatch", "==", details.isBatch)
-            .get().then((snapshot) => {
+        async function getLog() {
+            const doc = await rollDocRef.get();
+            const data = doc.data();
+            return firestore.collection("rollback").where("time", ">", details.time)
+                .get().then((snapshot) => {
+                    let code = 0;
+                    if (snapshot.size !== 0 ) {
+                        snapshot.docs.forEach((queryDoc) => {
+                            const queryData = queryDoc.data();
+                            if (queryData.docId.includes("sales")
+                                || queryData.docId.includes("buys")
+                                || queryData.docId.includes("eggs")) {
+                                if (data.event.includes("sale")
+                                    || data.event.includes("purchase")
+                                    || data.event.includes("eggs collected")) {
+                                    code = 1;
+                                    const error = new Error("This rewind is impossible!");
+                                    console.error(error);
+                                    return window.alert(error);
+                                }
 
-                if (details.action === "delete" && !details.imageId) {
-                    //this triggers rollback function again and when user deletes the rollback, it alternates
-                    //between 2 states
-                    batch.delete(rollDocRef);
+                            }
+                        })
+                    }
+                    return code;
+            })
+        }
+        getLog().then((code) => {
+            if (code === 0) {
+                firestore.collection("rollback").where("isBatch", "==", details.isBatch)
+                    .get().then((snapshot) => {
 
-                } else if (details.action === "create") {
-                    batch.set(rollDocRef, {...details.prevValues, cloud: true});
+                    if (details.action === "delete" && !details.imageId) {
+                        //this triggers rollback function again and when user deletes the rollback, it alternates
+                        //between 2 states
+                        batch.delete(rollDocRef);
 
-                }  else if (details.action === "update") {
-                    batch.update(rollDocRef, {...details.prevValues, cloud: true});
+                    } else if (details.action === "create") {
+                        batch.set(rollDocRef, {...details.prevValues, cloud: true});
 
-                } else if (details.action === "delete" && details.imageId) {
-                    //this triggers rollback function again and when user deletes the rollback, it alternates
-                    //between 2 states
-                    batch.delete(rollDocRef);
-                    // Create a reference to the file to delete
-                    const imageRef = storageRef.child(details.imageId);
+                    }  else if (details.action === "update") {
+                        batch.update(rollDocRef, {...details.prevValues, cloud: true});
 
-                    imageRef.delete().then(() => {
-                        // File deleted successfully
-                        return console.log("image deleted");
-                    }).catch(function(error) {
-                        // Uh-oh, an error occurred!
-                        window.alert(`ERROR: ${error}`);
-                        return console.error(error);
+                    } else if (details.action === "delete" && details.imageId) {
+                        //this triggers rollback function again and when user deletes the rollback, it alternates
+                        //between 2 states
+                        batch.delete(rollDocRef);
+                        // Create a reference to the file to delete
+                        const imageRef = storageRef.child(details.imageId);
+
+                        imageRef.delete().then(() => {
+                            // File deleted successfully
+                            return console.log("image deleted");
+                        }).catch(function(error) {
+                            // Uh-oh, an error occurred!
+                            window.alert(`ERROR: ${error}`);
+                            return console.error(error);
+                        });
+                    }
+                    batch.delete(rollBackDoc);
+
+                    // if it was a batch write/ transaction
+                    if (snapshot.size !== 0) {
+                        snapshot.docs.forEach((doc) => {
+                            const data = doc.data();
+                            const queryDocRef = firestore.collection("rollback").doc(doc.id);
+                            const actOnDocRef = firestore.doc(data.docId);
+                            const prevValues = data.prevValues || null;
+                            if (doc.id !== details.id) {
+                                if (data.action === "delete" && !data.imageId) {
+                                    batch.delete(actOnDocRef);
+                                }
+                                if (data.action === "create" && prevValues !== null) {
+                                    batch.set(actOnDocRef, {...prevValues, cloud: true});
+                                }
+                                if (data.action === "update" && prevValues !== null) {
+                                    batch.update(actOnDocRef, {...prevValues, cloud: true});
+                                }
+                                if (data.action === "delete" && data.imageId) {
+                                    //this triggers rollback function again and when user deletes the rollback, it alternates
+                                    //between 2 states
+                                    batch.delete(rollDocRef);
+                                    // Create a reference to the file to delete
+                                    const imageRef = storageRef.child(details.imageId);
+
+                                    imageRef.delete().then(() => {
+                                        // File deleted successfully
+                                        return console.log("image deleted");
+                                    }).catch(function(error) {
+                                        // Uh-oh, an error occurred!
+                                        window.alert(`ERROR: ${error}`);
+                                        return console.error(error);
+                                    });
+                                }
+
+                                batch.delete(queryDocRef);
+                            }
+                        });
+                    }
+                    return batch.commit().then(() => {
+                        dispatch({type: 'LATE_REPAID'});
+                    }).catch((err) => {
+                        dispatch({type: 'LATE_ERROR'});
+                        window.alert("ERROR: " + err.message);
+                        window.location.reload();
                     });
-                }
-                batch.delete(rollBackDoc);
-
-                // if it was a batch write/ transaction
-                if (snapshot.size !== 0) {
-                    snapshot.docs.forEach((doc) => {
-                        const data = doc.data();
-                        const queryDocRef = firestore.collection("rollback").doc(doc.id);
-                        const actOnDocRef = firestore.doc(data.docId);
-                        const prevValues = data.prevValues || null;
-                        if (doc.id !== details.id) {
-                            if (data.action === "delete" && !data.imageId) {
-                                batch.delete(actOnDocRef);
-                            }
-                            if (data.action === "create" && prevValues !== null) {
-                                batch.set(actOnDocRef, {...prevValues, cloud: true});
-                            }
-                            if (data.action === "update" && prevValues !== null) {
-                                batch.update(actOnDocRef, {...prevValues, cloud: true});
-                            }
-                            if (data.action === "delete" && data.imageId) {
-                                //this triggers rollback function again and when user deletes the rollback, it alternates
-                                //between 2 states
-                                batch.delete(rollDocRef);
-                                // Create a reference to the file to delete
-                                const imageRef = storageRef.child(details.imageId);
-
-                                imageRef.delete().then(() => {
-                                    // File deleted successfully
-                                    return console.log("image deleted");
-                                }).catch(function(error) {
-                                    // Uh-oh, an error occurred!
-                                    window.alert(`ERROR: ${error}`);
-                                    return console.error(error);
-                                });
-                            }
-
-                            batch.delete(queryDocRef);
-                        }
-                    });
-                }
-                return batch.commit().then(() => {
-                    dispatch({type: 'LATE_REPAID'});
-                }).catch((err) => {
-                    dispatch({type: 'LATE_ERROR'});
-                    window.alert("ERROR: " + err.message);
                 });
+            } else {
+                window.location.reload();
+            }
         });
-
     }
 }
 
