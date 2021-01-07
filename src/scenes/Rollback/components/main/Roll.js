@@ -17,7 +17,7 @@ function Roll(props) {
     }, []);
 
     useEffect(() => {
-       //window.alert("NB:- This page is still experimental, tread cautiously!");
+       window.alert("NB:- This page is still experimental, tread cautiously!");
     }, []);
 
     if (!user.__user) {
