@@ -17,7 +17,7 @@ function Roll(props) {
     }, []);
 
     useEffect(() => {
-       window.alert("NB:- This page is still experimental, tread cautiously!");
+       //window.alert("NB:- This page is still experimental, tread cautiously!");
     }, []);
 
     if (!user.__user) {
@@ -56,6 +56,6 @@ setPerformanceEnd('LATE_LOAD_TIME');
 export default compose(
     connect(mapStateToProps),
     firestoreConnect([
-        {collection: 'rollback', limit: 1000, orderBy: ['time', 'desc']}
+        {collection: 'rollback', limit: 1000, orderBy: ['isUserLog', 'desc']}
     ])
 )(Roll)

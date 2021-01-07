@@ -23,15 +23,11 @@ const Rollback = ({roll}) => {
                         name = "Jeff";
                     }
 
-                    if (user === "userLogs" && name) {
-                        return (
-                            <li key={item.id}>
-                                <RollbackSummary item={item} name={name} />
-                            </li>
-                        )
-                    } else {
-                        return <div key={item.id} />
-                    }
+                    return (
+                        <li key={item.id}>
+                            <RollbackSummary item={item} name={name}/>
+                        </li>
+                    )
                 })}
             </div>
         );
