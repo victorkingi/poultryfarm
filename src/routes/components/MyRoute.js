@@ -26,6 +26,7 @@ import Inputmoney from "../../scenes/Input Pages/scenes/Sending Money/components
 import AllCharts from "../../scenes/Charts/components/main/AllCharts";
 import InputBorrow from "../../scenes/Input Pages/scenes/Borrowing Funds/components/InputBorrow";
 import Roll from "../../scenes/Rollback/components/main/Roll";
+import AnneSends from "../../scenes/Input Pages/scenes/Sending Money/components/AnneSends";
 
 function MyRoute() {
 
@@ -44,6 +45,7 @@ function MyRoute() {
                 <Route path='/buy' component={Inputbuy}/>
                 <Route path='/eggs' component={Inputeggs}/>
                 <Route path='/send' component={Inputmoney}/>
+                <Route path='/asend' component={AnneSends}/>
                 <Route path='/d' component={InputDeadSick}/>
                 <Route path='/roll' component={Roll}/>
                 <Route path='/l' component={Late}/>

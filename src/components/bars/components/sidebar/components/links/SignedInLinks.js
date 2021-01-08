@@ -14,13 +14,11 @@ const SignedInLinks = function(props) {
                     <li><NavLink to='/' className="btn btn-floating pink lighten-1">
                         {props.profile.initials}
                     </NavLink></li>
-
+                    <br />
+                    <li><NavLink to='/roll'>Rewind</NavLink></li>
                     <li>
                         <div className="divider"/>
                     </li>
-                    <br />
-                    <li><NavLink to='/roll'>Rewind</NavLink></li>
-
                     <li>
                         <span className="subheader">Inputs</span>
                     </li>
@@ -40,7 +38,7 @@ const SignedInLinks = function(props) {
                     </li>
 
                     <li><NavLink to='/send'>Send money</NavLink></li>
-
+                    <li><NavLink to='/asend'>Anne Sends</NavLink></li>
                     <li>
                         <div className="divider"/>
                     </li>

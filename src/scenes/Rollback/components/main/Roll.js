@@ -56,6 +56,6 @@ setPerformanceEnd('LATE_LOAD_TIME');
 export default compose(
     connect(mapStateToProps),
     firestoreConnect([
-        {collection: 'rollback', limit: 1000, orderBy: ['isUserLog', 'desc']}
+        {collection: 'rollback', limit: 50, orderBy: ['isUserLog', 'desc']}
     ])
 )(Roll)

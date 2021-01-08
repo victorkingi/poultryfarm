@@ -1,5 +1,6 @@
 import {makeid} from "./salesAction";
 import {clearForm} from "../../scenes/Input Pages/scenes/Sales/components/Inputsell";
+import {functions} from "../api/firebase configurations/fbConfig";
 
 function setPerformanceStart() {
     performance.mark('measurementStart');
@@ -30,71 +31,96 @@ export const sendMoney = (money) => {
         const submit = document.getElementById("submit-btn-send-money");
 
         function sendTheFunds() {
-            return firestore.runTransaction(function (transaction) {
-                return transaction.get(currentDocRef).then(function (currentDoc) {
-                    return transaction.get(receiverDocRef).then(function (receiverDoc) {
+            if (money.anne) {
+                const anneSends = functions.httpsCallable('util-updateAnne');
+                anneSends({amount}).then((response) => {
+                    if (parseInt(response.data.status) === 200) {
+                        dispatch({type: 'MONEY_SENT', money});
+                        window.alert("Data submitted");
+                        load.style.display = 'none';
+                        submit.style.display = 'block';
+                        clearForm('send-money-form');
+                    } else {
+                        const error = response.data.message || response.data.status;
+                        dispatch({type: 'MONEY_ERROR', error});
+                        window.alert(error);
+                        load.style.display = 'none';
+                        window.location = '/';
+                    }
+                }).catch((err) => {
+                    const error = err.message || err;
+                    dispatch({type: 'MONEY_ERROR', error});
 
-                        if (currentDoc.exists) {
-                            if (receiverDoc.exists) {
-                                const name = receiverDoc.data().fullName;
+                    window.alert(error);
+                    load.style.display = 'none';
+                    window.location = '/';
+                });
+            } else {
+                return firestore.runTransaction(function (transaction) {
+                    return transaction.get(currentDocRef).then(function (currentDoc) {
+                        return transaction.get(receiverDocRef).then(function (receiverDoc) {
+                            if (currentDoc.exists) {
+                                if (receiverDoc.exists) {
+                                    const name = receiverDoc.data().fullName;
 
-                                if (name === currentDoc.data().fullName || amount < 1) {
-                                    return Promise.reject("ERROR: Recheck data entered!");
-
-                                } else {
-                                    const senderNewBalance = currentDoc.data().balance - amount;
-
-                                    if (senderNewBalance < 0) {
-                                        return Promise.reject("ERROR: Insufficient funds to complete transfer");
+                                    if (name === currentDoc.data().fullName || amount < 1) {
+                                        return Promise.reject("ERROR: Recheck data entered!");
 
                                     } else {
-                                        transaction.update(currentDocRef, {
-                                            cloud: true,
-                                            balance: senderNewBalance,
-                                            submittedBy: fullName,
-                                            submittedOn: firestore.FieldValue.serverTimestamp()
-                                        });
+                                        const senderNewBalance = currentDoc.data().balance - amount;
 
-                                        transaction.update(receiverDocRef, {
-                                            cloud: true,
-                                            balance: firestore.FieldValue.increment(amount),
-                                            submittedBy: fullName,
-                                            submittedOn: firestore.FieldValue.serverTimestamp()
-                                        });
+                                        if (senderNewBalance < 0) {
+                                            return Promise.reject("ERROR: Insufficient funds to complete transfer");
 
-                                        transaction.set(userLogRef, {
-                                            cloud: true,
-                                            event: 'sent money to ' + name,
-                                            receiver: name,
-                                            amount: amount,
-                                            submittedBy: fullName,
-                                            submittedOn: firestore.FieldValue.serverTimestamp()
-                                        });
+                                        } else {
+                                            transaction.update(currentDocRef, {
+                                                cloud: true,
+                                                balance: senderNewBalance,
+                                                submittedBy: fullName,
+                                                submittedOn: firestore.FieldValue.serverTimestamp()
+                                            });
+
+                                            transaction.update(receiverDocRef, {
+                                                cloud: true,
+                                                balance: firestore.FieldValue.increment(amount),
+                                                submittedBy: fullName,
+                                                submittedOn: firestore.FieldValue.serverTimestamp()
+                                            });
+
+                                            transaction.set(userLogRef, {
+                                                cloud: true,
+                                                event: 'sent money to ' + name,
+                                                receiver: name,
+                                                amount: amount,
+                                                submittedBy: fullName,
+                                                submittedOn: firestore.FieldValue.serverTimestamp()
+                                            });
+                                        }
                                     }
+                                } else {
+                                    return Promise.reject("ERROR: Doc doesn't exist!");
                                 }
+
                             } else {
                                 return Promise.reject("ERROR: Doc doesn't exist!");
                             }
-
-                        } else {
-                            return Promise.reject("ERROR: Doc doesn't exist!");
-                        }
+                        })
                     })
-                })
-            }).then(() => {
+                }).then(() => {
                     dispatch({type: 'MONEY_SENT', money});
                     window.alert("Data submitted");
                     load.style.display = 'none';
                     submit.style.display = 'block';
                     clearForm('send-money-form');
                 }).catch((err) => {
-                const error = err.message || err;
-                dispatch({type: 'MONEY_ERROR', error});
+                    const error = err.message || err;
+                    dispatch({type: 'MONEY_ERROR', error});
 
-                window.alert(error);
-                load.style.display = 'none';
-                window.location = '/';
-            })
+                    window.alert(error);
+                    load.style.display = 'none';
+                    window.location = '/';
+                });
+            }
         }
 
         if (money.receiver === "Bank Account") {
