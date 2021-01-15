@@ -22,16 +22,25 @@ export const inputTray = (eggs) => {
         const getMinutes = date.getMinutes();
         const getSeconds = date.getSeconds();
         const enteredMonth = parseInt(eggs.month);
-        const year = date.getFullYear();
-        const newMonth = enteredMonth - 1;
+        let year = undefined;
+        let ans = prompt("Is this a 2020 entry?(type Y or N)");
+        if (ans === "Y") {
+            year = 2020;
+        } else if (ans === "N") {
+            year = 2021;
+        } else {
+            const err = new Error("invalid year entered");
+            window.alert(err);
+            window.location.reload();
+            return 0;
+        }
         const enteredDate = parseInt(eggs.date);
-        const oldDate = new Date(year, newMonth, enteredDate);
+        const oldDate = new Date(year, enteredMonth-1, enteredDate);
         const dayOfTheWeek = oldDate.getDay();
         const endMonth = isLastDay(oldDate);
         let prevDate = enteredDate - 1;
         let prevMonth = enteredMonth;
         const isLeap = leapYear(year);
-        const controlledDate = enteredDate < 10 ? `0${enteredDate}` : enteredDate;
         const eggDocRef = firestore.collection("eggs").doc();
         const traysDocRef = firestore.collection("trays").doc("CurrentTrays");
         const chickenDocRef = firestore.collection("chickenDetails").doc("2020");
@@ -50,15 +59,17 @@ export const inputTray = (eggs) => {
         const total = parseInt(myTotal);
         const load = document.getElementById("loading-eggs");
         const submit = document.getElementById("egg7");
+        const finalDocId = `Month ${enteredMonth} Date ${enteredDate} Year ${year}`;
+
 
         for (let i = 0; i < tempArr.length; i++) {
             if (tempArr[i] > 75 || tempArr[i] < 0) {
-                const error = "ERROR: Impossible values entered!";
+                const error = new Error("Impossible values entered!");
                 dispatch({type: 'INPUT_BUYING_ERROR', error});
                 window.alert(error);
                 submit.style.display = 'block';
                 load.style.display = 'none';
-                return new Error("ERROR: Impossible values entered!");
+                return error;
             }
         }
 
@@ -74,28 +85,44 @@ export const inputTray = (eggs) => {
                 prevDate = 30
             }
         }
-        const controlledPrevDate = prevDate < 10 ? `0${prevDate}` : prevDate;
 
         const dateChecks = dateCheck(enteredMonth, enteredDate, isLeap)
 
 
         if (dateChecks) {
-            const error = "ERROR: Impossible date entered!";
+            const error = new Error("Impossible date entered!");
             dispatch({type: 'INPUT_BUYING_ERROR', error});
 
             window.alert(error);
             submit.style.display = 'block';
-            return new Error("ERROR: Impossible date entered!");
+            load.style.display = 'none';
+            return error;
         }
 
-        firestore.collection("eggs").where("docId", "==", `Month ${enteredMonth} Date ${controlledDate}`).get()
+        firestore.collection("eggs").where("docId", "==", finalDocId).get()
             .then((outerQuery) => {
                 if (outerQuery.size !== 0) {
-                    return new Error("ERROR: Data already exists!");
+                    const error = new Error("Data already exists!");
+                    dispatch({type: 'INPUT_BUYING_ERROR', error});
+
+                    window.alert(error);
+                    submit.style.display = 'block';
+                    load.style.display = 'none';
+                    return error;
                 } else {
-                    firestore.collection("eggs").where("docId", "==", `Month ${prevMonth} Date ${controlledPrevDate}`)
+                    firestore.collection("eggs").where("docId", "==", `Month ${prevMonth} Date ${prevDate} Year ${year}`)
                         .get().then((query) => {
-                        query.forEach((eggPreviousDoc) => {
+                        if (query.size === 0) {
+                            const error = new Error("Wrong date entered, dates are entered in chronological order!");
+                            dispatch({type: 'INPUT_BUYING_ERROR', error});
+
+                            window.alert(error);
+                            submit.style.display = 'block';
+                            load.style.display = 'none';
+                            return error;
+                        }
+
+                       query.forEach((eggPreviousDoc) => {
                             firestore.runTransaction(function (transaction) {
                                 return transaction.get(traysDocRef).then(function (trayDoc) {
                                     return  transaction.get(eggDocRef).then((_eggDoc) => {
@@ -128,6 +155,7 @@ export const inputTray = (eggs) => {
                                                         let allMonthlyEggs = total + prevAllMonthlyEggs;
                                                         let houseMonthlyEggs = house + prevHouseMonthlyEggs;
                                                         let cageMonthlyEggs = cageTotal + prevCageMonthlyEggs;
+                                                        const finalDate = new Date(year, enteredMonth-1, enteredDate, getHours, getMinutes, getSeconds);
 
                                                         if (dayOfTheWeek === 0 && endMonth) {
                                                             const weeklyAllPercent = ((prevAllWeeklyEggs / 7) / chickenNo) * 100;
@@ -149,7 +177,7 @@ export const inputTray = (eggs) => {
                                                             transaction.set(eggDocRef, {
                                                                 ...eggs,
                                                                 cloud: false,
-                                                                docId: `Month ${enteredMonth} Date ${controlledDate}`,
+                                                                docId: finalDocId,
                                                                 weeklyAllPercent: weeklyAllPercent,
                                                                 weeklyCagePercent: weeklyCagePercent,
                                                                 weeklyHousePercent: weeklyHousePercent,
@@ -162,7 +190,7 @@ export const inputTray = (eggs) => {
                                                                 allMonthlyEggs: total,
                                                                 cageMonthlyEggs: cageTotal,
                                                                 houseMonthlyEggs: house,
-                                                                date: new Date(year, newMonth, enteredDate, getHours, getMinutes, getSeconds).toString(),
+                                                                date: finalDate,
                                                                 submittedBy: profile.firstName + ' ' + profile.lastName,
                                                                 submittedOn: firestore.FieldValue.serverTimestamp()
                                                             })
@@ -182,7 +210,7 @@ export const inputTray = (eggs) => {
                                                             transaction.set(eggDocRef, {
                                                                 ...eggs,
                                                                 cloud: false,
-                                                                docId: `Month ${enteredMonth} Date ${controlledDate}`,
+                                                                docId: finalDocId,
                                                                 weeklyAllPercent: weeklyAllPercent,
                                                                 weeklyCagePercent: weeklyCagePercent,
                                                                 weeklyHousePercent: weeklyHousePercent,
@@ -192,7 +220,7 @@ export const inputTray = (eggs) => {
                                                                 allMonthlyEggs: allMonthlyEggs,
                                                                 cageMonthlyEggs: cageMonthlyEggs,
                                                                 houseMonthlyEggs: houseMonthlyEggs,
-                                                                date: new Date(year, newMonth, enteredDate, getHours, getMinutes, getSeconds).toString(),
+                                                                date: finalDate,
                                                                 submittedBy: profile.firstName + ' ' + profile.lastName,
                                                                 submittedOn: firestore.FieldValue.serverTimestamp()
                                                             })
@@ -210,7 +238,7 @@ export const inputTray = (eggs) => {
                                                             transaction.set(eggDocRef, {
                                                                 ...eggs,
                                                                 cloud: false,
-                                                                docId: `Month ${enteredMonth} Date ${controlledDate}`,
+                                                                docId: finalDocId,
                                                                 monthAllPercent: monthAllPercent,
                                                                 monthCagePercent: monthCagePercent,
                                                                 monthHousePercent: monthHousePercent,
@@ -220,23 +248,22 @@ export const inputTray = (eggs) => {
                                                                 allMonthlyEggs: total,
                                                                 cageMonthlyEggs: cageTotal,
                                                                 houseMonthlyEggs: house,
-                                                                date: new Date(year, newMonth, enteredDate, getHours, getMinutes, getSeconds).toString(),
+                                                                date: finalDate,
                                                                 submittedBy: profile.firstName + ' ' + profile.lastName,
                                                                 submittedOn: firestore.FieldValue.serverTimestamp()
                                                             })
                                                         } else {
-                                                            const myDate = new Date(year, newMonth, enteredDate, getHours, getMinutes, getSeconds).toString();
                                                             transaction.set(eggDocRef, {
                                                                 ...eggs,
                                                                 cloud: false,
-                                                                docId: `Month ${enteredMonth} Date ${controlledDate}`,
+                                                                docId: finalDocId,
                                                                 allWeeklyEggs: allWeeklyEggs,
                                                                 cageWeeklyEggs: cageWeeklyEggs,
                                                                 houseWeeklyEggs: houseWeeklyEggs,
                                                                 allMonthlyEggs: allMonthlyEggs,
                                                                 cageMonthlyEggs: cageMonthlyEggs,
                                                                 houseMonthlyEggs: houseMonthlyEggs,
-                                                                date: myDate,
+                                                                date: finalDate,
                                                                 submittedBy: profile.firstName + ' ' + profile.lastName,
                                                                 submittedOn: firestore.FieldValue.serverTimestamp()
                                                             })
@@ -292,7 +319,7 @@ export const inputTray = (eggs) => {
                                 window.location = '/';
 
                             })
-                        })
+                        });
                     })
                 }
             })
