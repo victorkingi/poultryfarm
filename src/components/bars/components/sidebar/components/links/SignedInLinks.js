@@ -108,6 +108,7 @@ const SignedInLinks = function(props) {
                     </li>
 
                     <li><NavLink to='/send'>Send money</NavLink></li>
+                    <li><NavLink to='/asend'>Anne Sends</NavLink></li>
 
                     <li>
                         <div className="divider"/>
