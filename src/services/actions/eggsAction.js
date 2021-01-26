@@ -75,6 +75,12 @@ export const inputTray = (eggs) => {
 
         if (prevDate === 0) {
             prevMonth = prevMonth - 1;
+
+            if (prevMonth === 0) {
+                prevMonth = 12;
+                year = year - 1;
+            }
+
             if (prevMonth === 1 || prevMonth === 3 || prevMonth === 5 || prevMonth === 7 || prevMonth === 8 || prevMonth === 10 || prevMonth === 12) {
                 prevDate = 31;
             } else if (isLeap && prevMonth === 2) {
