@@ -22,18 +22,8 @@ export const inputTray = (eggs) => {
         const getMinutes = date.getMinutes();
         const getSeconds = date.getSeconds();
         const enteredMonth = parseInt(eggs.month);
-        let year = undefined;
-        let ans = prompt("Is this a 2020 entry?(type Y or N)");
-        if (ans === "Y") {
-            year = 2020;
-        } else if (ans === "N") {
-            year = 2021;
-        } else {
-            const err = new Error("invalid year entered");
-            window.alert(err);
-            window.location.reload();
-            return 0;
-        }
+        let year = date.getFullYear();
+        let prevYear = year;
         const enteredDate = parseInt(eggs.date);
         const oldDate = new Date(year, enteredMonth-1, enteredDate);
         const dayOfTheWeek = oldDate.getDay();
@@ -78,7 +68,7 @@ export const inputTray = (eggs) => {
 
             if (prevMonth === 0) {
                 prevMonth = 12;
-                year = year - 1;
+                prevYear = prevYear - 1;
             }
 
             if (prevMonth === 1 || prevMonth === 3 || prevMonth === 5 || prevMonth === 7 || prevMonth === 8 || prevMonth === 10 || prevMonth === 12) {
@@ -116,7 +106,7 @@ export const inputTray = (eggs) => {
                     load.style.display = 'none';
                     return error;
                 } else {
-                    firestore.collection("eggs").where("docId", "==", `Month ${prevMonth} Date ${prevDate} Year ${year}`)
+                    firestore.collection("eggs").where("docId", "==", `Month ${prevMonth} Date ${prevDate} Year ${prevYear}`)
                         .get().then((query) => {
                         if (query.size === 0) {
                             const error = new Error("Wrong date entered, dates are entered in chronological order!");
