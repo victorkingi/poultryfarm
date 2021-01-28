@@ -54,6 +54,6 @@ setPerformanceEnd('LATE_LOAD_TIME');
 export default compose(
     connect(mapStateToProps),
     firestoreConnect([
-        {collection: 'latePayment', limit: 1000, orderBy: ['amountDue', 'desc']}
+        {collection: 'latePayment', limit: 1000, orderBy: ['submittedOn', 'desc']}
     ])
 )(Late)
