@@ -14,7 +14,6 @@ import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
-import Checkbox from '@material-ui/core/Checkbox';
 
 const useRowStyles = makeStyles({
     root: {
@@ -95,13 +94,10 @@ Row.propTypes = {
         history: PropTypes.arrayOf(
             PropTypes.shape({
                 amount: PropTypes.number.isRequired,
-                customerId: PropTypes.string.isRequired,
                 date: PropTypes.string.isRequired,
             }),
         ).isRequired,
-        month: PropTypes.string.isRequired,
-        price: PropTypes.number.isRequired,
-        protein: PropTypes.number.isRequired,
+        month: PropTypes.string.isRequired
     }).isRequired,
 };
 
@@ -114,7 +110,7 @@ const rows = [
 ];
 
 export default function AnneRoll() {
-    const handleClick = (e) => {
+    const handleClick = () => {
         
     }
 
@@ -137,8 +133,8 @@ export default function AnneRoll() {
         </TableContainer>
             <div style={{paddingLeft: "35%", paddingTop: "10px"}}>
                 <button type="submit"
-                    onClick={(e) => {
-                    handleClick(e)
+                    onClick={() => {
+                    handleClick()
                 }} className="btn pink lighten-2 z-depth-0">Cleared</button>
             </div>
         </div>
