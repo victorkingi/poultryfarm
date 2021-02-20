@@ -13,7 +13,6 @@ import Late from "../../scenes/Late Payments/components/main/Late";
 import SickDead from "../../scenes/Sick And Dead/components/main/SickDead";
 import Buy from "../../scenes/Purchases/components/main/Buy";
 import Egg from "../../scenes/Eggs Collected/components/main/Egg";
-import Borrow from "../../scenes/Funds Borrowed/components/main/Borrow";
 import Dashboard from "../../scenes/Home/components/main/Dashboard";
 import NotFound from "../../scenes/404/components/not found/NotFound";
 import Navbar from "../../components/bars/components/navbar/Navbar";
@@ -24,9 +23,9 @@ import Inputbuy from "../../scenes/Input Pages/scenes/Purchases/components/Input
 import Inputeggs from "../../scenes/Input Pages/scenes/Collecting Eggs/components/Inputeggs";
 import Inputmoney from "../../scenes/Input Pages/scenes/Sending Money/components/Inputmoney";
 import AllCharts from "../../scenes/Charts/components/main/AllCharts";
-import InputBorrow from "../../scenes/Input Pages/scenes/Borrowing Funds/components/InputBorrow";
 import Roll from "../../scenes/Rollback/components/main/Roll";
 import AnneSends from "../../scenes/Input Pages/scenes/Sending Money/components/AnneSends";
+import AnneRoll from "../../scenes/Anne Debt/components/AnneRoll";
 
 function MyRoute() {
 
@@ -35,29 +34,28 @@ function MyRoute() {
             <Navbar/>
             <Sidebar/>
             <Switch>
-                <Route path='/s/:id' component={SalesDetails}/>
-                <Route path='/sd/:id' component={SickDeadDetails}/>
-                <Route path='/e/:id' component={EggsDetails}/>
-                <Route path='/b/:id' component={BuyDetails}/>
-                <Route path='/signin' component={SignIn}/>
-                <Route path='/signup' component={SignUp}/>
+                <Route exact path='/' component={Dashboard}/>
+                <Route path='/roll' component={Roll}/>
                 <Route path='/sales' component={Inputsell}/>
-                <Route path='/buy' component={Inputbuy}/>
                 <Route path='/eggs' component={Inputeggs}/>
+                <Route path='/buy' component={Inputbuy}/>
+                <Route path='/d' component={InputDeadSick}/>
                 <Route path='/send' component={Inputmoney}/>
                 <Route path='/asend' component={AnneSends}/>
-                <Route path='/d' component={InputDeadSick}/>
-                <Route path='/roll' component={Roll}/>
                 <Route path='/l' component={Late}/>
+                <Route path='/ad' component={AnneRoll}/>
                 <Route path='/o' component={OtherDebts}/>
-                <Route path='/s' component={Sale}/>
-                <Route path='/sd' component={SickDead}/>
-                <Route path='/b' component={Buy}/>
                 <Route path='/e' component={Egg}/>
+                <Route path='/e/:id' component={EggsDetails}/>
+                <Route path='/s' component={Sale}/>
+                <Route path='/s/:id' component={SalesDetails}/>
+                <Route path='/b' component={Buy}/>
+                <Route path='/b/:id' component={BuyDetails}/>
+                <Route path='/sd' component={SickDead}/>
+                <Route path='/sd/:id' component={SickDeadDetails}/>
                 <Route path='/chart' component={AllCharts}/>
-                <Route path='/rb' component={Borrow}/>
-                <Route path='/ib' component={InputBorrow}/>
-                <Route exact path='/' component={Dashboard}/>
+                <Route path='/signin' component={SignIn}/>
+                <Route path='/signup' component={SignUp}/>
                 <Route path="*" component={NotFound} status={404}/>
             </Switch>
         </BrowserRouter>
