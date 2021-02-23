@@ -1,4 +1,4 @@
-import React, {useMemo, useEffect} from "react";
+import React, {useMemo} from "react";
 import {connect} from 'react-redux';
 import {compose} from 'redux'
 import {Redirect} from 'react-router-dom';
@@ -14,10 +14,6 @@ function Roll(props) {
         const __user = localStorage.getItem('user') || false;
 
         return {__user};
-    }, []);
-
-    useEffect(() => {
-       window.alert("NB:- This page is still experimental, tread cautiously!");
     }, []);
 
     if (!user.__user) {

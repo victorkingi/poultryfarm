@@ -2,11 +2,10 @@ import React from "react";
 import RollbackSummary from "../summary/RollbackSummary";
 
 const Rollback = ({roll}) => {
-
     if (roll['length'] > 0) {
         return (
             <div className="project-list section">
-                {roll && roll.map(item => {
+                {roll && roll.slice(0, 10).map(item => {
                     const user = item.docId?.substring(0, 8);
                     const res = user
                     === "userLogs" ? item.docId?.substring(9,
@@ -22,7 +21,6 @@ const Rollback = ({roll}) => {
                     } else if (uid === "uM7j65iqBzQmU5vJZCzAsOibba53") {
                         name = "Jeff";
                     }
-
                     return (
                         <li key={item.id}>
                             <RollbackSummary item={item} name={name}/>

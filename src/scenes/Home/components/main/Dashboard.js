@@ -12,6 +12,8 @@ import ChickenDetails from "../chicken data/ChickenDetails";
 import Notifications from "../notifications/components/notifications/Notifications";
 import {setPerformanceEnd, setPerformanceStart} from "../../../../services/actions/moneyAction";
 import CloudCost from "../cloud costs/CloudCost";
+import {messaging} from "../../../../services/api/firebase configurations/fbConfig";
+import {sendTokenToServer} from "../../../../services/actions/chickenAction";
 
 
 setPerformanceStart();
@@ -30,6 +32,20 @@ function time() {
     }
 }
 
+function refreshToken() {
+    if (messaging !== null) {
+        messaging.onTokenRefresh(() => {
+            messaging.getToken().then((refreshedToken) => {
+                console.log('Token refreshed.');
+                sendTokenToServer(refreshedToken);
+            }).catch((err) => {
+                console.log('Unable to retrieve refreshed token ', err);
+                window.alert(`ERROR: unable to retrieve messaging token ${err}`);
+            });
+        });
+    }
+}
+
 function Dashboard(props) {
     const {auth, admin, changer, balance, notifications, billing } = props;
     const firstName = auth?.displayName?.substring(0, auth?.displayName?.lastIndexOf(' '));
@@ -40,9 +56,9 @@ function Dashboard(props) {
         return {__user};
     }, []);
 
-    useEffect(function(){
+    useEffect(() => {
         time();
-
+        refreshToken();
     }, [props]);
 
     if (!user.__user) {

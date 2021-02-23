@@ -14,7 +14,7 @@ function ValidateEmail(mail) {
     if (/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(mail)) {
         return true
     }
-    alert("Please enter user email to send reset prompt to");
+    window.alert("Please enter user email to send reset prompt to");
     return false
 }
 
