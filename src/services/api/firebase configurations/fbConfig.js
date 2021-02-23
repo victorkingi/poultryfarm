@@ -7,13 +7,13 @@ import 'firebase/storage';
 import 'firebase/functions';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyD3tzp-dWkeucSmG8dME_J7Zlxj9vm1hvw",
-  authDomain: "poultry101-6b1ed.firebaseapp.com",
-  databaseURL: "https://poultry101-6b1ed.firebaseio.com",
-  projectId: "poultry101-6b1ed",
-  storageBucket: "poultry101-6b1ed.appspot.com",
-  messagingSenderId: "921557433248",
-  appId: "1:921557433248:web:5828718b6146d8a293c2c5"
+  apiKey: "",
+  authDomain: "",
+  databaseURL: "",
+  projectId: "",
+  storageBucket: "",
+  messagingSenderId: "",
+  appId: ""
 };
 
 // Initialize Firebase
