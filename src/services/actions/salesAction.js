@@ -10,6 +10,12 @@ function makeid(l) {
     return text;
 }
 
+const monthNames = ["January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+];
+
+let wrongMonth = false;
+
 function leapYear(year) {
     return ((year % 4 === 0) && (year % 100 !== 0)) || (year % 400 === 0);
 }
@@ -57,6 +63,7 @@ export const inputSell = (sales) => {
         const userLogRef = firestore.collection("userLogs").doc(user.uid).collection("logs").doc();
         const latePaymentDocRef = firestore.collection("latePayment").doc();
         const load = document.getElementById("loading-sales");
+        const submit = document.getElementById("submit-btn-sales");
         let total = sales.trayNo ? parseInt(sales.trayNo) * parseInt(sales.trayPrice)
             : parseInt(sales.chickenNo) * parseInt(sales.chickenPrice);
         const dateChecks = dateCheck(enteredMonth, enteredDate, isLeap);
@@ -65,10 +72,26 @@ export const inputSell = (sales) => {
             sales.status = true
             status = true
         }
+        if (section !== "Cakes" && (buyer.includes("mum") || buyer.includes("Mum"))) {
+            const error = "ERROR: Impossible data! mum instead of cakes section";
+            dispatch({type: 'INPUT_SALES_ERROR', error});
+            window.alert(error);
+            return new Error(error);
+        }
+
+        if (enteredMonth !== date.getMonth()+1 && !wrongMonth) {
+            const error = `ERROR: you entered ${monthNames[enteredMonth-1]} but it's currently ${monthNames[date.getMonth()]} retry if you are sure`;
+            dispatch({type: 'INPUT_SALES_ERROR', error});
+            window.alert(error);
+            wrongMonth = true;
+            load.style.display = 'none';
+            submit.style.display = 'block';
+            return new Error(error);
+        }
 
         if (dateChecks) {
             const error = "ERROR: Impossible date entered!";
-            dispatch({type: 'INPUT_BUYING_ERROR', error});
+            dispatch({type: 'INPUT_SALES_ERROR', error});
 
             window.alert(error);
             return new Error(error);

@@ -18,6 +18,16 @@ export const rollBack = (details) => {
         async function getLog() {
             const doc = await rollDocRef.get();
             const data = doc.data();
+
+            const ids = [
+                "1vMGrBhcwPXj2b4k2BlpAPyHAtc2",
+                "cMxQ5l47KmVackqSRBpaM3ieVCX2",
+                "jj9uon3O9LOaM6k5wtkeVUAy5wi2",
+                "uM7j65iqBzQmU5vJZCzAsOibba53",
+                "5AjrDRY93TSAqdOgX7bb67UuPH43",
+                "phD4BTAFfKc38Tqx4ukmjfMwZD42"
+            ]
+
             return firestore.collection("rollback").where("time", ">", details.time)
                 .get().then((snapshot) => {
                     let code = 0;
@@ -35,13 +45,30 @@ export const rollBack = (details) => {
                                     console.error(error);
                                     return window.alert(error);
                                 }
-
+                            }
+                            for (let i = 0; i < ids.length; i++) {
+                                firestore.collection("userLogs").doc(ids[i]).collection('logs')
+                                    .where("submittedOn", ">", details.time).get()
+                                    .then((snap) => {
+                                        if (snap.size !== 0) {
+                                            snap.docs.forEach((finalDoc) => {
+                                                const finalData = finalDoc.data();
+                                                if (finalData.event.includes("sent money")) {
+                                                    code = 1;
+                                                    const error = new Error("This rewind is impossible!");
+                                                    console.error(error);
+                                                    return window.alert(error);
+                                                }
+                                            });
+                                        }
+                                    })
                             }
                         })
                     }
                     return code;
             })
         }
+
         getLog().then((code) => {
             if (code === 0) {
                 firestore.collection("rollback").where("isBatch", "==", details.isBatch)

@@ -48,5 +48,5 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
-  "version": "2.5.2"
+  "version": "2.5.3"
 }
