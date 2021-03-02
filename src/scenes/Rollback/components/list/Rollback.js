@@ -5,7 +5,7 @@ const Rollback = ({roll}) => {
     if (roll['length'] > 0) {
         return (
             <div className="project-list section">
-                {roll && roll.slice(0, 5).map(item => {
+                {roll && roll.slice(0, 10).map(item => {
                     const user = item.docId?.substring(0, 8);
                     const res = user
                     === "userLogs" ? item.docId?.substring(9,
