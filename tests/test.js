@@ -1,6 +1,6 @@
 const firebase = require('@firebase/testing');
 
-const MY_PROJECT_ID = "poultry101-6b1ed";
+const MY_PROJECT_ID = "";
 const adminId = "user_admin";
 const changerId = "user_changer";
 const moderatorId = "user_moderator";

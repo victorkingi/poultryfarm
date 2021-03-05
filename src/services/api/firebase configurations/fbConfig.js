@@ -26,7 +26,7 @@ const functions = firebase.functions();
 
 if (firebase.messaging.isSupported()) {
   messaging = firebase.messaging();
-  messaging.usePublicVapidKey("BAKZFaJ-BRXiOD_-PIzqLcqwXOjqx0j5vEqW8CWYWfB9T7v7YK_o5fzR_LPi6LNx8U31YXxxPWHx_VBUQ6nmpJM");
+  messaging.usePublicVapidKey("");
 }
 
 export {firebase, performance, storage, messaging, functions};
