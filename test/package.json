@@ -4,7 +4,7 @@
   "description": "Unit testing security rules for poultryfarm",
   "main": "test.js",
   "scripts": {
-    "test": "mocha --exit"
+    "test": "mocha -g 'Assert oweJeff collection is safe' --exit"
   },
   "author": "Victor Kingi",
   "license": "ISC",
