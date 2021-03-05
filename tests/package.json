@@ -9,7 +9,7 @@
   "author": "Victor Kingi",
   "license": "ISC",
   "devDependencies": {
-    "@firebase/testing": "^0.20.11",
-    "mocha": "^8.2.0"
+    "mocha": "^8.2.0",
+    "@firebase/testing": "^0.20.11"
   }
 }
